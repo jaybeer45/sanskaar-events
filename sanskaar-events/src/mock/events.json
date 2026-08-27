@@ -1,0 +1,6823 @@
+[
+  {
+    "id": "evt-001",
+    "title": "Sufi Night — Nizami Bandhu",
+    "category": "live-music",
+    "description": "An enchanting evening of soul-stirring Sufi music at the Rajmahal Rooftop. Experience the magic of qawwali and sufi songs performed by the celebrated Nizami Bandhu group from Delhi.",
+    "date": "2026-07-21",
+    "time": "9:10 PM",
+    "endTime": "11:30 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": { "name": "Rajmahal Rooftop", "address": "Civil Lines, Bareilly", "distance": "2.0 km", "lat": 28.3670, "lng": 79.4304 },
+    "price": { "free": false, "min": 299, "max": 999, "currency": "INR" },
+    "crowdLevel": "high",
+    "capacity": 300,
+    "attendees": 210,
+    "going": 210,
+    "organizer": { "id": "org-001", "name": "Sanskaar Events", "avatar": "https://picsum.photos/seed/org1/40/40", "verified": true },
+    "tags": ["sufi", "music", "outdoor", "soulful", "festival"],
+    "images": ["https://picsum.photos/seed/sufinight/800/500", "https://picsum.photos/seed/sufinight2/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-002",
+    "title": "Bareilly Startup Meetup",
+    "category": "meetups",
+    "description": "Connect with fellow entrepreneurs, founders, and startup enthusiasts in Bareilly. This month's theme: funding your first startup. Panel discussion, networking, and light snacks included.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": { "name": "WorkNest, Civil Lines", "address": "Civil Lines, Bareilly", "distance": "1.4 km", "lat": 28.3680, "lng": 79.4312 },
+    "price": { "free": true, "min": 0, "max": 0, "currency": "INR" },
+    "crowdLevel": "low",
+    "capacity": 80,
+    "attendees": 48,
+    "going": 48,
+    "organizer": { "id": "org-002", "name": "Bareilly Startup Hub", "avatar": "https://picsum.photos/seed/org2/40/40", "verified": true },
+    "tags": ["startup", "networking", "business", "meetup"],
+    "images": ["https://picsum.photos/seed/startupmeet/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-003",
+    "title": "Acoustic Night: Aftaab & The Locals",
+    "category": "live-music",
+    "description": "An intimate acoustic evening with Bareilly's own Aftaab Khan and his band The Locals. Classic Bollywood, folk, and originals in a cozy rooftop setting.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": { "name": "Zero Degree Café, Civil Lines", "address": "Civil Lines, Bareilly", "distance": "1.2 km", "lat": 28.3665, "lng": 79.4298 },
+    "price": { "free": false, "min": 299, "max": 299, "currency": "INR" },
+    "crowdLevel": "medium",
+    "capacity": 200,
+    "attendees": 124,
+    "going": 124,
+    "organizer": { "id": "org-001", "name": "Sanskaar Events", "avatar": "https://picsum.photos/seed/org1/40/40", "verified": true },
+    "tags": ["acoustic", "live-music", "rooftop", "bollywood"],
+    "images": ["https://picsum.photos/seed/acoustic/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-004",
+    "title": "Bareilly Open Mic: Standup Night",
+    "category": "comedy",
+    "description": "Five comics, two hours of laughs. Bareilly's biggest open mic night returns with fresh faces and crowd favorites. Doors open at 7:00 PM.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": { "name": "The Brew Room, Rampur Garden", "address": "Rampur Garden, Bareilly", "distance": "2.4 km", "lat": 28.3650, "lng": 79.4350 },
+    "price": { "free": false, "min": 199, "max": 199, "currency": "INR" },
+    "crowdLevel": "low",
+    "capacity": 100,
+    "attendees": 60,
+    "going": 60,
+    "organizer": { "id": "org-003", "name": "Comedy Collective", "avatar": "https://picsum.photos/seed/org3/40/40", "verified": false },
+    "tags": ["comedy", "standup", "open-mic", "humor"],
+    "images": ["https://picsum.photos/seed/openmic/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-005",
+    "title": "Bhajan Sandhya & Ganga Aarti",
+    "category": "spiritual",
+    "description": "A serene evening of devotional bhajans followed by the sacred Ganga Aarti at the Alakhnath Temple. Open to all. Prasad will be distributed.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": { "name": "Alakhnath Temple", "address": "Alakhnath, Bareilly", "distance": "3.1 km", "lat": 28.3710, "lng": 79.4210 },
+    "price": { "free": true, "min": 0, "max": 0, "currency": "INR" },
+    "crowdLevel": "high",
+    "capacity": 500,
+    "attendees": 320,
+    "going": 320,
+    "organizer": { "id": "org-004", "name": "Alakhnath Temple Trust", "avatar": "https://picsum.photos/seed/org4/40/40", "verified": true },
+    "tags": ["spiritual", "bhajan", "temple", "aarti", "family"],
+    "images": ["https://picsum.photos/seed/bhajan/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-006",
+    "title": "Wheel Pottery: Beginner Basics",
+    "category": "workshops",
+    "description": "Learn to throw clay on a pottery wheel in this hands-on beginner workshop. All materials provided. Take home your creation! Limited to 12 participants.",
+    "date": "2026-07-21",
+    "time": "5:00 PM",
+    "endTime": "7:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": { "name": "Mitti Clay Studio, Prem Nagar", "address": "Prem Nagar, Bareilly", "distance": "4.0 km", "lat": 28.3600, "lng": 79.4400 },
+    "price": { "free": false, "min": 499, "max": 499, "currency": "INR" },
+    "crowdLevel": "low",
+    "capacity": 12,
+    "attendees": 9,
+    "going": 9,
+    "organizer": { "id": "org-005", "name": "Mitti Studio", "avatar": "https://picsum.photos/seed/org5/40/40", "verified": true },
+    "tags": ["pottery", "workshop", "craft", "hands-on"],
+    "images": ["https://picsum.photos/seed/pottery/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-007",
+    "title": "Awadhi Food Festival & Dawat",
+    "category": "restaurant-events",
+    "description": "A grand buffet celebrating the rich culinary tradition of Awadh. Dum biryani, shahi korma, galouti kebabs, and live tawa cooking. Book your table early.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": { "name": "Rooftop, Hotel Rajmahal", "address": "Civil Lines, Bareilly", "distance": "2.0 km", "lat": 28.3672, "lng": 79.4305 },
+    "price": { "free": false, "min": 899, "max": 899, "currency": "INR" },
+    "crowdLevel": "medium",
+    "capacity": 120,
+    "attendees": 80,
+    "going": 80,
+    "organizer": { "id": "org-006", "name": "Hotel Rajmahal", "avatar": "https://picsum.photos/seed/org6/40/40", "verified": true },
+    "tags": ["food", "awadhi", "buffet", "restaurant", "biryani"],
+    "images": ["https://picsum.photos/seed/foodfest/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-008",
+    "title": "Kathak Evening by Meera Ensemble",
+    "category": "art-culture",
+    "description": "A mesmerising Kathak dance performance by Meera Ensemble, Bareilly's premier classical dance troupe. Featuring solo and group compositions.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": { "name": "Sanjay Community Hall", "address": "CBD, Bareilly", "distance": "3.6 km", "lat": 28.3640, "lng": 79.4280 },
+    "price": { "free": false, "min": 150, "max": 150, "currency": "INR" },
+    "crowdLevel": "low",
+    "capacity": 60,
+    "attendees": 45,
+    "going": 45,
+    "organizer": { "id": "org-007", "name": "Meera Dance Academy", "avatar": "https://picsum.photos/seed/org7/40/40", "verified": true },
+    "tags": ["kathak", "dance", "classical", "culture", "seated"],
+    "images": ["https://picsum.photos/seed/kathak/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-009",
+    "title": "Yoga at Sunrise — Pilibhit Road",
+    "category": "sports",
+    "description": "Start your day right with a community yoga session led by certified instructor Anjali Srivastava. Bring your mat and a bottle of water.",
+    "date": "2026-07-22",
+    "time": "6:00 AM",
+    "endTime": "7:30 AM",
+    "isLive": false,
+    "isTonightEvent": false,
+    "venue": { "name": "Central Park, Pilibhit Road", "address": "Pilibhit Road, Bareilly", "distance": "5.2 km", "lat": 28.3580, "lng": 79.4450 },
+    "price": { "free": true, "min": 0, "max": 0, "currency": "INR" },
+    "crowdLevel": "low",
+    "capacity": 50,
+    "attendees": 22,
+    "going": 22,
+    "organizer": { "id": "org-008", "name": "Wellness Bareilly", "avatar": "https://picsum.photos/seed/org8/40/40", "verified": false },
+    "tags": ["yoga", "fitness", "morning", "outdoor", "community"],
+    "images": ["https://picsum.photos/seed/yoga/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-010",
+    "title": "Kite Making Workshop for Kids",
+    "category": "kids-activities",
+    "description": "A colourful workshop teaching children aged 5-12 to make and fly their own kites. Includes craft supplies, colour pencils, and a kite-flying session in the park.",
+    "date": "2026-07-22",
+    "time": "10:00 AM",
+    "endTime": "12:30 PM",
+    "isLive": false,
+    "isTonightEvent": false,
+    "venue": { "name": "Fun Zone, Ram Ganga Vihar", "address": "Ram Ganga Vihar, Bareilly", "distance": "6.8 km", "lat": 28.3620, "lng": 79.4500 },
+    "price": { "free": false, "min": 149, "max": 149, "currency": "INR" },
+    "crowdLevel": "low",
+    "capacity": 30,
+    "attendees": 18,
+    "going": 18,
+    "organizer": { "id": "org-009", "name": "Kiddo Kreations", "avatar": "https://picsum.photos/seed/org9/40/40", "verified": false },
+    "tags": ["kids", "craft", "kite", "outdoor", "family"],
+    "images": ["https://picsum.photos/seed/kite/800/500"],
+    "bookingUrl": "#",
+    "status": "approved"
+  } , 
+  {
+    "id": "evt-bareilly-001",
+    "title": "Unplugged Night: Civil Lines Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Civil Lines Café, Civil Lines, Bareilly.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Civil Lines Café",
+      "address": "Civil Lines, Bareilly",
+      "distance": "2.5 km",
+      "lat": 28.3754,
+      "lng": 79.4019
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 220,
+    "attendees": 97,
+    "going": 97,
+    "organizer": {
+      "id": "org-001",
+      "name": "Civil Lines Events Collective",
+      "avatar": "https://picsum.photos/seed/org-001/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-002",
+    "title": "Laugh Riot Comedy Show — Rampur Garden",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Rampur Garden Community Hall, Rampur Garden, Bareilly.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Rampur Garden Community Hall",
+      "address": "Rampur Garden, Bareilly",
+      "distance": "4.0 km",
+      "lat": 28.3776,
+      "lng": 79.4539
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 91,
+    "attendees": 64,
+    "going": 64,
+    "organizer": {
+      "id": "org-002",
+      "name": "Rampur Garden Events Collective",
+      "avatar": "https://picsum.photos/seed/org-002/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Prem Nagar",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Prem Nagar Rooftop Lounge, Prem Nagar, Bareilly.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Prem Nagar Rooftop Lounge",
+      "address": "Prem Nagar, Bareilly",
+      "distance": "2.3 km",
+      "lat": 28.3501,
+      "lng": 79.4307
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 213,
+    "attendees": 134,
+    "going": 134,
+    "organizer": {
+      "id": "org-003",
+      "name": "Prem Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-003/40/40",
+      "verified": false
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-004",
+    "title": "Pottery Basics Workshop — Alakhnath",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Alakhnath Studio, Alakhnath, Bareilly.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Alakhnath Studio",
+      "address": "Alakhnath, Bareilly",
+      "distance": "7.0 km",
+      "lat": 28.3697,
+      "lng": 79.4136
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 21,
+    "attendees": 10,
+    "going": 10,
+    "organizer": {
+      "id": "org-004",
+      "name": "Alakhnath Events Collective",
+      "avatar": "https://picsum.photos/seed/org-004/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-005",
+    "title": "Rooftop Dinner Pop-up — CBD",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at CBD Amphitheatre, CBD, Bareilly.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "CBD Amphitheatre",
+      "address": "CBD, Bareilly",
+      "distance": "8.2 km",
+      "lat": 28.3789,
+      "lng": 79.4208
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 99,
+    "attendees": 42,
+    "going": 42,
+    "organizer": {
+      "id": "org-005",
+      "name": "CBD Events Collective",
+      "avatar": "https://picsum.photos/seed/org-005/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-006",
+    "title": "Theatre Night: One-Act Plays — Civil Lines",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Civil Lines Banquet Hall, Civil Lines, Bareilly.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Civil Lines Banquet Hall",
+      "address": "Civil Lines, Bareilly",
+      "distance": "2.8 km",
+      "lat": 28.3426,
+      "lng": 79.4062
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 104,
+    "attendees": 69,
+    "going": 69,
+    "organizer": {
+      "id": "org-006",
+      "name": "Civil Lines Events Collective",
+      "avatar": "https://picsum.photos/seed/org-006/40/40",
+      "verified": false
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-007",
+    "title": "Startup Founders Meetup — Rampur Garden",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Rampur Garden Art Gallery, Rampur Garden, Bareilly.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Rampur Garden Art Gallery",
+      "address": "Rampur Garden, Bareilly",
+      "distance": "5.1 km",
+      "lat": 28.3646,
+      "lng": 79.4079
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 84,
+    "attendees": 30,
+    "going": 30,
+    "organizer": {
+      "id": "org-007",
+      "name": "Rampur Garden Events Collective",
+      "avatar": "https://picsum.photos/seed/org-007/40/40",
+      "verified": false
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-008",
+    "title": "5K Night Run — Prem Nagar",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Prem Nagar Cultural Centre, Prem Nagar, Bareilly.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Prem Nagar Cultural Centre",
+      "address": "Prem Nagar, Bareilly",
+      "distance": "1.3 km",
+      "lat": 28.3901,
+      "lng": 79.4221
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 42,
+    "attendees": 34,
+    "going": 34,
+    "organizer": {
+      "id": "org-008",
+      "name": "Prem Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-008/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-009",
+    "title": "Junior Art Workshop — Alakhnath",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Alakhnath Park Pavilion, Alakhnath, Bareilly.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Alakhnath Park Pavilion",
+      "address": "Alakhnath, Bareilly",
+      "distance": "1.6 km",
+      "lat": 28.3834,
+      "lng": 79.4595
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 27,
+    "attendees": 21,
+    "going": 21,
+    "organizer": {
+      "id": "org-009",
+      "name": "Alakhnath Events Collective",
+      "avatar": "https://picsum.photos/seed/org-009/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bareilly-010",
+    "title": "Jazz Night Live: CBD Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at CBD Club House, CBD, Bareilly.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "CBD Club House",
+      "address": "CBD, Bareilly",
+      "distance": "2.4 km",
+      "lat": 28.3751,
+      "lng": 79.4223
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 127,
+    "attendees": 83,
+    "going": 83,
+    "organizer": {
+      "id": "org-010",
+      "name": "CBD Events Collective",
+      "avatar": "https://picsum.photos/seed/org-010/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bareilly-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-001",
+    "title": "Unplugged Night: Hauz Khas Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Hauz Khas Café, Hauz Khas, Delhi.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Hauz Khas Café",
+      "address": "Hauz Khas, Delhi",
+      "distance": "2.1 km",
+      "lat": 28.6401,
+      "lng": 77.2179
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 305,
+    "attendees": 253,
+    "going": 253,
+    "organizer": {
+      "id": "org-011",
+      "name": "Hauz Khas Events Collective",
+      "avatar": "https://picsum.photos/seed/org-011/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-002",
+    "title": "Laugh Riot Comedy Show — Connaught Place",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Connaught Place Community Hall, Connaught Place, Delhi.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Connaught Place Community Hall",
+      "address": "Connaught Place, Delhi",
+      "distance": "3.3 km",
+      "lat": 28.5937,
+      "lng": 77.2018
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 108,
+    "attendees": 75,
+    "going": 75,
+    "organizer": {
+      "id": "org-012",
+      "name": "Connaught Place Events Collective",
+      "avatar": "https://picsum.photos/seed/org-012/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Saket",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Saket Rooftop Lounge, Saket, Delhi.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Saket Rooftop Lounge",
+      "address": "Saket, Delhi",
+      "distance": "1.3 km",
+      "lat": 28.6332,
+      "lng": 77.2273
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 405,
+    "attendees": 189,
+    "going": 189,
+    "organizer": {
+      "id": "org-013",
+      "name": "Saket Events Collective",
+      "avatar": "https://picsum.photos/seed/org-013/40/40",
+      "verified": false
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-004",
+    "title": "Pottery Basics Workshop — Vasant Kunj",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Vasant Kunj Studio, Vasant Kunj, Delhi.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Vasant Kunj Studio",
+      "address": "Vasant Kunj, Delhi",
+      "distance": "4.3 km",
+      "lat": 28.6028,
+      "lng": 77.2183
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 18,
+    "attendees": 15,
+    "going": 15,
+    "organizer": {
+      "id": "org-014",
+      "name": "Vasant Kunj Events Collective",
+      "avatar": "https://picsum.photos/seed/org-014/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-005",
+    "title": "Rooftop Dinner Pop-up — Dwarka",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Dwarka Amphitheatre, Dwarka, Delhi.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Dwarka Amphitheatre",
+      "address": "Dwarka, Delhi",
+      "distance": "7.7 km",
+      "lat": 28.5987,
+      "lng": 77.2127
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 113,
+    "attendees": 87,
+    "going": 87,
+    "organizer": {
+      "id": "org-015",
+      "name": "Dwarka Events Collective",
+      "avatar": "https://picsum.photos/seed/org-015/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-006",
+    "title": "Theatre Night: One-Act Plays — Hauz Khas",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Hauz Khas Banquet Hall, Hauz Khas, Delhi.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Hauz Khas Banquet Hall",
+      "address": "Hauz Khas, Delhi",
+      "distance": "1.5 km",
+      "lat": 28.5971,
+      "lng": 77.2389
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 125,
+    "attendees": 100,
+    "going": 100,
+    "organizer": {
+      "id": "org-016",
+      "name": "Hauz Khas Events Collective",
+      "avatar": "https://picsum.photos/seed/org-016/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-007",
+    "title": "Startup Founders Meetup — Connaught Place",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Connaught Place Art Gallery, Connaught Place, Delhi.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Connaught Place Art Gallery",
+      "address": "Connaught Place, Delhi",
+      "distance": "1.3 km",
+      "lat": 28.5931,
+      "lng": 77.1886
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 87,
+    "attendees": 64,
+    "going": 64,
+    "organizer": {
+      "id": "org-017",
+      "name": "Connaught Place Events Collective",
+      "avatar": "https://picsum.photos/seed/org-017/40/40",
+      "verified": false
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-008",
+    "title": "5K Night Run — Saket",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Saket Cultural Centre, Saket, Delhi.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Saket Cultural Centre",
+      "address": "Saket, Delhi",
+      "distance": "6.0 km",
+      "lat": 28.6437,
+      "lng": 77.2107
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 65,
+    "attendees": 19,
+    "going": 19,
+    "organizer": {
+      "id": "org-018",
+      "name": "Saket Events Collective",
+      "avatar": "https://picsum.photos/seed/org-018/40/40",
+      "verified": false
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-009",
+    "title": "Junior Art Workshop — Vasant Kunj",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Vasant Kunj Park Pavilion, Vasant Kunj, Delhi.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Vasant Kunj Park Pavilion",
+      "address": "Vasant Kunj, Delhi",
+      "distance": "1.7 km",
+      "lat": 28.637,
+      "lng": 77.2241
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 40,
+    "attendees": 22,
+    "going": 22,
+    "organizer": {
+      "id": "org-019",
+      "name": "Vasant Kunj Events Collective",
+      "avatar": "https://picsum.photos/seed/org-019/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-delhi-010",
+    "title": "Jazz Night Live: Dwarka Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Dwarka Club House, Dwarka, Delhi.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Dwarka Club House",
+      "address": "Dwarka, Delhi",
+      "distance": "8.3 km",
+      "lat": 28.6111,
+      "lng": 77.2362
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 172,
+    "attendees": 84,
+    "going": 84,
+    "organizer": {
+      "id": "org-020",
+      "name": "Dwarka Events Collective",
+      "avatar": "https://picsum.photos/seed/org-020/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-delhi-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-001",
+    "title": "Unplugged Night: Bandra Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Bandra Café, Bandra, Mumbai.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Bandra Café",
+      "address": "Bandra, Mumbai",
+      "distance": "5.7 km",
+      "lat": 19.1008,
+      "lng": 72.8999
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 226,
+    "attendees": 174,
+    "going": 174,
+    "organizer": {
+      "id": "org-021",
+      "name": "Bandra Events Collective",
+      "avatar": "https://picsum.photos/seed/org-021/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-002",
+    "title": "Laugh Riot Comedy Show — Andheri",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Andheri Community Hall, Andheri, Mumbai.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Andheri Community Hall",
+      "address": "Andheri, Mumbai",
+      "distance": "7.9 km",
+      "lat": 19.0552,
+      "lng": 72.8935
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 149,
+    "attendees": 111,
+    "going": 111,
+    "organizer": {
+      "id": "org-022",
+      "name": "Andheri Events Collective",
+      "avatar": "https://picsum.photos/seed/org-022/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Lower Parel",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Lower Parel Rooftop Lounge, Lower Parel, Mumbai.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Lower Parel Rooftop Lounge",
+      "address": "Lower Parel, Mumbai",
+      "distance": "7.0 km",
+      "lat": 19.0753,
+      "lng": 72.8544
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 385,
+    "attendees": 327,
+    "going": 327,
+    "organizer": {
+      "id": "org-023",
+      "name": "Lower Parel Events Collective",
+      "avatar": "https://picsum.photos/seed/org-023/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-004",
+    "title": "Pottery Basics Workshop — Powai",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Powai Studio, Powai, Mumbai.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Powai Studio",
+      "address": "Powai, Mumbai",
+      "distance": "6.4 km",
+      "lat": 19.0605,
+      "lng": 72.8817
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 13,
+    "attendees": 4,
+    "going": 4,
+    "organizer": {
+      "id": "org-024",
+      "name": "Powai Events Collective",
+      "avatar": "https://picsum.photos/seed/org-024/40/40",
+      "verified": false
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-005",
+    "title": "Rooftop Dinner Pop-up — Colaba",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Colaba Amphitheatre, Colaba, Mumbai.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Colaba Amphitheatre",
+      "address": "Colaba, Mumbai",
+      "distance": "2.1 km",
+      "lat": 19.092,
+      "lng": 72.8554
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 140,
+    "attendees": 112,
+    "going": 112,
+    "organizer": {
+      "id": "org-025",
+      "name": "Colaba Events Collective",
+      "avatar": "https://picsum.photos/seed/org-025/40/40",
+      "verified": false
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-006",
+    "title": "Theatre Night: One-Act Plays — Bandra",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Bandra Banquet Hall, Bandra, Mumbai.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Bandra Banquet Hall",
+      "address": "Bandra, Mumbai",
+      "distance": "6.3 km",
+      "lat": 19.0714,
+      "lng": 72.8604
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 129,
+    "attendees": 63,
+    "going": 63,
+    "organizer": {
+      "id": "org-026",
+      "name": "Bandra Events Collective",
+      "avatar": "https://picsum.photos/seed/org-026/40/40",
+      "verified": false
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-007",
+    "title": "Startup Founders Meetup — Andheri",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Andheri Art Gallery, Andheri, Mumbai.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Andheri Art Gallery",
+      "address": "Andheri, Mumbai",
+      "distance": "1.7 km",
+      "lat": 19.085,
+      "lng": 72.874
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 93,
+    "attendees": 55,
+    "going": 55,
+    "organizer": {
+      "id": "org-027",
+      "name": "Andheri Events Collective",
+      "avatar": "https://picsum.photos/seed/org-027/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-008",
+    "title": "5K Night Run — Lower Parel",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Lower Parel Cultural Centre, Lower Parel, Mumbai.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Lower Parel Cultural Centre",
+      "address": "Lower Parel, Mumbai",
+      "distance": "2.5 km",
+      "lat": 19.0663,
+      "lng": 72.883
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 44,
+    "attendees": 31,
+    "going": 31,
+    "organizer": {
+      "id": "org-028",
+      "name": "Lower Parel Events Collective",
+      "avatar": "https://picsum.photos/seed/org-028/40/40",
+      "verified": false
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-009",
+    "title": "Junior Art Workshop — Powai",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Powai Park Pavilion, Powai, Mumbai.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Powai Park Pavilion",
+      "address": "Powai, Mumbai",
+      "distance": "1.3 km",
+      "lat": 19.0839,
+      "lng": 72.8614
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 21,
+    "attendees": 11,
+    "going": 11,
+    "organizer": {
+      "id": "org-029",
+      "name": "Powai Events Collective",
+      "avatar": "https://picsum.photos/seed/org-029/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-mumbai-010",
+    "title": "Jazz Night Live: Colaba Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Colaba Club House, Colaba, Mumbai.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Colaba Club House",
+      "address": "Colaba, Mumbai",
+      "distance": "8.0 km",
+      "lat": 19.0861,
+      "lng": 72.8606
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 96,
+    "attendees": 74,
+    "going": 74,
+    "organizer": {
+      "id": "org-030",
+      "name": "Colaba Events Collective",
+      "avatar": "https://picsum.photos/seed/org-030/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-mumbai-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-001",
+    "title": "Unplugged Night: Indiranagar Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Indiranagar Café, Indiranagar, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Indiranagar Café",
+      "address": "Indiranagar, Bengaluru",
+      "distance": "1.5 km",
+      "lat": 12.97,
+      "lng": 77.6117
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 254,
+    "attendees": 124,
+    "going": 124,
+    "organizer": {
+      "id": "org-031",
+      "name": "Indiranagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-031/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-002",
+    "title": "Laugh Riot Comedy Show — Koramangala",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Koramangala Community Hall, Koramangala, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Koramangala Community Hall",
+      "address": "Koramangala, Bengaluru",
+      "distance": "5.8 km",
+      "lat": 12.9629,
+      "lng": 77.5893
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 86,
+    "attendees": 68,
+    "going": 68,
+    "organizer": {
+      "id": "org-032",
+      "name": "Koramangala Events Collective",
+      "avatar": "https://picsum.photos/seed/org-032/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Whitefield",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Whitefield Rooftop Lounge, Whitefield, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Whitefield Rooftop Lounge",
+      "address": "Whitefield, Bengaluru",
+      "distance": "2.3 km",
+      "lat": 12.9452,
+      "lng": 77.6083
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 255,
+    "attendees": 139,
+    "going": 139,
+    "organizer": {
+      "id": "org-033",
+      "name": "Whitefield Events Collective",
+      "avatar": "https://picsum.photos/seed/org-033/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-004",
+    "title": "Pottery Basics Workshop — MG Road",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at MG Road Studio, MG Road, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "MG Road Studio",
+      "address": "MG Road, Bengaluru",
+      "distance": "7.5 km",
+      "lat": 12.95,
+      "lng": 77.5756
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 19,
+    "attendees": 8,
+    "going": 8,
+    "organizer": {
+      "id": "org-034",
+      "name": "MG Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-034/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-005",
+    "title": "Rooftop Dinner Pop-up — Jayanagar",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Jayanagar Amphitheatre, Jayanagar, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Jayanagar Amphitheatre",
+      "address": "Jayanagar, Bengaluru",
+      "distance": "5.8 km",
+      "lat": 12.9901,
+      "lng": 77.616
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 92,
+    "attendees": 30,
+    "going": 30,
+    "organizer": {
+      "id": "org-035",
+      "name": "Jayanagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-035/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-006",
+    "title": "Theatre Night: One-Act Plays — Indiranagar",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Indiranagar Banquet Hall, Indiranagar, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Indiranagar Banquet Hall",
+      "address": "Indiranagar, Bengaluru",
+      "distance": "3.9 km",
+      "lat": 12.9997,
+      "lng": 77.6202
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 90,
+    "attendees": 37,
+    "going": 37,
+    "organizer": {
+      "id": "org-036",
+      "name": "Indiranagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-036/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-007",
+    "title": "Startup Founders Meetup — Koramangala",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Koramangala Art Gallery, Koramangala, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Koramangala Art Gallery",
+      "address": "Koramangala, Bengaluru",
+      "distance": "0.8 km",
+      "lat": 12.9935,
+      "lng": 77.6187
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 70,
+    "attendees": 45,
+    "going": 45,
+    "organizer": {
+      "id": "org-037",
+      "name": "Koramangala Events Collective",
+      "avatar": "https://picsum.photos/seed/org-037/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-008",
+    "title": "5K Night Run — Whitefield",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Whitefield Cultural Centre, Whitefield, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Whitefield Cultural Centre",
+      "address": "Whitefield, Bengaluru",
+      "distance": "6.2 km",
+      "lat": 12.9972,
+      "lng": 77.6117
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 48,
+    "attendees": 27,
+    "going": 27,
+    "organizer": {
+      "id": "org-038",
+      "name": "Whitefield Events Collective",
+      "avatar": "https://picsum.photos/seed/org-038/40/40",
+      "verified": false
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-009",
+    "title": "Junior Art Workshop — MG Road",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at MG Road Park Pavilion, MG Road, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "MG Road Park Pavilion",
+      "address": "MG Road, Bengaluru",
+      "distance": "2.5 km",
+      "lat": 12.9813,
+      "lng": 77.5938
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 26,
+    "attendees": 16,
+    "going": 16,
+    "organizer": {
+      "id": "org-039",
+      "name": "MG Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-039/40/40",
+      "verified": false
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bengaluru-010",
+    "title": "Jazz Night Live: Jayanagar Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Jayanagar Club House, Jayanagar, Bengaluru.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Jayanagar Club House",
+      "address": "Jayanagar, Bengaluru",
+      "distance": "1.2 km",
+      "lat": 12.9857,
+      "lng": 77.5683
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 120,
+    "attendees": 43,
+    "going": 43,
+    "organizer": {
+      "id": "org-040",
+      "name": "Jayanagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-040/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bengaluru-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-001",
+    "title": "Unplugged Night: Nungambakkam Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Nungambakkam Café, Nungambakkam, Chennai.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Nungambakkam Café",
+      "address": "Nungambakkam, Chennai",
+      "distance": "1.4 km",
+      "lat": 13.1079,
+      "lng": 80.2726
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 164,
+    "attendees": 114,
+    "going": 114,
+    "organizer": {
+      "id": "org-041",
+      "name": "Nungambakkam Events Collective",
+      "avatar": "https://picsum.photos/seed/org-041/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-002",
+    "title": "Laugh Riot Comedy Show — Adyar",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Adyar Community Hall, Adyar, Chennai.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Adyar Community Hall",
+      "address": "Adyar, Chennai",
+      "distance": "1.7 km",
+      "lat": 13.0884,
+      "lng": 80.2812
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 110,
+    "attendees": 58,
+    "going": 58,
+    "organizer": {
+      "id": "org-042",
+      "name": "Adyar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-042/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-003",
+    "title": "Evening Aarti & Bhajan Sandhya — T Nagar",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at T Nagar Rooftop Lounge, T Nagar, Chennai.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "T Nagar Rooftop Lounge",
+      "address": "T Nagar, Chennai",
+      "distance": "5.9 km",
+      "lat": 13.0874,
+      "lng": 80.2431
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 241,
+    "attendees": 179,
+    "going": 179,
+    "organizer": {
+      "id": "org-043",
+      "name": "T Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-043/40/40",
+      "verified": false
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-004",
+    "title": "Pottery Basics Workshop — Besant Nagar",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Besant Nagar Studio, Besant Nagar, Chennai.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Besant Nagar Studio",
+      "address": "Besant Nagar, Chennai",
+      "distance": "3.2 km",
+      "lat": 13.0717,
+      "lng": 80.2563
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 22,
+    "attendees": 17,
+    "going": 17,
+    "organizer": {
+      "id": "org-044",
+      "name": "Besant Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-044/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-005",
+    "title": "Rooftop Dinner Pop-up — Anna Nagar",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Anna Nagar Amphitheatre, Anna Nagar, Chennai.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Anna Nagar Amphitheatre",
+      "address": "Anna Nagar, Chennai",
+      "distance": "8.0 km",
+      "lat": 13.0606,
+      "lng": 80.2794
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 138,
+    "attendees": 81,
+    "going": 81,
+    "organizer": {
+      "id": "org-045",
+      "name": "Anna Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-045/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-006",
+    "title": "Theatre Night: One-Act Plays — Nungambakkam",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Nungambakkam Banquet Hall, Nungambakkam, Chennai.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Nungambakkam Banquet Hall",
+      "address": "Nungambakkam, Chennai",
+      "distance": "4.9 km",
+      "lat": 13.0802,
+      "lng": 80.3006
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 72,
+    "attendees": 25,
+    "going": 25,
+    "organizer": {
+      "id": "org-046",
+      "name": "Nungambakkam Events Collective",
+      "avatar": "https://picsum.photos/seed/org-046/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-007",
+    "title": "Startup Founders Meetup — Adyar",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Adyar Art Gallery, Adyar, Chennai.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Adyar Art Gallery",
+      "address": "Adyar, Chennai",
+      "distance": "3.6 km",
+      "lat": 13.0606,
+      "lng": 80.2616
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 64,
+    "attendees": 34,
+    "going": 34,
+    "organizer": {
+      "id": "org-047",
+      "name": "Adyar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-047/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-008",
+    "title": "5K Night Run — T Nagar",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at T Nagar Cultural Centre, T Nagar, Chennai.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "T Nagar Cultural Centre",
+      "address": "T Nagar, Chennai",
+      "distance": "0.9 km",
+      "lat": 13.1027,
+      "lng": 80.2829
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 69,
+    "attendees": 53,
+    "going": 53,
+    "organizer": {
+      "id": "org-048",
+      "name": "T Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-048/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-009",
+    "title": "Junior Art Workshop — Besant Nagar",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Besant Nagar Park Pavilion, Besant Nagar, Chennai.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Besant Nagar Park Pavilion",
+      "address": "Besant Nagar, Chennai",
+      "distance": "1.7 km",
+      "lat": 13.1086,
+      "lng": 80.2469
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 24,
+    "attendees": 11,
+    "going": 11,
+    "organizer": {
+      "id": "org-049",
+      "name": "Besant Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-049/40/40",
+      "verified": false
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chennai-010",
+    "title": "Jazz Night Live: Anna Nagar Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Anna Nagar Club House, Anna Nagar, Chennai.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Anna Nagar Club House",
+      "address": "Anna Nagar, Chennai",
+      "distance": "6.3 km",
+      "lat": 13.0859,
+      "lng": 80.257
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 157,
+    "attendees": 73,
+    "going": 73,
+    "organizer": {
+      "id": "org-050",
+      "name": "Anna Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-050/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chennai-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-001",
+    "title": "Unplugged Night: Park Street Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Park Street Café, Park Street, Kolkata.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Park Street Café",
+      "address": "Park Street, Kolkata",
+      "distance": "7.8 km",
+      "lat": 22.5807,
+      "lng": 88.3497
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 275,
+    "attendees": 146,
+    "going": 146,
+    "organizer": {
+      "id": "org-051",
+      "name": "Park Street Events Collective",
+      "avatar": "https://picsum.photos/seed/org-051/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-002",
+    "title": "Laugh Riot Comedy Show — Salt Lake",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Salt Lake Community Hall, Salt Lake, Kolkata.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Salt Lake Community Hall",
+      "address": "Salt Lake, Kolkata",
+      "distance": "3.4 km",
+      "lat": 22.5807,
+      "lng": 88.3837
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 85,
+    "attendees": 25,
+    "going": 25,
+    "organizer": {
+      "id": "org-052",
+      "name": "Salt Lake Events Collective",
+      "avatar": "https://picsum.photos/seed/org-052/40/40",
+      "verified": false
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Ballygunge",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Ballygunge Rooftop Lounge, Ballygunge, Kolkata.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Ballygunge Rooftop Lounge",
+      "address": "Ballygunge, Kolkata",
+      "distance": "6.2 km",
+      "lat": 22.6014,
+      "lng": 88.3436
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 426,
+    "attendees": 268,
+    "going": 268,
+    "organizer": {
+      "id": "org-053",
+      "name": "Ballygunge Events Collective",
+      "avatar": "https://picsum.photos/seed/org-053/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-004",
+    "title": "Pottery Basics Workshop — New Town",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at New Town Studio, New Town, Kolkata.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "New Town Studio",
+      "address": "New Town, Kolkata",
+      "distance": "5.0 km",
+      "lat": 22.5493,
+      "lng": 88.3906
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 23,
+    "attendees": 8,
+    "going": 8,
+    "organizer": {
+      "id": "org-054",
+      "name": "New Town Events Collective",
+      "avatar": "https://picsum.photos/seed/org-054/40/40",
+      "verified": false
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-005",
+    "title": "Rooftop Dinner Pop-up — Gariahat",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Gariahat Amphitheatre, Gariahat, Kolkata.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Gariahat Amphitheatre",
+      "address": "Gariahat, Kolkata",
+      "distance": "3.6 km",
+      "lat": 22.5758,
+      "lng": 88.3597
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 85,
+    "attendees": 44,
+    "going": 44,
+    "organizer": {
+      "id": "org-055",
+      "name": "Gariahat Events Collective",
+      "avatar": "https://picsum.photos/seed/org-055/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-006",
+    "title": "Theatre Night: One-Act Plays — Park Street",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Park Street Banquet Hall, Park Street, Kolkata.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Park Street Banquet Hall",
+      "address": "Park Street, Kolkata",
+      "distance": "6.8 km",
+      "lat": 22.5552,
+      "lng": 88.3489
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 73,
+    "attendees": 43,
+    "going": 43,
+    "organizer": {
+      "id": "org-056",
+      "name": "Park Street Events Collective",
+      "avatar": "https://picsum.photos/seed/org-056/40/40",
+      "verified": false
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-007",
+    "title": "Startup Founders Meetup — Salt Lake",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Salt Lake Art Gallery, Salt Lake, Kolkata.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Salt Lake Art Gallery",
+      "address": "Salt Lake, Kolkata",
+      "distance": "8.3 km",
+      "lat": 22.5876,
+      "lng": 88.3894
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 75,
+    "attendees": 32,
+    "going": 32,
+    "organizer": {
+      "id": "org-057",
+      "name": "Salt Lake Events Collective",
+      "avatar": "https://picsum.photos/seed/org-057/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-008",
+    "title": "5K Night Run — Ballygunge",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Ballygunge Cultural Centre, Ballygunge, Kolkata.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Ballygunge Cultural Centre",
+      "address": "Ballygunge, Kolkata",
+      "distance": "8.0 km",
+      "lat": 22.5441,
+      "lng": 88.3781
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 51,
+    "attendees": 40,
+    "going": 40,
+    "organizer": {
+      "id": "org-058",
+      "name": "Ballygunge Events Collective",
+      "avatar": "https://picsum.photos/seed/org-058/40/40",
+      "verified": false
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-009",
+    "title": "Junior Art Workshop — New Town",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at New Town Park Pavilion, New Town, Kolkata.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "New Town Park Pavilion",
+      "address": "New Town, Kolkata",
+      "distance": "7.5 km",
+      "lat": 22.5912,
+      "lng": 88.3499
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 23,
+    "attendees": 12,
+    "going": 12,
+    "organizer": {
+      "id": "org-059",
+      "name": "New Town Events Collective",
+      "avatar": "https://picsum.photos/seed/org-059/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kolkata-010",
+    "title": "Jazz Night Live: Gariahat Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Gariahat Club House, Gariahat, Kolkata.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Gariahat Club House",
+      "address": "Gariahat, Kolkata",
+      "distance": "7.1 km",
+      "lat": 22.5546,
+      "lng": 88.389
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 124,
+    "attendees": 76,
+    "going": 76,
+    "organizer": {
+      "id": "org-060",
+      "name": "Gariahat Events Collective",
+      "avatar": "https://picsum.photos/seed/org-060/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kolkata-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-001",
+    "title": "Unplugged Night: Banjara Hills Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Banjara Hills Café, Banjara Hills, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Banjara Hills Café",
+      "address": "Banjara Hills, Hyderabad",
+      "distance": "7.5 km",
+      "lat": 17.3564,
+      "lng": 78.4683
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 234,
+    "attendees": 141,
+    "going": 141,
+    "organizer": {
+      "id": "org-061",
+      "name": "Banjara Hills Events Collective",
+      "avatar": "https://picsum.photos/seed/org-061/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-002",
+    "title": "Laugh Riot Comedy Show — Jubilee Hills",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Jubilee Hills Community Hall, Jubilee Hills, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Jubilee Hills Community Hall",
+      "address": "Jubilee Hills, Hyderabad",
+      "distance": "8.0 km",
+      "lat": 17.3935,
+      "lng": 78.4807
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 148,
+    "attendees": 86,
+    "going": 86,
+    "organizer": {
+      "id": "org-062",
+      "name": "Jubilee Hills Events Collective",
+      "avatar": "https://picsum.photos/seed/org-062/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Gachibowli",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Gachibowli Rooftop Lounge, Gachibowli, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Gachibowli Rooftop Lounge",
+      "address": "Gachibowli, Hyderabad",
+      "distance": "1.6 km",
+      "lat": 17.3657,
+      "lng": 78.5145
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 335,
+    "attendees": 109,
+    "going": 109,
+    "organizer": {
+      "id": "org-063",
+      "name": "Gachibowli Events Collective",
+      "avatar": "https://picsum.photos/seed/org-063/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-004",
+    "title": "Pottery Basics Workshop — Hitech City",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Hitech City Studio, Hitech City, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Hitech City Studio",
+      "address": "Hitech City, Hyderabad",
+      "distance": "1.7 km",
+      "lat": 17.3987,
+      "lng": 78.4755
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 21,
+    "attendees": 14,
+    "going": 14,
+    "organizer": {
+      "id": "org-064",
+      "name": "Hitech City Events Collective",
+      "avatar": "https://picsum.photos/seed/org-064/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-005",
+    "title": "Rooftop Dinner Pop-up — Kondapur",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Kondapur Amphitheatre, Kondapur, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kondapur Amphitheatre",
+      "address": "Kondapur, Hyderabad",
+      "distance": "7.9 km",
+      "lat": 17.3703,
+      "lng": 78.4992
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 80,
+    "attendees": 57,
+    "going": 57,
+    "organizer": {
+      "id": "org-065",
+      "name": "Kondapur Events Collective",
+      "avatar": "https://picsum.photos/seed/org-065/40/40",
+      "verified": false
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-006",
+    "title": "Theatre Night: One-Act Plays — Banjara Hills",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Banjara Hills Banquet Hall, Banjara Hills, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Banjara Hills Banquet Hall",
+      "address": "Banjara Hills, Hyderabad",
+      "distance": "3.6 km",
+      "lat": 17.3982,
+      "lng": 78.5012
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 145,
+    "attendees": 68,
+    "going": 68,
+    "organizer": {
+      "id": "org-066",
+      "name": "Banjara Hills Events Collective",
+      "avatar": "https://picsum.photos/seed/org-066/40/40",
+      "verified": false
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-007",
+    "title": "Startup Founders Meetup — Jubilee Hills",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Jubilee Hills Art Gallery, Jubilee Hills, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Jubilee Hills Art Gallery",
+      "address": "Jubilee Hills, Hyderabad",
+      "distance": "4.7 km",
+      "lat": 17.4102,
+      "lng": 78.4941
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 67,
+    "attendees": 39,
+    "going": 39,
+    "organizer": {
+      "id": "org-067",
+      "name": "Jubilee Hills Events Collective",
+      "avatar": "https://picsum.photos/seed/org-067/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-008",
+    "title": "5K Night Run — Gachibowli",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Gachibowli Cultural Centre, Gachibowli, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Gachibowli Cultural Centre",
+      "address": "Gachibowli, Hyderabad",
+      "distance": "2.3 km",
+      "lat": 17.3746,
+      "lng": 78.4985
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 65,
+    "attendees": 27,
+    "going": 27,
+    "organizer": {
+      "id": "org-068",
+      "name": "Gachibowli Events Collective",
+      "avatar": "https://picsum.photos/seed/org-068/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-009",
+    "title": "Junior Art Workshop — Hitech City",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Hitech City Park Pavilion, Hitech City, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Hitech City Park Pavilion",
+      "address": "Hitech City, Hyderabad",
+      "distance": "3.1 km",
+      "lat": 17.3956,
+      "lng": 78.5109
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 39,
+    "attendees": 29,
+    "going": 29,
+    "organizer": {
+      "id": "org-069",
+      "name": "Hitech City Events Collective",
+      "avatar": "https://picsum.photos/seed/org-069/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-hyderabad-010",
+    "title": "Jazz Night Live: Kondapur Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Kondapur Club House, Kondapur, Hyderabad.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kondapur Club House",
+      "address": "Kondapur, Hyderabad",
+      "distance": "5.5 km",
+      "lat": 17.3732,
+      "lng": 78.4693
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 180,
+    "attendees": 128,
+    "going": 128,
+    "organizer": {
+      "id": "org-070",
+      "name": "Kondapur Events Collective",
+      "avatar": "https://picsum.photos/seed/org-070/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-hyderabad-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-001",
+    "title": "Unplugged Night: Koregaon Park Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Koregaon Park Café, Koregaon Park, Pune.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Koregaon Park Café",
+      "address": "Koregaon Park, Pune",
+      "distance": "6.9 km",
+      "lat": 18.5169,
+      "lng": 73.8672
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 280,
+    "attendees": 205,
+    "going": 205,
+    "organizer": {
+      "id": "org-071",
+      "name": "Koregaon Park Events Collective",
+      "avatar": "https://picsum.photos/seed/org-071/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-002",
+    "title": "Laugh Riot Comedy Show — Baner",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Baner Community Hall, Baner, Pune.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Baner Community Hall",
+      "address": "Baner, Pune",
+      "distance": "7.1 km",
+      "lat": 18.5299,
+      "lng": 73.8437
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 122,
+    "attendees": 47,
+    "going": 47,
+    "organizer": {
+      "id": "org-072",
+      "name": "Baner Events Collective",
+      "avatar": "https://picsum.photos/seed/org-072/40/40",
+      "verified": false
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Viman Nagar",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Viman Nagar Rooftop Lounge, Viman Nagar, Pune.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Viman Nagar Rooftop Lounge",
+      "address": "Viman Nagar, Pune",
+      "distance": "1.2 km",
+      "lat": 18.509,
+      "lng": 73.8751
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 275,
+    "attendees": 88,
+    "going": 88,
+    "organizer": {
+      "id": "org-073",
+      "name": "Viman Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-073/40/40",
+      "verified": false
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-004",
+    "title": "Pottery Basics Workshop — Kothrud",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Kothrud Studio, Kothrud, Pune.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kothrud Studio",
+      "address": "Kothrud, Pune",
+      "distance": "5.2 km",
+      "lat": 18.5414,
+      "lng": 73.8311
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 18,
+    "attendees": 15,
+    "going": 15,
+    "organizer": {
+      "id": "org-074",
+      "name": "Kothrud Events Collective",
+      "avatar": "https://picsum.photos/seed/org-074/40/40",
+      "verified": false
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-005",
+    "title": "Rooftop Dinner Pop-up — FC Road",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at FC Road Amphitheatre, FC Road, Pune.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "FC Road Amphitheatre",
+      "address": "FC Road, Pune",
+      "distance": "6.1 km",
+      "lat": 18.5134,
+      "lng": 73.8507
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 98,
+    "attendees": 70,
+    "going": 70,
+    "organizer": {
+      "id": "org-075",
+      "name": "FC Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-075/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-006",
+    "title": "Theatre Night: One-Act Plays — Koregaon Park",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Koregaon Park Banquet Hall, Koregaon Park, Pune.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Koregaon Park Banquet Hall",
+      "address": "Koregaon Park, Pune",
+      "distance": "4.4 km",
+      "lat": 18.5035,
+      "lng": 73.8749
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 149,
+    "attendees": 110,
+    "going": 110,
+    "organizer": {
+      "id": "org-076",
+      "name": "Koregaon Park Events Collective",
+      "avatar": "https://picsum.photos/seed/org-076/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-007",
+    "title": "Startup Founders Meetup — Baner",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Baner Art Gallery, Baner, Pune.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Baner Art Gallery",
+      "address": "Baner, Pune",
+      "distance": "5.9 km",
+      "lat": 18.5454,
+      "lng": 73.834
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 68,
+    "attendees": 49,
+    "going": 49,
+    "organizer": {
+      "id": "org-077",
+      "name": "Baner Events Collective",
+      "avatar": "https://picsum.photos/seed/org-077/40/40",
+      "verified": false
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-008",
+    "title": "5K Night Run — Viman Nagar",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Viman Nagar Cultural Centre, Viman Nagar, Pune.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Viman Nagar Cultural Centre",
+      "address": "Viman Nagar, Pune",
+      "distance": "4.1 km",
+      "lat": 18.5094,
+      "lng": 73.872
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 58,
+    "attendees": 49,
+    "going": 49,
+    "organizer": {
+      "id": "org-078",
+      "name": "Viman Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-078/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-009",
+    "title": "Junior Art Workshop — Kothrud",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Kothrud Park Pavilion, Kothrud, Pune.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kothrud Park Pavilion",
+      "address": "Kothrud, Pune",
+      "distance": "2.8 km",
+      "lat": 18.5442,
+      "lng": 73.8713
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 35,
+    "attendees": 24,
+    "going": 24,
+    "organizer": {
+      "id": "org-079",
+      "name": "Kothrud Events Collective",
+      "avatar": "https://picsum.photos/seed/org-079/40/40",
+      "verified": false
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-pune-010",
+    "title": "Jazz Night Live: FC Road Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at FC Road Club House, FC Road, Pune.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "FC Road Club House",
+      "address": "FC Road, Pune",
+      "distance": "2.9 km",
+      "lat": 18.507,
+      "lng": 73.8734
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 142,
+    "attendees": 72,
+    "going": 72,
+    "organizer": {
+      "id": "org-080",
+      "name": "FC Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-080/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-pune-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-001",
+    "title": "Unplugged Night: Navrangpura Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Navrangpura Café, Navrangpura, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Navrangpura Café",
+      "address": "Navrangpura, Ahmedabad",
+      "distance": "1.9 km",
+      "lat": 23.0096,
+      "lng": 72.5577
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 231,
+    "attendees": 89,
+    "going": 89,
+    "organizer": {
+      "id": "org-081",
+      "name": "Navrangpura Events Collective",
+      "avatar": "https://picsum.photos/seed/org-081/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-002",
+    "title": "Laugh Riot Comedy Show — Satellite",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Satellite Community Hall, Satellite, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Satellite Community Hall",
+      "address": "Satellite, Ahmedabad",
+      "distance": "3.9 km",
+      "lat": 23.0341,
+      "lng": 72.5838
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 88,
+    "attendees": 52,
+    "going": 52,
+    "organizer": {
+      "id": "org-082",
+      "name": "Satellite Events Collective",
+      "avatar": "https://picsum.photos/seed/org-082/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Prahlad Nagar",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Prahlad Nagar Rooftop Lounge, Prahlad Nagar, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Prahlad Nagar Rooftop Lounge",
+      "address": "Prahlad Nagar, Ahmedabad",
+      "distance": "7.8 km",
+      "lat": 23.0174,
+      "lng": 72.5538
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 415,
+    "attendees": 223,
+    "going": 223,
+    "organizer": {
+      "id": "org-083",
+      "name": "Prahlad Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-083/40/40",
+      "verified": false
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-004",
+    "title": "Pottery Basics Workshop — Bopal",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Bopal Studio, Bopal, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Bopal Studio",
+      "address": "Bopal, Ahmedabad",
+      "distance": "4.5 km",
+      "lat": 22.9937,
+      "lng": 72.5942
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 21,
+    "attendees": 12,
+    "going": 12,
+    "organizer": {
+      "id": "org-084",
+      "name": "Bopal Events Collective",
+      "avatar": "https://picsum.photos/seed/org-084/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-005",
+    "title": "Rooftop Dinner Pop-up — CG Road",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at CG Road Amphitheatre, CG Road, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "CG Road Amphitheatre",
+      "address": "CG Road, Ahmedabad",
+      "distance": "6.6 km",
+      "lat": 23.0377,
+      "lng": 72.5926
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 133,
+    "attendees": 107,
+    "going": 107,
+    "organizer": {
+      "id": "org-085",
+      "name": "CG Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-085/40/40",
+      "verified": false
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-006",
+    "title": "Theatre Night: One-Act Plays — Navrangpura",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Navrangpura Banquet Hall, Navrangpura, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Navrangpura Banquet Hall",
+      "address": "Navrangpura, Ahmedabad",
+      "distance": "4.5 km",
+      "lat": 23.0464,
+      "lng": 72.5707
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 94,
+    "attendees": 55,
+    "going": 55,
+    "organizer": {
+      "id": "org-086",
+      "name": "Navrangpura Events Collective",
+      "avatar": "https://picsum.photos/seed/org-086/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-007",
+    "title": "Startup Founders Meetup — Satellite",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Satellite Art Gallery, Satellite, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Satellite Art Gallery",
+      "address": "Satellite, Ahmedabad",
+      "distance": "7.9 km",
+      "lat": 23.0326,
+      "lng": 72.5893
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 70,
+    "attendees": 50,
+    "going": 50,
+    "organizer": {
+      "id": "org-087",
+      "name": "Satellite Events Collective",
+      "avatar": "https://picsum.photos/seed/org-087/40/40",
+      "verified": false
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-008",
+    "title": "5K Night Run — Prahlad Nagar",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Prahlad Nagar Cultural Centre, Prahlad Nagar, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Prahlad Nagar Cultural Centre",
+      "address": "Prahlad Nagar, Ahmedabad",
+      "distance": "1.4 km",
+      "lat": 22.9941,
+      "lng": 72.565
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 66,
+    "attendees": 20,
+    "going": 20,
+    "organizer": {
+      "id": "org-088",
+      "name": "Prahlad Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-088/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-009",
+    "title": "Junior Art Workshop — Bopal",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Bopal Park Pavilion, Bopal, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Bopal Park Pavilion",
+      "address": "Bopal, Ahmedabad",
+      "distance": "3.3 km",
+      "lat": 23.0445,
+      "lng": 72.5523
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 28,
+    "attendees": 20,
+    "going": 20,
+    "organizer": {
+      "id": "org-089",
+      "name": "Bopal Events Collective",
+      "avatar": "https://picsum.photos/seed/org-089/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-ahmedabad-010",
+    "title": "Jazz Night Live: CG Road Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at CG Road Club House, CG Road, Ahmedabad.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "CG Road Club House",
+      "address": "CG Road, Ahmedabad",
+      "distance": "2.7 km",
+      "lat": 23.0128,
+      "lng": 72.5942
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 115,
+    "attendees": 87,
+    "going": 87,
+    "organizer": {
+      "id": "org-090",
+      "name": "CG Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-090/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-ahmedabad-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-001",
+    "title": "Unplugged Night: Malviya Nagar Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Malviya Nagar Café, Malviya Nagar, Jaipur.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Malviya Nagar Café",
+      "address": "Malviya Nagar, Jaipur",
+      "distance": "5.8 km",
+      "lat": 26.8836,
+      "lng": 75.7897
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 239,
+    "attendees": 128,
+    "going": 128,
+    "organizer": {
+      "id": "org-091",
+      "name": "Malviya Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-091/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-002",
+    "title": "Laugh Riot Comedy Show — C Scheme",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at C Scheme Community Hall, C Scheme, Jaipur.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "C Scheme Community Hall",
+      "address": "C Scheme, Jaipur",
+      "distance": "1.0 km",
+      "lat": 26.9277,
+      "lng": 75.8143
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 105,
+    "attendees": 84,
+    "going": 84,
+    "organizer": {
+      "id": "org-092",
+      "name": "C Scheme Events Collective",
+      "avatar": "https://picsum.photos/seed/org-092/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Vaishali Nagar",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Vaishali Nagar Rooftop Lounge, Vaishali Nagar, Jaipur.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Vaishali Nagar Rooftop Lounge",
+      "address": "Vaishali Nagar, Jaipur",
+      "distance": "4.4 km",
+      "lat": 26.89,
+      "lng": 75.7975
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 488,
+    "attendees": 257,
+    "going": 257,
+    "organizer": {
+      "id": "org-093",
+      "name": "Vaishali Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-093/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-004",
+    "title": "Pottery Basics Workshop — Bani Park",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Bani Park Studio, Bani Park, Jaipur.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Bani Park Studio",
+      "address": "Bani Park, Jaipur",
+      "distance": "1.7 km",
+      "lat": 26.8925,
+      "lng": 75.7937
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 23,
+    "attendees": 17,
+    "going": 17,
+    "organizer": {
+      "id": "org-094",
+      "name": "Bani Park Events Collective",
+      "avatar": "https://picsum.photos/seed/org-094/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-005",
+    "title": "Rooftop Dinner Pop-up — Tonk Road",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Tonk Road Amphitheatre, Tonk Road, Jaipur.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Tonk Road Amphitheatre",
+      "address": "Tonk Road, Jaipur",
+      "distance": "3.9 km",
+      "lat": 26.8889,
+      "lng": 75.7588
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 119,
+    "attendees": 83,
+    "going": 83,
+    "organizer": {
+      "id": "org-095",
+      "name": "Tonk Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-095/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-006",
+    "title": "Theatre Night: One-Act Plays — Malviya Nagar",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Malviya Nagar Banquet Hall, Malviya Nagar, Jaipur.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Malviya Nagar Banquet Hall",
+      "address": "Malviya Nagar, Jaipur",
+      "distance": "1.6 km",
+      "lat": 26.887,
+      "lng": 75.7987
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 140,
+    "attendees": 73,
+    "going": 73,
+    "organizer": {
+      "id": "org-096",
+      "name": "Malviya Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-096/40/40",
+      "verified": false
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-007",
+    "title": "Startup Founders Meetup — C Scheme",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at C Scheme Art Gallery, C Scheme, Jaipur.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "C Scheme Art Gallery",
+      "address": "C Scheme, Jaipur",
+      "distance": "1.1 km",
+      "lat": 26.9184,
+      "lng": 75.7646
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 96,
+    "attendees": 78,
+    "going": 78,
+    "organizer": {
+      "id": "org-097",
+      "name": "C Scheme Events Collective",
+      "avatar": "https://picsum.photos/seed/org-097/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-008",
+    "title": "5K Night Run — Vaishali Nagar",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Vaishali Nagar Cultural Centre, Vaishali Nagar, Jaipur.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Vaishali Nagar Cultural Centre",
+      "address": "Vaishali Nagar, Jaipur",
+      "distance": "0.9 km",
+      "lat": 26.9221,
+      "lng": 75.7614
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 71,
+    "attendees": 42,
+    "going": 42,
+    "organizer": {
+      "id": "org-098",
+      "name": "Vaishali Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-098/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-009",
+    "title": "Junior Art Workshop — Bani Park",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Bani Park Park Pavilion, Bani Park, Jaipur.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Bani Park Park Pavilion",
+      "address": "Bani Park, Jaipur",
+      "distance": "6.2 km",
+      "lat": 26.8887,
+      "lng": 75.8149
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 40,
+    "attendees": 26,
+    "going": 26,
+    "organizer": {
+      "id": "org-099",
+      "name": "Bani Park Events Collective",
+      "avatar": "https://picsum.photos/seed/org-099/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-jaipur-010",
+    "title": "Jazz Night Live: Tonk Road Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Tonk Road Club House, Tonk Road, Jaipur.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Tonk Road Club House",
+      "address": "Tonk Road, Jaipur",
+      "distance": "7.0 km",
+      "lat": 26.9264,
+      "lng": 75.8152
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 114,
+    "attendees": 73,
+    "going": 73,
+    "organizer": {
+      "id": "org-100",
+      "name": "Tonk Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-100/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-jaipur-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-001",
+    "title": "Unplugged Night: Hazratganj Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Hazratganj Café, Hazratganj, Lucknow.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Hazratganj Café",
+      "address": "Hazratganj, Lucknow",
+      "distance": "3.3 km",
+      "lat": 26.8446,
+      "lng": 80.9657
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 301,
+    "attendees": 158,
+    "going": 158,
+    "organizer": {
+      "id": "org-101",
+      "name": "Hazratganj Events Collective",
+      "avatar": "https://picsum.photos/seed/org-101/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-002",
+    "title": "Laugh Riot Comedy Show — Gomti Nagar",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Gomti Nagar Community Hall, Gomti Nagar, Lucknow.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Gomti Nagar Community Hall",
+      "address": "Gomti Nagar, Lucknow",
+      "distance": "5.5 km",
+      "lat": 26.8334,
+      "lng": 80.9432
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 139,
+    "attendees": 113,
+    "going": 113,
+    "organizer": {
+      "id": "org-102",
+      "name": "Gomti Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-102/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Aliganj",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Aliganj Rooftop Lounge, Aliganj, Lucknow.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Aliganj Rooftop Lounge",
+      "address": "Aliganj, Lucknow",
+      "distance": "2.4 km",
+      "lat": 26.8184,
+      "lng": 80.9673
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 293,
+    "attendees": 211,
+    "going": 211,
+    "organizer": {
+      "id": "org-103",
+      "name": "Aliganj Events Collective",
+      "avatar": "https://picsum.photos/seed/org-103/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-004",
+    "title": "Pottery Basics Workshop — Indira Nagar",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Indira Nagar Studio, Indira Nagar, Lucknow.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Indira Nagar Studio",
+      "address": "Indira Nagar, Lucknow",
+      "distance": "0.9 km",
+      "lat": 26.8335,
+      "lng": 80.952
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 16,
+    "attendees": 12,
+    "going": 12,
+    "organizer": {
+      "id": "org-104",
+      "name": "Indira Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-104/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-005",
+    "title": "Rooftop Dinner Pop-up — Chowk",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Chowk Amphitheatre, Chowk, Lucknow.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Chowk Amphitheatre",
+      "address": "Chowk, Lucknow",
+      "distance": "4.5 km",
+      "lat": 26.8312,
+      "lng": 80.9406
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 110,
+    "attendees": 77,
+    "going": 77,
+    "organizer": {
+      "id": "org-105",
+      "name": "Chowk Events Collective",
+      "avatar": "https://picsum.photos/seed/org-105/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-006",
+    "title": "Theatre Night: One-Act Plays — Hazratganj",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Hazratganj Banquet Hall, Hazratganj, Lucknow.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Hazratganj Banquet Hall",
+      "address": "Hazratganj, Lucknow",
+      "distance": "3.9 km",
+      "lat": 26.8436,
+      "lng": 80.9172
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 97,
+    "attendees": 43,
+    "going": 43,
+    "organizer": {
+      "id": "org-106",
+      "name": "Hazratganj Events Collective",
+      "avatar": "https://picsum.photos/seed/org-106/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-007",
+    "title": "Startup Founders Meetup — Gomti Nagar",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Gomti Nagar Art Gallery, Gomti Nagar, Lucknow.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Gomti Nagar Art Gallery",
+      "address": "Gomti Nagar, Lucknow",
+      "distance": "3.4 km",
+      "lat": 26.8565,
+      "lng": 80.9383
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 95,
+    "attendees": 61,
+    "going": 61,
+    "organizer": {
+      "id": "org-107",
+      "name": "Gomti Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-107/40/40",
+      "verified": false
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-008",
+    "title": "5K Night Run — Aliganj",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Aliganj Cultural Centre, Aliganj, Lucknow.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Aliganj Cultural Centre",
+      "address": "Aliganj, Lucknow",
+      "distance": "2.7 km",
+      "lat": 26.8365,
+      "lng": 80.9584
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 47,
+    "attendees": 23,
+    "going": 23,
+    "organizer": {
+      "id": "org-108",
+      "name": "Aliganj Events Collective",
+      "avatar": "https://picsum.photos/seed/org-108/40/40",
+      "verified": false
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-009",
+    "title": "Junior Art Workshop — Indira Nagar",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Indira Nagar Park Pavilion, Indira Nagar, Lucknow.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Indira Nagar Park Pavilion",
+      "address": "Indira Nagar, Lucknow",
+      "distance": "2.3 km",
+      "lat": 26.8283,
+      "lng": 80.9234
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 37,
+    "attendees": 16,
+    "going": 16,
+    "organizer": {
+      "id": "org-109",
+      "name": "Indira Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-109/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-lucknow-010",
+    "title": "Jazz Night Live: Chowk Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Chowk Club House, Chowk, Lucknow.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Chowk Club House",
+      "address": "Chowk, Lucknow",
+      "distance": "5.4 km",
+      "lat": 26.8333,
+      "lng": 80.9516
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 177,
+    "attendees": 120,
+    "going": 120,
+    "organizer": {
+      "id": "org-110",
+      "name": "Chowk Events Collective",
+      "avatar": "https://picsum.photos/seed/org-110/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-lucknow-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-001",
+    "title": "Unplugged Night: Sector 17 Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Sector 17 Café, Sector 17, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 17 Café",
+      "address": "Sector 17, Chandigarh",
+      "distance": "6.3 km",
+      "lat": 30.7211,
+      "lng": 76.7711
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 227,
+    "attendees": 69,
+    "going": 69,
+    "organizer": {
+      "id": "org-111",
+      "name": "Sector 17 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-111/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-002",
+    "title": "Laugh Riot Comedy Show — Sector 35",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Sector 35 Community Hall, Sector 35, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 35 Community Hall",
+      "address": "Sector 35, Chandigarh",
+      "distance": "5.7 km",
+      "lat": 30.706,
+      "lng": 76.7527
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 117,
+    "attendees": 51,
+    "going": 51,
+    "organizer": {
+      "id": "org-112",
+      "name": "Sector 35 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-112/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Sector 26",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Sector 26 Rooftop Lounge, Sector 26, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 26 Rooftop Lounge",
+      "address": "Sector 26, Chandigarh",
+      "distance": "4.2 km",
+      "lat": 30.7557,
+      "lng": 76.7838
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 440,
+    "attendees": 254,
+    "going": 254,
+    "organizer": {
+      "id": "org-113",
+      "name": "Sector 26 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-113/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-004",
+    "title": "Pottery Basics Workshop — Sector 8",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Sector 8 Studio, Sector 8, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 8 Studio",
+      "address": "Sector 8, Chandigarh",
+      "distance": "3.9 km",
+      "lat": 30.7184,
+      "lng": 76.8011
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 13,
+    "attendees": 4,
+    "going": 4,
+    "organizer": {
+      "id": "org-114",
+      "name": "Sector 8 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-114/40/40",
+      "verified": false
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-005",
+    "title": "Rooftop Dinner Pop-up — Sector 22",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Sector 22 Amphitheatre, Sector 22, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 22 Amphitheatre",
+      "address": "Sector 22, Chandigarh",
+      "distance": "5.1 km",
+      "lat": 30.7411,
+      "lng": 76.7526
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 99,
+    "attendees": 80,
+    "going": 80,
+    "organizer": {
+      "id": "org-115",
+      "name": "Sector 22 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-115/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-006",
+    "title": "Theatre Night: One-Act Plays — Sector 17",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Sector 17 Banquet Hall, Sector 17, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 17 Banquet Hall",
+      "address": "Sector 17, Chandigarh",
+      "distance": "6.8 km",
+      "lat": 30.7629,
+      "lng": 76.7565
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 113,
+    "attendees": 61,
+    "going": 61,
+    "organizer": {
+      "id": "org-116",
+      "name": "Sector 17 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-116/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-007",
+    "title": "Startup Founders Meetup — Sector 35",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Sector 35 Art Gallery, Sector 35, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 35 Art Gallery",
+      "address": "Sector 35, Chandigarh",
+      "distance": "3.2 km",
+      "lat": 30.7578,
+      "lng": 76.7672
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 97,
+    "attendees": 56,
+    "going": 56,
+    "organizer": {
+      "id": "org-117",
+      "name": "Sector 35 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-117/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-008",
+    "title": "5K Night Run — Sector 26",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Sector 26 Cultural Centre, Sector 26, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 26 Cultural Centre",
+      "address": "Sector 26, Chandigarh",
+      "distance": "5.6 km",
+      "lat": 30.7399,
+      "lng": 76.7938
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 78,
+    "attendees": 36,
+    "going": 36,
+    "organizer": {
+      "id": "org-118",
+      "name": "Sector 26 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-118/40/40",
+      "verified": false
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-009",
+    "title": "Junior Art Workshop — Sector 8",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Sector 8 Park Pavilion, Sector 8, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 8 Park Pavilion",
+      "address": "Sector 8, Chandigarh",
+      "distance": "2.0 km",
+      "lat": 30.7082,
+      "lng": 76.7638
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 37,
+    "attendees": 13,
+    "going": 13,
+    "organizer": {
+      "id": "org-119",
+      "name": "Sector 8 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-119/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-chandigarh-010",
+    "title": "Jazz Night Live: Sector 22 Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Sector 22 Club House, Sector 22, Chandigarh.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sector 22 Club House",
+      "address": "Sector 22, Chandigarh",
+      "distance": "3.0 km",
+      "lat": 30.7447,
+      "lng": 76.7776
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 84,
+    "attendees": 39,
+    "going": 39,
+    "organizer": {
+      "id": "org-120",
+      "name": "Sector 22 Events Collective",
+      "avatar": "https://picsum.photos/seed/org-120/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-chandigarh-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-001",
+    "title": "Unplugged Night: Fort Kochi Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Fort Kochi Café, Fort Kochi, Kochi.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Fort Kochi Café",
+      "address": "Fort Kochi, Kochi",
+      "distance": "6.9 km",
+      "lat": 9.9528,
+      "lng": 76.2416
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 209,
+    "attendees": 95,
+    "going": 95,
+    "organizer": {
+      "id": "org-121",
+      "name": "Fort Kochi Events Collective",
+      "avatar": "https://picsum.photos/seed/org-121/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-002",
+    "title": "Laugh Riot Comedy Show — Kakkanad",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Kakkanad Community Hall, Kakkanad, Kochi.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kakkanad Community Hall",
+      "address": "Kakkanad, Kochi",
+      "distance": "5.0 km",
+      "lat": 9.9409,
+      "lng": 76.2933
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 134,
+    "attendees": 54,
+    "going": 54,
+    "organizer": {
+      "id": "org-122",
+      "name": "Kakkanad Events Collective",
+      "avatar": "https://picsum.photos/seed/org-122/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Marine Drive",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Marine Drive Rooftop Lounge, Marine Drive, Kochi.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Marine Drive Rooftop Lounge",
+      "address": "Marine Drive, Kochi",
+      "distance": "2.1 km",
+      "lat": 9.9557,
+      "lng": 76.2869
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 236,
+    "attendees": 85,
+    "going": 85,
+    "organizer": {
+      "id": "org-123",
+      "name": "Marine Drive Events Collective",
+      "avatar": "https://picsum.photos/seed/org-123/40/40",
+      "verified": false
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-004",
+    "title": "Pottery Basics Workshop — Edappally",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Edappally Studio, Edappally, Kochi.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Edappally Studio",
+      "address": "Edappally, Kochi",
+      "distance": "1.8 km",
+      "lat": 9.9461,
+      "lng": 76.2715
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 16,
+    "attendees": 11,
+    "going": 11,
+    "organizer": {
+      "id": "org-124",
+      "name": "Edappally Events Collective",
+      "avatar": "https://picsum.photos/seed/org-124/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-005",
+    "title": "Rooftop Dinner Pop-up — Panampilly Nagar",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Panampilly Nagar Amphitheatre, Panampilly Nagar, Kochi.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Panampilly Nagar Amphitheatre",
+      "address": "Panampilly Nagar, Kochi",
+      "distance": "4.6 km",
+      "lat": 9.9432,
+      "lng": 76.2939
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 144,
+    "attendees": 112,
+    "going": 112,
+    "organizer": {
+      "id": "org-125",
+      "name": "Panampilly Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-125/40/40",
+      "verified": false
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-006",
+    "title": "Theatre Night: One-Act Plays — Fort Kochi",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Fort Kochi Banquet Hall, Fort Kochi, Kochi.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Fort Kochi Banquet Hall",
+      "address": "Fort Kochi, Kochi",
+      "distance": "2.7 km",
+      "lat": 9.9036,
+      "lng": 76.2632
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 101,
+    "attendees": 68,
+    "going": 68,
+    "organizer": {
+      "id": "org-126",
+      "name": "Fort Kochi Events Collective",
+      "avatar": "https://picsum.photos/seed/org-126/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-007",
+    "title": "Startup Founders Meetup — Kakkanad",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Kakkanad Art Gallery, Kakkanad, Kochi.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kakkanad Art Gallery",
+      "address": "Kakkanad, Kochi",
+      "distance": "8.1 km",
+      "lat": 9.9589,
+      "lng": 76.2875
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 96,
+    "attendees": 65,
+    "going": 65,
+    "organizer": {
+      "id": "org-127",
+      "name": "Kakkanad Events Collective",
+      "avatar": "https://picsum.photos/seed/org-127/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-008",
+    "title": "5K Night Run — Marine Drive",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Marine Drive Cultural Centre, Marine Drive, Kochi.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Marine Drive Cultural Centre",
+      "address": "Marine Drive, Kochi",
+      "distance": "4.8 km",
+      "lat": 9.9358,
+      "lng": 76.2831
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 41,
+    "attendees": 27,
+    "going": 27,
+    "organizer": {
+      "id": "org-128",
+      "name": "Marine Drive Events Collective",
+      "avatar": "https://picsum.photos/seed/org-128/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-009",
+    "title": "Junior Art Workshop — Edappally",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Edappally Park Pavilion, Edappally, Kochi.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Edappally Park Pavilion",
+      "address": "Edappally, Kochi",
+      "distance": "8.3 km",
+      "lat": 9.9121,
+      "lng": 76.2724
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 40,
+    "attendees": 27,
+    "going": 27,
+    "organizer": {
+      "id": "org-129",
+      "name": "Edappally Events Collective",
+      "avatar": "https://picsum.photos/seed/org-129/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-kochi-010",
+    "title": "Jazz Night Live: Panampilly Nagar Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Panampilly Nagar Club House, Panampilly Nagar, Kochi.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Panampilly Nagar Club House",
+      "address": "Panampilly Nagar, Kochi",
+      "distance": "3.3 km",
+      "lat": 9.9257,
+      "lng": 76.2566
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 93,
+    "attendees": 37,
+    "going": 37,
+    "organizer": {
+      "id": "org-130",
+      "name": "Panampilly Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-130/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-kochi-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-001",
+    "title": "Unplugged Night: Vijay Nagar Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at Vijay Nagar Café, Vijay Nagar, Indore.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Vijay Nagar Café",
+      "address": "Vijay Nagar, Indore",
+      "distance": "1.1 km",
+      "lat": 22.7069,
+      "lng": 75.8844
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 344,
+    "attendees": 243,
+    "going": 243,
+    "organizer": {
+      "id": "org-131",
+      "name": "Vijay Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-131/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-002",
+    "title": "Laugh Riot Comedy Show — Rajwada",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Rajwada Community Hall, Rajwada, Indore.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Rajwada Community Hall",
+      "address": "Rajwada, Indore",
+      "distance": "7.2 km",
+      "lat": 22.7047,
+      "lng": 75.8347
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 131,
+    "attendees": 104,
+    "going": 104,
+    "organizer": {
+      "id": "org-132",
+      "name": "Rajwada Events Collective",
+      "avatar": "https://picsum.photos/seed/org-132/40/40",
+      "verified": false
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-003",
+    "title": "Evening Aarti & Bhajan Sandhya — Palasia",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at Palasia Rooftop Lounge, Palasia, Indore.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Palasia Rooftop Lounge",
+      "address": "Palasia, Indore",
+      "distance": "4.8 km",
+      "lat": 22.7418,
+      "lng": 75.8554
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 227,
+    "attendees": 92,
+    "going": 92,
+    "organizer": {
+      "id": "org-133",
+      "name": "Palasia Events Collective",
+      "avatar": "https://picsum.photos/seed/org-133/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-004",
+    "title": "Pottery Basics Workshop — Sapna Sangeeta",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Sapna Sangeeta Studio, Sapna Sangeeta, Indore.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sapna Sangeeta Studio",
+      "address": "Sapna Sangeeta, Indore",
+      "distance": "5.0 km",
+      "lat": 22.7271,
+      "lng": 75.8733
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 15,
+    "attendees": 8,
+    "going": 8,
+    "organizer": {
+      "id": "org-134",
+      "name": "Sapna Sangeeta Events Collective",
+      "avatar": "https://picsum.photos/seed/org-134/40/40",
+      "verified": true
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-005",
+    "title": "Rooftop Dinner Pop-up — AB Road",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at AB Road Amphitheatre, AB Road, Indore.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "AB Road Amphitheatre",
+      "address": "AB Road, Indore",
+      "distance": "5.5 km",
+      "lat": 22.7425,
+      "lng": 75.8568
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 83,
+    "attendees": 64,
+    "going": 64,
+    "organizer": {
+      "id": "org-135",
+      "name": "AB Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-135/40/40",
+      "verified": false
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-006",
+    "title": "Theatre Night: One-Act Plays — Vijay Nagar",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at Vijay Nagar Banquet Hall, Vijay Nagar, Indore.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Vijay Nagar Banquet Hall",
+      "address": "Vijay Nagar, Indore",
+      "distance": "1.5 km",
+      "lat": 22.6991,
+      "lng": 75.8608
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 130,
+    "attendees": 91,
+    "going": 91,
+    "organizer": {
+      "id": "org-136",
+      "name": "Vijay Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-136/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-007",
+    "title": "Startup Founders Meetup — Rajwada",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Rajwada Art Gallery, Rajwada, Indore.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Rajwada Art Gallery",
+      "address": "Rajwada, Indore",
+      "distance": "8.0 km",
+      "lat": 22.7464,
+      "lng": 75.8666
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 69,
+    "attendees": 51,
+    "going": 51,
+    "organizer": {
+      "id": "org-137",
+      "name": "Rajwada Events Collective",
+      "avatar": "https://picsum.photos/seed/org-137/40/40",
+      "verified": false
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-008",
+    "title": "5K Night Run — Palasia",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at Palasia Cultural Centre, Palasia, Indore.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Palasia Cultural Centre",
+      "address": "Palasia, Indore",
+      "distance": "2.7 km",
+      "lat": 22.7319,
+      "lng": 75.8526
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 60,
+    "attendees": 48,
+    "going": 48,
+    "organizer": {
+      "id": "org-138",
+      "name": "Palasia Events Collective",
+      "avatar": "https://picsum.photos/seed/org-138/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-009",
+    "title": "Junior Art Workshop — Sapna Sangeeta",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Sapna Sangeeta Park Pavilion, Sapna Sangeeta, Indore.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Sapna Sangeeta Park Pavilion",
+      "address": "Sapna Sangeeta, Indore",
+      "distance": "7.5 km",
+      "lat": 22.7126,
+      "lng": 75.883
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 36,
+    "attendees": 14,
+    "going": 14,
+    "organizer": {
+      "id": "org-139",
+      "name": "Sapna Sangeeta Events Collective",
+      "avatar": "https://picsum.photos/seed/org-139/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-indore-010",
+    "title": "Jazz Night Live: AB Road Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at AB Road Club House, AB Road, Indore.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "AB Road Club House",
+      "address": "AB Road, Indore",
+      "distance": "0.8 km",
+      "lat": 22.71,
+      "lng": 75.875
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 114,
+    "attendees": 86,
+    "going": 86,
+    "organizer": {
+      "id": "org-140",
+      "name": "AB Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-140/40/40",
+      "verified": true
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-indore-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-001",
+    "title": "Unplugged Night: MP Nagar Café",
+    "category": "live-music",
+    "description": "An evening of live music featuring local artists, unplugged sets and a relaxed, sing-along crowd. Happening tonight at MP Nagar Café, MP Nagar, Bhopal.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": true,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "MP Nagar Café",
+      "address": "MP Nagar, Bhopal",
+      "distance": "7.5 km",
+      "lat": 23.2801,
+      "lng": 77.4174
+    },
+    "price": {
+      "free": false,
+      "min": 299,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 318,
+    "attendees": 220,
+    "going": 220,
+    "organizer": {
+      "id": "org-141",
+      "name": "MP Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-141/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "live",
+      "night"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-001/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-002",
+    "title": "Laugh Riot Comedy Show — Arera Colony",
+    "category": "comedy",
+    "description": "A lineup of comics taking the stage for a night of standup, crowd work and fresh material. Happening tonight at Arera Colony Community Hall, Arera Colony, Bhopal.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Arera Colony Community Hall",
+      "address": "Arera Colony, Bhopal",
+      "distance": "4.3 km",
+      "lat": 23.259,
+      "lng": 77.4025
+    },
+    "price": {
+      "free": false,
+      "min": 199,
+      "max": 349,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 149,
+    "attendees": 92,
+    "going": 92,
+    "organizer": {
+      "id": "org-142",
+      "name": "Arera Colony Events Collective",
+      "avatar": "https://picsum.photos/seed/org-142/40/40",
+      "verified": true
+    },
+    "tags": [
+      "comedy",
+      "standup",
+      "humor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-002/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-003",
+    "title": "Evening Aarti & Bhajan Sandhya — New Market",
+    "category": "spiritual",
+    "description": "A devotional evening of bhajans and aarti, open to all, with prasad distributed at the end. Happening tonight at New Market Rooftop Lounge, New Market, Bhopal.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "New Market Rooftop Lounge",
+      "address": "New Market, Bhopal",
+      "distance": "7.4 km",
+      "lat": 23.2887,
+      "lng": 77.3969
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 396,
+    "attendees": 177,
+    "going": 177,
+    "organizer": {
+      "id": "org-143",
+      "name": "New Market Events Collective",
+      "avatar": "https://picsum.photos/seed/org-143/40/40",
+      "verified": true
+    },
+    "tags": [
+      "spiritual",
+      "temple",
+      "bhajan"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-003/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-004",
+    "title": "Pottery Basics Workshop — Shahpura",
+    "category": "workshops",
+    "description": "A hands-on beginner workshop with all materials provided — take your creation home at the end. Happening tonight at Shahpura Studio, Shahpura, Bhopal.",
+    "date": "2026-07-21",
+    "time": "7:30 PM",
+    "endTime": "9:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Shahpura Studio",
+      "address": "Shahpura, Bhopal",
+      "distance": "3.8 km",
+      "lat": 23.249,
+      "lng": 77.411
+    },
+    "price": {
+      "free": false,
+      "min": 399,
+      "max": 699,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 24,
+    "attendees": 13,
+    "going": 13,
+    "organizer": {
+      "id": "org-144",
+      "name": "Shahpura Events Collective",
+      "avatar": "https://picsum.photos/seed/org-144/40/40",
+      "verified": false
+    },
+    "tags": [
+      "workshop",
+      "craft",
+      "hands-on"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-004/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-005",
+    "title": "Rooftop Dinner Pop-up — Kolar Road",
+    "category": "restaurant-events",
+    "description": "A curated spread of regional specialities with live counters — book your table early. Happening tonight at Kolar Road Amphitheatre, Kolar Road, Bhopal.",
+    "date": "2026-07-21",
+    "time": "8:00 PM",
+    "endTime": "10:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kolar Road Amphitheatre",
+      "address": "Kolar Road, Bhopal",
+      "distance": "4.7 km",
+      "lat": 23.2887,
+      "lng": 77.4123
+    },
+    "price": {
+      "free": false,
+      "min": 599,
+      "max": 999,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 84,
+    "attendees": 33,
+    "going": 33,
+    "organizer": {
+      "id": "org-145",
+      "name": "Kolar Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-145/40/40",
+      "verified": true
+    },
+    "tags": [
+      "food",
+      "buffet",
+      "dining"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-005/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-006",
+    "title": "Theatre Night: One-Act Plays — MP Nagar",
+    "category": "art-culture",
+    "description": "A showcase of classical and folk performances by local troupes in an intimate seated setting. Happening tonight at MP Nagar Banquet Hall, MP Nagar, Bhopal.",
+    "date": "2026-07-21",
+    "time": "8:30 PM",
+    "endTime": "10:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "MP Nagar Banquet Hall",
+      "address": "MP Nagar, Bhopal",
+      "distance": "4.8 km",
+      "lat": 23.2821,
+      "lng": 77.4351
+    },
+    "price": {
+      "free": false,
+      "min": 150,
+      "max": 350,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 116,
+    "attendees": 46,
+    "going": 46,
+    "organizer": {
+      "id": "org-146",
+      "name": "MP Nagar Events Collective",
+      "avatar": "https://picsum.photos/seed/org-146/40/40",
+      "verified": true
+    },
+    "tags": [
+      "dance",
+      "classical",
+      "culture"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-006/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-007",
+    "title": "Startup Founders Meetup — Arera Colony",
+    "category": "meetups",
+    "description": "A casual meetup for founders, builders and freelancers to connect over light snacks and conversation. Happening tonight at Arera Colony Art Gallery, Arera Colony, Bhopal.",
+    "date": "2026-07-21",
+    "time": "9:00 PM",
+    "endTime": "11:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Arera Colony Art Gallery",
+      "address": "Arera Colony, Bhopal",
+      "distance": "4.4 km",
+      "lat": 23.2732,
+      "lng": 77.4072
+    },
+    "price": {
+      "free": true,
+      "min": 0,
+      "max": 0,
+      "currency": "INR"
+    },
+    "crowdLevel": "medium",
+    "capacity": 69,
+    "attendees": 24,
+    "going": 24,
+    "organizer": {
+      "id": "org-147",
+      "name": "Arera Colony Events Collective",
+      "avatar": "https://picsum.photos/seed/org-147/40/40",
+      "verified": true
+    },
+    "tags": [
+      "networking",
+      "meetup",
+      "business"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-007/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-008",
+    "title": "5K Night Run — New Market",
+    "category": "sports",
+    "description": "A community fitness session open to all levels — bring your own mat or gear. Happening tonight at New Market Cultural Centre, New Market, Bhopal.",
+    "date": "2026-07-21",
+    "time": "6:00 PM",
+    "endTime": "8:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "New Market Cultural Centre",
+      "address": "New Market, Bhopal",
+      "distance": "7.4 km",
+      "lat": 23.2673,
+      "lng": 77.4064
+    },
+    "price": {
+      "free": false,
+      "min": 0,
+      "max": 149,
+      "currency": "INR"
+    },
+    "crowdLevel": "high",
+    "capacity": 35,
+    "attendees": 20,
+    "going": 20,
+    "organizer": {
+      "id": "org-148",
+      "name": "New Market Events Collective",
+      "avatar": "https://picsum.photos/seed/org-148/40/40",
+      "verified": true
+    },
+    "tags": [
+      "fitness",
+      "sports",
+      "outdoor"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-008/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-009",
+    "title": "Junior Art Workshop — Shahpura",
+    "category": "kids-activities",
+    "description": "A family-friendly evening of craft, stories and games designed for young children. Happening tonight at Shahpura Park Pavilion, Shahpura, Bhopal.",
+    "date": "2026-07-21",
+    "time": "6:30 PM",
+    "endTime": "8:30 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Shahpura Park Pavilion",
+      "address": "Shahpura, Bhopal",
+      "distance": "1.1 km",
+      "lat": 23.2871,
+      "lng": 77.4202
+    },
+    "price": {
+      "free": false,
+      "min": 99,
+      "max": 249,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 35,
+    "attendees": 27,
+    "going": 27,
+    "organizer": {
+      "id": "org-149",
+      "name": "Shahpura Events Collective",
+      "avatar": "https://picsum.photos/seed/org-149/40/40",
+      "verified": true
+    },
+    "tags": [
+      "kids",
+      "family",
+      "craft"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-009/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  },
+  {
+    "id": "evt-bhopal-010",
+    "title": "Jazz Night Live: Kolar Road Club House",
+    "category": "live-music",
+    "description": "A cosy acoustic set in a café setting — original songs, covers and quiet conversation. Happening tonight at Kolar Road Club House, Kolar Road, Bhopal.",
+    "date": "2026-07-21",
+    "time": "7:00 PM",
+    "endTime": "9:00 PM",
+    "isLive": false,
+    "isTonightEvent": true,
+    "venue": {
+      "name": "Kolar Road Club House",
+      "address": "Kolar Road, Bhopal",
+      "distance": "1.5 km",
+      "lat": 23.2678,
+      "lng": 77.4379
+    },
+    "price": {
+      "free": false,
+      "min": 249,
+      "max": 599,
+      "currency": "INR"
+    },
+    "crowdLevel": "low",
+    "capacity": 109,
+    "attendees": 79,
+    "going": 79,
+    "organizer": {
+      "id": "org-150",
+      "name": "Kolar Road Events Collective",
+      "avatar": "https://picsum.photos/seed/org-150/40/40",
+      "verified": false
+    },
+    "tags": [
+      "music",
+      "acoustic",
+      "cafe"
+    ],
+    "images": [
+      "https://picsum.photos/seed/evt-bhopal-010/800/500"
+    ],
+    "bookingUrl": "#",
+    "status": "approved"
+  }
+
+]
