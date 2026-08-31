@@ -95,6 +95,14 @@ const Navbar = () => {
                     onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
                     Become an Organizer
                   </Link>
+                  <Link to={ROUTES.VENDOR_DASHBOARD}
+                    onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
+                    Become a Vendor
+                  </Link>
+                  <Link to={ROUTES.MY_REQUESTS}
+                    onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
+                    My Requests
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-brand-red hover:bg-gray-50"
@@ -183,6 +191,16 @@ const Navbar = () => {
                 >
                   Become an Organizer
                 </Link>
+
+                <Link to={ROUTES.VENDOR_DASHBOARD}
+                  onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
+                  Become a Vendor
+                  </Link>
+                  
+                  <Link to={ROUTES.MY_REQUESTS}
+                  onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
+                    My Requests
+                  </Link>
 
                 <button
                   onClick={() => { handleLogout(); setMobileOpen(false); }}
