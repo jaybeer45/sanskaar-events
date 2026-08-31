@@ -32,7 +32,7 @@ const CityPicker = () => {
     <div className="relative shrink-0" ref={ref}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="hidden rounded-full px-4 md:flex items-center gap-1.5 border border-gray-300 py-1.5 text-sm text-gray-700 hover:border-gray-500 transition-colors"
+        className=" rounded-full px-4 flex items-center gap-1.5 border border-gray-300 py-1.5 text-sm text-gray-700 hover:border-gray-500 transition-colors"
       >
         <MapPin size={14} className="text-brand-red" />
         <span className="font-medium">{selectedCity.name}</span>
