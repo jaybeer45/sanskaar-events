@@ -26,10 +26,12 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-const authorize = (...roles) => (req, res, next) => {
-  if (!req.user || !roles.includes(req.user.role)) {
+const authorize = (...allowedRoles) => (req, res, next) => {
+  const userRoles = req.user?.roles || [];
+  const hasAccess = allowedRoles.some((r) => userRoles.includes(r));
+  if (!req.user || !hasAccess) {
     res.status(403);
-    throw new Error(`Role '${req.user?.role}' is not authorized for this action.`);
+    throw new Error(`None of your roles (${userRoles.join(', ') || 'none'}) are authorized for this action.`);
   }
   next();
 };

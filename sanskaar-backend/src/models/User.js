@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     phone: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true, minlength: 8, select: false },
-    role: { type: String, enum: ['user', 'organizer', 'vendor', 'admin', 'moderator', 'event_team'], default: 'user' },
+    roles: {type: [String], enum: ['user', 'organizer', 'vendor', 'admin', 'moderator', 'event_team'], default: ['user']},
     avatar: { type: String, default: '' },
     bio: { type: String, maxlength: 200, default: '' },
     city: { type: String, default: 'Bareilly' },
@@ -53,6 +53,7 @@ const userSchema = new mongoose.Schema(
     organizerKyc: organizerKycSchema,
     vendorKyc: vendorKycSchema,
     isActive: { type: Boolean, default: true },
+    walletBalancePaise: { type: Number, default: 0 },
   }, { timestamps: true }
 );
 
@@ -72,4 +73,7 @@ userSchema.methods.toSafeObject = function () {
   return obj;
 };
 
+userSchema.methods.hasRole = function (r) {
+  return this.roles.includes(r);
+};
 module.exports = mongoose.model('User', userSchema);

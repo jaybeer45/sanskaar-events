@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
 
 const updateProfile = asyncHandler(async (req, res) => {
-  if (req.user._id.toString() !== req.params.id && req.user.role !== 'admin') {
+    if (req.user._id.toString() !== req.params.id && !req.user.roles.includes('admin'))  {
     res.status(403);
     throw new Error('You can only update your profile ');
   }
@@ -96,7 +96,7 @@ const recordConsent = asyncHandler(async (req, res) => {
 });
 
 const getConsents = asyncHandler(async (req, res) => {
-  if (req.user._id.toString() !== req.params.id && req.user.role !== 'admin') {
+   if (req.user._id.toString() !== req.params.id && !req.user.roles.includes('admin')) {
     res.status(403);
     throw new Error('You can only consent yout history ');
   }

@@ -118,4 +118,43 @@ const deleteEvent = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true });
 });
 
-module.exports = {getEvents, getEventById, getTonightEvents, createEvent, updateEvent, deleteEvent, getMyEvents};
+// @route PUT /api/v1/events/:id/dates
+// Replaces the whole eventDates array in one call — simplest contract for
+// an organizer managing a multi-day event's schedule from a form (add one
+// day, remove one day, edit a label — all just resubmit the full list).
+// Existing soldCount per date is preserved by matching on date; a brand new
+// date entry starts at soldCount 0.
+const updateEventDates = asyncHandler(async (req, res) => {
+  const { dates } = req.body; // [{ date, label, capacity }]
+  if (!Array.isArray(dates) || dates.length === 0) {
+    res.status(400);
+    throw new Error('dates must be a non-empty array.');
+  }
+
+  const event = await Event.findById(req.params.id);
+  if (!event) {
+    res.status(404);
+    throw new Error('Event not found.');
+  }
+  if (event.organizer.toString() !== req.user._id.toString() && !req.user.roles.includes('admin')) {
+    res.status(403);
+    throw new Error('You can only edit your own event.');
+  }
+
+  event.eventDates = dates.map((d) => {
+    // Keep the existing soldCount for a date that already existed (matched
+    // by exact timestamp) — only a genuinely new date starts at 0.
+    const existing = event.eventDates.find((ed) => ed.date.getTime() === new Date(d.date).getTime());
+    return {
+      date: d.date,
+      label: d.label || '',
+      capacity: d.capacity || 0,
+      soldCount: existing ? existing.soldCount : 0,
+    };
+  });
+
+  await event.save();
+  res.status(200).json(event);
+});
+
+module.exports = {getEvents, getEventById, getTonightEvents, createEvent, updateEvent, deleteEvent, getMyEvents ,updateEventDates };

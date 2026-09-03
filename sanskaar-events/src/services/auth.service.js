@@ -92,6 +92,13 @@ verifyOtp: async (identifier, code) => {
   return axiosInstance.post('/auth/verify-otp', { identifier, code });
 },
 
+otpLogin: async (identifier, code) => {
+  if (USE_MOCK) {
+    return { data: { user: MOCK_USERS[0], token: makeToken(MOCK_USERS[0].id) } };
+  }
+  return axiosInstance.post('/auth/otp-login', { identifier, code });
+},
+
   logout: async () => {
     if (USE_MOCK) return { data: { success: true } };
     return axiosInstance.post('/auth/logout');

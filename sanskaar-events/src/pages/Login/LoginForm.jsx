@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login } from "../../features/auth/slices/authSlice";
+import { login , otpLogin } from "../../features/auth/slices/authSlice";
 import { ROUTES } from "../../constants/routes";
 import Input from "../../components/ui/Input/Input";
 import OTP from "../../components/ui/OTP/OTP";
@@ -27,11 +27,11 @@ const LoginPage = () => {
     formState: { errors, isSubmitting },
   } = useForm({ mode: "onBlur" });
 
-  const redirectAfterLogin = (role) => {
+    const redirectAfterLogin = (roles = []) => {
     const redirectTo = location.state?.from?.pathname;
     if (redirectTo) return navigate(redirectTo, { replace: true });
-    if (role === "admin") return navigate(ROUTES.ADMIN, { replace: true });
-    if (role === "organizer") return navigate(ROUTES.ORGANIZER_SUBMIT, { replace: true });
+    if (roles.includes("admin")) return navigate(ROUTES.ADMIN, { replace: true });
+    if (roles.includes("organizer")) return navigate(ROUTES.ORGANIZER_SUBMIT, { replace: true });
     navigate(ROUTES.HOME, { replace: true });
   };
 
@@ -42,7 +42,7 @@ const LoginPage = () => {
       const result = await dispatch(
         login({ email: data.emailOrPhone, password: data.password })
       ).unwrap();
-      redirectAfterLogin(result.user.role);
+      redirectAfterLogin(result.user.roles);
     } catch (err) {
       setAuthError(err || "Invalid email/phone or password.");
     }
@@ -73,12 +73,11 @@ const LoginPage = () => {
     setOtpError("");
     setOtpStage("verifying");
     try {
-      const emailOrPhone = getValues("emailOrPhone");
-      await authService.verifyOtp(emailOrPhone, otpValue);
+          const emailOrPhone = getValues("emailOrPhone");
       const result = await dispatch(
-        login({ email: emailOrPhone, password: "otp-verified" })
+        otpLogin({ identifier: emailOrPhone, code: otpValue })
       ).unwrap();
-      redirectAfterLogin(result.user.role);
+      redirectAfterLogin(result.user.roles);
     } catch (err) {
       setOtpError(err?.message || err || "Invalid or expired code.");
       setOtpStage("sent");

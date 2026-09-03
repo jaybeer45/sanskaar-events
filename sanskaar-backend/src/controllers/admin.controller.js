@@ -54,8 +54,15 @@ const verifyVendor = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Vendor nahi mila.');
   }
+
+  // $addToSet — adds 'vendor' only if not already present, so this stays
+  // safe to run more than once and never duplicates the role.
+  await User.findByIdAndUpdate(vendor.user, { $addToSet: { roles: 'vendor' } });
+
   res.status(200).json({ success: true, id: vendor._id, verified: true });
 });
+
+
 
 // @route GET /api/v1/admin/organizers/pending
 const getPendingOrganizers = asyncHandler(async (req, res) => {
@@ -78,7 +85,15 @@ const verifyOrganizer = asyncHandler(async (req, res) => {
 
   organizer.kycStatus = 'verified';
   organizer.kycRejectionReason = '';
+
   await organizer.save();
+
+    await User.findByIdAndUpdate(
+    organizer.owner,
+    { $addToSet: { roles: 'organizer' } }
+  );
+
+  
 
   res.status(200).json({ success: true, id: organizer._id, kycStatus: organizer.kycStatus });
 });

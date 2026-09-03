@@ -10,6 +10,15 @@ export const login = createAsyncThunk('auth/login', async (credentials, { reject
   } catch (err) { return rejectWithValue(err.message); }
 });
 
+export const otpLogin = createAsyncThunk('auth/otpLogin', async ({ identifier, code }, { rejectWithValue }) => {
+  try {
+    const res = await authService.otpLogin(identifier, code);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'OTP login failed.');
+  }
+});
+
 export const register = createAsyncThunk('auth/register', async (data, { rejectWithValue }) => {
   try {
     const res = await authService.register(data);
@@ -40,7 +49,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
 
 const initialState = {
   user: null,
-  role: 'visitor',
+  roles: ['visitor'],
   token: localStorage.getItem('sanskaar_token') || null,
   savedEvents: [],
   status: 'idle',
@@ -52,7 +61,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setRole: (state, action) => { state.role = action.payload; },
+    setRoles: (state, action) => { state.roles = action.payload; },
     toggleSaveEvent: (state, action) => {
       const id = action.payload;
       const idx = state.savedEvents.indexOf(id);
@@ -64,18 +73,21 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (s) => { s.status = 'loading'; s.error = null; })
-      .addCase(login.fulfilled, (s, a) => { s.status = 'succeeded'; s.user = a.payload.user; s.role = a.payload.user.role; s.token = a.payload.token; })
+      .addCase(login.fulfilled, (s, a) => { s.status = 'succeeded'; s.user = a.payload.user; s.roles = a.payload.user.roles?.length ? a.payload.user.roles : ['user']; s.token = a.payload.token; })
       .addCase(login.rejected, (s, a) => { s.status = 'failed'; s.error = a.payload; })
-      .addCase(register.fulfilled, (s, a) => { s.user = a.payload.user; s.role = a.payload.user.role; s.token = a.payload.token; s.status = 'succeeded'; })
+      .addCase(otpLogin.pending, (s) => { s.status = 'loading'; s.error = null; })
+      .addCase(otpLogin.fulfilled, (s, a) => { s.status = 'succeeded'; s.user = a.payload.user; s.roles = a.payload.user.roles?.length ? a.payload.user.roles : ['user']; s.token = a.payload.token; })
+      .addCase(otpLogin.rejected, (s, a) => { s.status = 'failed'; s.error = a.payload; })
+      .addCase(register.fulfilled, (s, a) => { s.user = a.payload.user; s.roles = a.payload.user.roles?.length ? a.payload.user.roles : ['user']; s.token = a.payload.token; s.status = 'succeeded'; })
       .addCase(fetchProfile.fulfilled, (s, a) => {
-        s.user = a.payload; s.role = a.payload.role; s.status = 'succeeded'; s.authStatus = 'done';
+        s.user = a.payload; s.roles = a.payload.roles?.length ? a.payload.roles : ['user']; s.status = 'succeeded'; s.authStatus = 'done';
       })
       .addCase(fetchProfile.rejected, (s) => {
-        s.user = null; s.role = 'visitor'; s.token = null; s.authStatus = 'done'; localStorage.removeItem('sanskaar_token');
+        s.user = null; s.roles = ['visitor']; s.token = null; s.authStatus = 'done'; localStorage.removeItem('sanskaar_token');
       })
       .addCase(updateProfile.fulfilled, (s, a) => { s.user = a.payload; })
-      .addCase(logout.fulfilled, (s) => { s.user = null; s.role = 'visitor'; s.token = null; s.savedEvents = []; s.status = 'idle'; s.authStatus = 'idle'; });  },
+      .addCase(logout.fulfilled, (s) => { s.user = null; s.roles = ['visitor']; s.token = null; s.savedEvents = []; s.status = 'idle'; s.authStatus = 'idle'; });  },
 });
 
-export const { setRole, toggleSaveEvent, clearAuthError } = authSlice.actions;
+export const { setRoles, toggleSaveEvent, clearAuthError } = authSlice.actions;
 export default authSlice.reducer;

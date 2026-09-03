@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getEvents, getEventById, getTonightEvents, createEvent, updateEvent, deleteEvent,getMyEvents} = require('../controllers/event.controller');
+const { getEvents, getEventById, getTonightEvents, createEvent, updateEvent, deleteEvent,getMyEvents , updateEventDates} = require('../controllers/event.controller');
 const { getVariants, createVariant, updateVariant, deleteVariant,} = require('../controllers/ticketVariant.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 const { inviteStaff, listStaff, revokeStaff } = require('../controllers/organizerStaff.controller');
@@ -14,6 +14,7 @@ router.get('/:id', getEventById);
 router.post('/', protect, createEvent);
 router.put('/:id', protect, authorize('organizer', 'admin'), updateEvent);
 router.delete('/:id', protect, authorize('organizer', 'admin'), deleteEvent);
+router.put('/:id/dates', protect, authorize('organizer', 'admin'), updateEventDates);
 
 // Ticket variants — nested under event
 router.get('/:id/variants', getVariants);

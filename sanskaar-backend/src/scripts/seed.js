@@ -28,15 +28,15 @@ const run = async () => {
     email: 'seed.organizer@sanskaar.com',
     phone: '9990000001',
     password: 'password123',
-    role: 'organizer',
+    roles: ['user', 'organizer'],
   });
 
-  const admin = await User.create({
+    const admin = await User.create({
   name: 'Super Admin',
   email: 'seed.admin@sanskaar.com',
   phone: '9990000000',
   password: 'password123',
-  role: 'admin',
+  roles: ['user', 'admin'],
 });
 
   // ── 2. mock events.json ko Event schema mein daalo ──────────
@@ -81,12 +81,12 @@ const run = async () => {
   for (let i = 0; i < mockVendors.length; i++) {
     const v = mockVendors[i];
 
-    const vendorUser = await User.create({
+        const vendorUser = await User.create({
       name: v.name,
       email: `seed.vendor${i + 1}@sanskaar.com`,
       phone: `999000${1000 + i}`,
       password: 'password123',
-      role: 'vendor',
+      roles: ['user', 'vendor'],
     });
 
     await Vendor.create({

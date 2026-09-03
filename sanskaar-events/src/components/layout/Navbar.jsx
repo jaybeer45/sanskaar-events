@@ -6,15 +6,29 @@ import { ROUTES } from '../../constants/routes';
 import { logout } from '../../features/auth/slices/authSlice';
 import CityPicker from './CityPicker';
 
-const NAV_LINKS = [
+
+const PUBLIC_NAV_LINKS = [
   { label: 'Discover', to: ROUTES.HOME },
   { label: 'Tonight', to: ROUTES.TONIGHT },
   { label: 'Map', to: '/map' },
-  { label: 'Vendors', to: ROUTES.VENDORS },
-  { label: 'Marketplace', to: ROUTES.MARKETPLACE },
-  { label: 'Organize', to: ROUTES.ORGANIZER_SUBMIT },
-  { label: 'Admin', to: ROUTES.ADMIN },
+  { label: 'MarketPlace', to: ROUTES.MARKETPLACE }
 ];
+
+
+const getNavLinks = (isLoggedIn, roles = []) => {
+
+  const links = isLoggedIn ? [...PUBLIC_NAV_LINKS,] : PUBLIC_NAV_LINKS;
+  if (roles.includes("admin")) {
+    return [...links, { label: 'Admin', to: ROUTES.ADMIN }];
+  }
+  if (roles.includes("vendor")) {
+return [...links, { label: 'Vendors', to: ROUTES.VENDORS }]
+}
+  if (roles.includes("organizer")) {
+    return [...links, { label: 'Organize', to: ROUTES.ORGANIZER_SUBMIT }]
+  }
+  return links;
+};
 
 const Navbar = () => {
   const [query, setQuery] = useState('');
@@ -23,7 +37,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, token } = useSelector((s) => s.auth);
+
   const isLoggedIn = Boolean(token && user);
+    const navLinks = getNavLinks(isLoggedIn, useSelector((s) => s.auth.roles));
 
   const handleLogout = () => {
     dispatch(logout());
@@ -130,7 +146,7 @@ const Navbar = () => {
         </div>
 
         <nav className="hidden md:flex ml-28 gap-8 items-center h-14 border-t border-gray-200 bg-white px-4 lg:px-8">
-          {NAV_LINKS.map(({ label, to }) => (
+          {navLinks.map(({ label, to }) => (
             <NavLink
               key={to}
               to={to}
@@ -162,7 +178,7 @@ const Navbar = () => {
           </form>
 
           <nav className="py-2">
-            {NAV_LINKS.map(({ label, to }) => (
+            {navLinks.map(({ label, to }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -195,12 +211,12 @@ const Navbar = () => {
                 <Link to={ROUTES.VENDOR_DASHBOARD}
                   onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
                   Become a Vendor
-                  </Link>
-                  
-                  <Link to={ROUTES.MY_REQUESTS}
+                </Link>
+
+                <Link to={ROUTES.MY_REQUESTS}
                   onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
-                    My Requests
-                  </Link>
+                  My Requests
+                </Link>
 
                 <button
                   onClick={() => { handleLogout(); setMobileOpen(false); }}

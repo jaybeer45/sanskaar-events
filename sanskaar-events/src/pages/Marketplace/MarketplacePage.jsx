@@ -30,9 +30,34 @@ const MarketplacePage = () => {
   const status          = useSelector((s) => s.marketplace.status);
   const { register, handleSubmit } = useForm();
 
-  useEffect(() => { return () => dispatch(resetLeadResult()); }, []);
+  // Guests can fill in the form freely, but submitting requires an account —
+  // same "browse freely, gate at the action" pattern as event booking.
+  const isLoggedIn = useSelector((s) => Boolean(s.auth.token && s.auth.user));
 
-  const onSubmit = (data) => dispatch(submitLeadRequest({ ...data, serviceType: selectedService }));
+  useEffect(() => {
+    // If we got bounced to login mid-submission, the filled form data is
+    // waiting in sessionStorage — resume automatically instead of making
+    // the person type everything again.
+    const pending = sessionStorage.getItem('pendingMarketplaceRequest');
+    if (pending && isLoggedIn) {
+      const parsed = JSON.parse(pending);
+      sessionStorage.removeItem('pendingMarketplaceRequest');
+      dispatch(setSelectedService(parsed.serviceType));
+      dispatch(submitLeadRequest(parsed));
+    }
+    return () => dispatch(resetLeadResult());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onSubmit = (data) => {
+    const payload = { ...data, serviceType: selectedService };
+    if (!isLoggedIn) {
+      sessionStorage.setItem('pendingMarketplaceRequest', JSON.stringify(payload));
+      navigate('/login', { state: { from: { pathname: '/marketplace' } } });
+      return;
+    }
+    dispatch(submitLeadRequest(payload));
+  };
 
   // Success state
   if (leadResult) {

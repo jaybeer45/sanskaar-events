@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Organizer = require('../models/Organizer');
 const Otp = require('../models/Otp');
+const User = require('../models/User');
 
 // @route POST /api/v1/organizers
 const registerOrganizer = asyncHandler(async (req, res) => {
@@ -174,11 +175,11 @@ const verifyContactOtp = asyncHandler(async (req, res) => {
   const entry = await Otp.findOne({ identifier, code, purpose: 'organizer_contact' }).sort({ createdAt: -1 });
   if (!entry) {
     res.status(400);
-    throw new Error('Galat ya expired OTP.');
+    throw new Error('wrong or expired OTP.');
   }
   if (entry.expiresAt < new Date()) {
     res.status(400);
-    throw new Error('OTP expire ho chuka hai.');
+    throw new Error('OTP expired');
   }
 
   await Otp.deleteOne({ _id: entry._id });

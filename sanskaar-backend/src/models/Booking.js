@@ -6,6 +6,7 @@ const bookingSchema = new mongoose.Schema(
   {
     event: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true },
     variant: { type: mongoose.Schema.Types.ObjectId, ref: 'TicketVariant', default: null },
+     eventDateId: { type: mongoose.Schema.Types.ObjectId, default: null },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     fullName: { type: String, required: true },
     phone: { type: String, required: true },
@@ -24,6 +25,10 @@ const bookingSchema = new mongoose.Schema(
     checkedInAt: { type: Date, default: null },
     ticketCode: { type: String, unique: true, sparse: true },
     status: { type: String, enum: ['confirmed', 'cancelled', 'transferred', 'used'], default: 'confirmed' },
+    // Cancellation/refund audit trail
+    cancelledAt: { type: Date, default: null },
+    refundPercent: { type: Number, default: null },
+    refundedPaise: { type: Number, default: null },
   }, { timestamps: true }
 );
 

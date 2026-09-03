@@ -30,6 +30,7 @@ const ConfirmBookingPage = () => {
   const [promoCode, setPromoCode] = useState('');
   const location = useLocation();
   const variantId = location.state?.variantId || null;
+  const eventDateId = location.state?.eventDateId || null;
   const [selectedVariant, setSelectedVariant] = useState(null);
 
   useEffect(() => {
@@ -62,7 +63,7 @@ const ConfirmBookingPage = () => {
     return <div className="flex justify-center items-center min-h-[60vh]"><Spinner size="lg" /></div>;
   }
 
- const remaining = selectedVariant
+  const remaining = selectedVariant
     ? selectedVariant.capacity - selectedVariant.soldCount
     : event.inventory?.remaining ?? 99;
   const maxQty = Math.min(remaining, 10);
@@ -94,19 +95,24 @@ const ConfirmBookingPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!fullName || !phone || !email) {
-      toast.error('Contact details complete karo pehle');
+      toast.error('complete contact details ');
       return;
     }
     if (quantity > remaining) {
-      toast.error('Itni seats available nahi hain');
+      toast.error('seat not avalible ');
       return;
+    }
+    if (event.eventDates?.length > 0 && !eventDateId) {
+    toast.error('please select a date ');
+  return;
     }
 
     try {
       const booking = await dispatch(
-       createBooking({
+        createBooking({
           eventId: event.id,
           variantId: selectedVariant?._id || null,
+          eventDateId,
           fullName,
           phone,
           email,
@@ -224,7 +230,7 @@ const ConfirmBookingPage = () => {
                 <h2 className="font-black text-base text-gray-900 mb-4">Order summary</h2>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between text-gray-600">
-                   <span>{isFree ? 'Price' : `${selectedVariant ? selectedVariant.name : formatPrice(event.price)} × ${quantity}`}</span>
+                    <span>{isFree ? 'Price' : `${selectedVariant ? selectedVariant.name : formatPrice(event.price)} × ${quantity}`}</span>
                     <span>{isFree ? 'Free' : `₹${amount.toLocaleString('en-IN')}`}</span>
                   </div>
                   {!isFree && (
@@ -242,11 +248,11 @@ const ConfirmBookingPage = () => {
                 </span>
               </div>
               <div className="p-6">
-              {bookingError && (
-  <p className="text-sm text-red-600 mb-3">
-    {typeof bookingError === 'string' ? bookingError : bookingError?.message || 'Kuch galat ho gaya, dobara try karo'}
-  </p>
-)}
+                {bookingError && (
+                  <p className="text-sm text-red-600 mb-3">
+                    {typeof bookingError === 'string' ? bookingError : bookingError?.message || 'Kuch galat ho gaya, dobara try karo'}
+                  </p>
+                )}
                 <button
                   type="submit"
                   disabled={bookingStatus === 'loading'}

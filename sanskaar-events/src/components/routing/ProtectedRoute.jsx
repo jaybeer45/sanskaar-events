@@ -6,7 +6,7 @@ import Spinner from '../ui/Spinner/Spinner';
 
 const ProtectedRoute = ({ roles = [] }) => {
   const location = useLocation();
-  const { user, role, token, authStatus } = useSelector((s) => s.auth);
+  const { user, roles: userRoles, token, authStatus } = useSelector((s) => s.auth);
 
   if (token && authStatus === 'checking') {
     return (
@@ -20,8 +20,8 @@ const ProtectedRoute = ({ roles = [] }) => {
   if (!token && !user)
     return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
 
-  // Role check
-  if (roles.length > 0 && !roles.includes(role))
+  // Role check — pass if the user holds ANY of the roles this route requires
+  if (roles.length > 0 && !roles.some((r) => (userRoles || []).includes(r)))
     return <Navigate to={ROUTES.HOME} replace />;
 
   return <Outlet />;

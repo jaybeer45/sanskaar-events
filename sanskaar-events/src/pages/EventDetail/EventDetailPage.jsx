@@ -14,6 +14,8 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { eventsService } from '../../services/events.service';
 
+
+
 const EventDetailPage = () => {
   const { eventId } = useParams();
   const dispatch = useDispatch();
@@ -23,6 +25,13 @@ const EventDetailPage = () => {
 
   const [variants, setVariants] = useState([]);
   const [selectedVariantId, setSelectedVariantId] = useState(null);
+  const [selectedEventDateId, setSelectedEventDateId] = useState(null);
+
+  useEffect(() => {
+    if (event?.eventDates?.length > 0 && !selectedEventDateId) {
+      setSelectedEventDateId(event.eventDates[0]._id); // default first date
+    }
+  }, [event, selectedEventDateId]);
 
   useEffect(() => {
     if (!event?.id) return;
@@ -39,14 +48,16 @@ const EventDetailPage = () => {
 
   const user = useSelector((s) => s.auth.user);
 
-  const handleBookNow = () => {
-    if (!user) {
-      toast.error('Please log in to book');
-      navigate('/login', { state: { from: { pathname: buildRoute.confirmBooking(event.id) } } });
-      return;
-    }
-    navigate(buildRoute.confirmBooking(event.id), { state: { variantId: selectedVariantId } });
-  };
+ const handleBookNow = () => {
+  if (!user) {
+    toast.error('Please log in to book');
+    navigate('/login', { state: { from: { pathname: buildRoute.confirmBooking(event.id) } } });
+    return;
+  }
+  navigate(buildRoute.confirmBooking(event.id), {
+    state: { variantId: selectedVariantId, eventDateId: selectedEventDateId },
+  });
+};
 
   if (status === 'loading') return <div className="flex justify-center items-center min-h-[60vh]"><Spinner size="lg" /></div>;
   if (!event) return <EmptyState icon="❌" title="Event not found" message="This event may have been removed" action={<Link to={ROUTES.HOME} className="bg-brand-red text-white font-bold px-6 py-3">Browse Events</Link>} />;
@@ -54,6 +65,14 @@ const EventDetailPage = () => {
   const isFree = !event.price || event.price?.free || event.price?.min === 0;
   const priceLabel = isFree ? 'Free' : formatPrice(event.price);
   const date = new Date(event.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const totalCapacity = event.eventDates?.length > 0
+  ? event.eventDates.reduce((sum, d) => sum + (d.capacity || 0), 0)
+  : event.inventory?.total ?? 0;
+
+const totalGoing = event.eventDates?.length > 0
+  ? event.eventDates.reduce((sum, d) => sum + (d.soldCount || 0), 0)
+  : (event.inventory?.total ?? 0) - (event.inventory?.remaining ?? 0);
 
   return (
     <div className="bg-[#f5f5f4] min-h-screen">
@@ -116,7 +135,7 @@ const EventDetailPage = () => {
               {[
                 { icon: <Clock size={16} />, label: 'Date & Time', value: `${date} · ${event.time}` },
                 { icon: <MapPin size={16} />, label: 'Venue', value: `${event.venue?.name}${event.venue?.distance ? ' · ' + event.venue.distance : ''}` },
-                { icon: <Users size={16} />, label: 'Attendance', value: `${event.attendees ?? 0} / ${event.capacity} going` },
+                { icon: <Users size={16} />, label: 'Attendance', value: `${totalGoing} / ${totalCapacity} going` },
               ].map(({ icon, label, value }, i) => (
                 <div key={label} className={`px-5 py-4 ${i < 2 ? 'border-b sm:border-b-0 sm:border-r border-gray-200' : ''}`}>
                   <div className="flex items-center gap-2 text-brand-red mb-1">{icon}<span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{label}</span></div>
@@ -170,6 +189,41 @@ const EventDetailPage = () => {
           {/* Right — booking sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-20 bg-white border border-gray-200">
+              {event.eventDates?.length > 0 && (
+                <div className="p-6 border-b border-gray-200">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-3">Select date</p>
+                  <div className="space-y-2">
+                    {event.eventDates.map((d) => {
+                      const remaining = d.capacity > 0 ? d.capacity - d.soldCount : null;
+                      const soldOut = remaining !== null && remaining <= 0;
+                      return (
+                        <label
+                          key={d._id}
+                          className={`flex items-center justify-between border px-4 py-3 cursor-pointer transition-colors ${selectedEventDateId === d._id ? 'border-brand-red bg-red-50' : 'border-gray-200'
+                            } ${soldOut ? 'opacity-40 cursor-not-allowed' : ''}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="eventDate"
+                              disabled={soldOut}
+                              checked={selectedEventDateId === d._id}
+                              onChange={() => setSelectedEventDateId(d._id)}
+                            />
+                            <div>
+                              <p className="font-bold text-sm text-gray-900">
+                                {new Date(d.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                                {d.label ? ` · ${d.label}` : ''}
+                              </p>
+                              <p className="text-xs text-gray-400">{soldOut ? 'Sold out' : remaining !== null ? `${remaining} left` : 'Open'}</p>
+                            </div>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               {/* Price / Ticket variants */}
               {variants.length > 0 ? (
                 <div className="p-6 border-b border-gray-200">
@@ -239,7 +293,7 @@ const EventDetailPage = () => {
               <div className="p-6">
                 <div className="flex justify-between text-xs text-gray-500 mb-2">
                   <span className="font-semibold">Crowd level</span>
-                  <span>{event.attendees} attending</span>
+                  <span>{totalGoing} attending</span>
                 </div>
                 <div className="h-1.5 bg-gray-100 overflow-hidden">
                   <div className={`h-full transition-all ${event.crowdLevel === 'high' ? 'bg-brand-red w-4/5' : event.crowdLevel === 'medium' ? 'bg-amber-400 w-1/2' : 'bg-green-400 w-1/4'}`} />

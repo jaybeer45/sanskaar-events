@@ -61,10 +61,10 @@ const handleVerifyOtp = async () => {
   const handleSignUp = async (data) => {
     setAuthError("");
 
-    if (otpStage !== "verified") {
-      setAuthError("Please verify your phone number before continuing.");
-      return;
-    }
+    // if (otpStage !== "verified") {
+    //   setAuthError("Please verify your phone number before continuing.");
+    //   return;
+    // }
 
     try {
       await dispatch(
