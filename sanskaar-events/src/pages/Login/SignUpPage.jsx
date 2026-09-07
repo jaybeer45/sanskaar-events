@@ -9,6 +9,7 @@ import { ROUTES } from "../../constants/routes";
 import Input from "../../components/ui/Input/Input";
 import OTP from "../../components/ui/OTP/OTP";
 import { authService } from "../../services/auth.service";
+import { useSearchParams } from 'react-router-dom';
 
 const SignUpPage = () => {
   const [authError, setAuthError] = useState("");
@@ -18,7 +19,10 @@ const SignUpPage = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+const referredBy = searchParams.get('ref');
   const dispatch = useDispatch();
+ 
 
   const {
     register,
@@ -78,6 +82,7 @@ const handleVerifyOtp = async () => {
           acceptedPrivacy: data.terms,
           termsVersion: "v1",
           privacyVersion: "v1",
+          referredBy: referredBy || undefined,
         })
       ).unwrap();
 

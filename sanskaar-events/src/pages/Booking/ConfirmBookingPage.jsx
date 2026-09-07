@@ -11,6 +11,7 @@ import Spinner from '../../components/ui/Spinner/Spinner';
 import toast from 'react-hot-toast';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { eventsService } from '../../services/events.service';
+import { rewardsService } from '../../services/rewards.service';
 
 const ConfirmBookingPage = () => {
   const { eventId } = useParams();
@@ -28,6 +29,9 @@ const ConfirmBookingPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [attendeeNames, setAttendeeNames] = useState(['']);
   const [promoCode, setPromoCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // { valuePaise, type } | null
+  const [couponError, setCouponError] = useState('');
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
   const location = useLocation();
   const variantId = location.state?.variantId || null;
   const eventDateId = location.state?.eventDateId || null;
@@ -72,7 +76,8 @@ const ConfirmBookingPage = () => {
   const unitPrice = selectedVariant ? selectedVariant.price : (isFree ? 0 : event.price.min);
   const amount = unitPrice * quantity;
   const gst = Math.round(amount * 0.18);
-  const total = amount + gst;
+  const discountRupees = appliedCoupon ? appliedCoupon.valuePaise / 100 : 0;
+  const total = Math.max(0, amount + gst - discountRupees);
 
   const handleQuantityChange = (delta) => {
     const next = Math.max(1, Math.min(maxQty, quantity + delta));
@@ -82,6 +87,22 @@ const ConfirmBookingPage = () => {
       while (copy.length < next) copy.push('');
       return copy.slice(0, next);
     });
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!promoCode.trim()) return;
+    setCheckingCoupon(true);
+    setCouponError('');
+    try {
+      const res = await rewardsService.validateCoupon(promoCode.trim());
+      setAppliedCoupon(res.data.coupon); // unwrap the { success, coupon } shape
+      toast.success('Coupon applied!');
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponError(err.response?.data?.message || 'Invalid ya expired coupon code.');
+    } finally {
+      setCheckingCoupon(false);
+    }
   };
 
   const handleAttendeeNameChange = (index, value) => {
@@ -103,8 +124,8 @@ const ConfirmBookingPage = () => {
       return;
     }
     if (event.eventDates?.length > 0 && !eventDateId) {
-    toast.error('please select a date ');
-  return;
+      toast.error('please select a date ');
+      return;
     }
 
     try {
@@ -213,12 +234,33 @@ const ConfirmBookingPage = () => {
             {!isFree && (
               <div className="bg-white border border-gray-200 p-6">
                 <h2 className="font-black text-base text-gray-900 mb-4">Promo code</h2>
-                <Input
-                  placeholder="Have a code? Enter it here"
-                  value={promoCode}
-                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                />
-                <p className="text-xs text-gray-400 mt-1.5">Applied at checkout — discount confirm hone ke baad total update hoga.</p>
+                <div className="flex gap-2 items-start">
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Have a code? Enter it here"
+                      value={promoCode}
+                      onChange={(e) => {
+                        setPromoCode(e.target.value.toUpperCase());
+                        setAppliedCoupon(null);
+                        setCouponError('');
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={!promoCode.trim() || checkingCoupon || !!appliedCoupon}
+                    className="h-[42px] px-4 border border-gray-300 text-sm font-bold text-gray-700 hover:border-brand-red disabled:opacity-50 shrink-0"
+                  >
+                    {checkingCoupon ? '...' : appliedCoupon ? 'Applied' : 'Apply'}
+                  </button>
+                </div>
+                {couponError && <p className="text-xs text-red-500 mt-1.5">{couponError}</p>}
+                {appliedCoupon && (
+                  <p className="text-xs text-green-600 mt-1.5">
+                    ✓ Coupon applied — ₹{(appliedCoupon.valuePaise / 100).toLocaleString('en-IN')} off
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -241,6 +283,12 @@ const ConfirmBookingPage = () => {
                   )}
                 </div>
               </div>
+              {appliedCoupon && (
+                <div className="px-6 pb-2 flex justify-between text-sm text-green-600">
+                  <span>Coupon discount</span>
+                  <span>− ₹{(appliedCoupon.valuePaise / 100).toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="p-6 border-b border-gray-200 flex justify-between items-baseline">
                 <span className="font-bold text-gray-900">Total</span>
                 <span className="font-black text-2xl text-gray-900">

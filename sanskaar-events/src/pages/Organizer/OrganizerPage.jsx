@@ -1,7 +1,7 @@
 // src/pages/Organizer/OrganizerPage.jsx
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { CircleCheck, Upload, Info, Lock, X, Loader2 } from 'lucide-react';
 import { submitEvent, resetSubmitStatus } from '../../features/events/slices/eventsSlice';
@@ -29,9 +29,60 @@ const OrganizerPage = () => {
   const [selectedVenueId, setSelectedVenueId] = useState('');
   const [saveThisVenue, setSaveThisVenue] = useState(false);
   const [eventDates, setEventDates] = useState([]);
+  const { eventId } = useParams();
+  const navigate = useNavigate();
+  const isEditMode = !!eventId;
+
+  const [initialLoading, setInitialLoading] = useState(isEditMode);
+  const [existingImages, setExistingImages] = useState([]); // URLs already on the event
+  const [editSubmitStatus, setEditSubmitStatus] = useState('idle'); // separate from create's redux submitStatus
+
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    eventsService.getById(eventId).then((res) => {
+      const event = res.data;
+
+      setValue('title', event.title);
+      setValue('category', event.category);
+      setValue('description', event.description);
+      setValue('date', new Date(event.date).toISOString().slice(0, 10));
+      setValue('time', event.time);
+      setValue('venueName', event.venue?.name || '');
+      setValue('venueAddress', event.venue?.address || '');
+      setValue('isFree', !!event.price?.free);
+      setValue('priceMin', event.price?.min ?? '');
+      setValue('priceMax', event.price?.max ?? '');
+      setValue('capacity', event.inventory?.total ?? '');
+      setValue('bookingUrl', event.bookingUrl || '');
+      setValue('organizerName', event.organizerName || '');
+      setValue('organizerPhone', event.organizerPhone || '');
+      setValue('organizerEmail', event.organizerEmail || '');
+
+      setEventDates(
+        (event.eventDates || []).map((d) => ({
+          date: new Date(d.date).toISOString().slice(0, 10),
+          label: d.label || '',
+          capacity: d.capacity || '',
+        }))
+      );
+
+      setExistingImages(event.images || []);
+      setInitialLoading(false);
+    }).catch(() => {
+      setUploadError('Failed to load event for editing.');
+      setInitialLoading(false);
+    });
+  }, [eventId]);
 
   useEffect(() => {
     venuesService.getMine().then((res) => setSavedVenues(res.data.results || []));
+  }, []);
+
+  useEffect(() => {
+    if (!organizerProfile) {
+      dispatch(fetchMyOrganizer());
+    }
   }, []);
 
   const addVariantRow = () => {
@@ -160,12 +211,12 @@ const OrganizerPage = () => {
       date: data.date,
       time: data.time,
       eventDates: eventDates
-   .filter((d) => d.date) // date empty row skip
-   .map((d) => ({
-    date: d.date,
-    label: d.label || '',
-    capacity: Number(d.capacity) || 0,
-     })),
+        .filter((d) => d.date) // date empty row skip
+        .map((d) => ({
+          date: d.date,
+          label: d.label || '',
+          capacity: Number(d.capacity) || 0,
+        })),
       venue: {
         name: data.venueName,
         address: data.venueAddress,
@@ -183,11 +234,25 @@ const OrganizerPage = () => {
       organizerName: data.organizerName || '',
       organizerPhone: data.organizerPhone || '',
       organizerEmail: data.organizerEmail || '',
-      images,
+      images: isEditMode ? [...existingImages, ...images] : images,
     };
+    // ── EDIT MODE: update existing event, resubmit for review ──
+    if (isEditMode) {
+      setEditSubmitStatus('loading');
+      try {
+        await eventsService.update(eventId, eventPayload);
+        setEditSubmitStatus('succeeded');
+      } catch (err) {
+        setEditSubmitStatus('failed');
+        setUploadError(err?.response?.data?.message || err?.message || 'Failed to update event.');
+      }
+      return;
+    }
 
+    // ── CREATE MODE ──
     try {
       const createdEvent = await dispatch(submitEvent(eventPayload)).unwrap();
+
 
       if (saveThisVenue && !selectedVenueId) {
         venuesService.create({
@@ -221,7 +286,7 @@ const OrganizerPage = () => {
   const isVerifiedOrganizer = organizerProfile?.kycStatus === 'verified';
   const canSubmitEvents = isAdmin || isVerifiedOrganizer;
 
-  if (fetchStatus === 'loading') {
+  if (fetchStatus === 'loading' || initialLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="lg" />
@@ -262,7 +327,7 @@ const OrganizerPage = () => {
     );
   }
 
-  if (submitStatus === 'succeeded') {
+  if (submitStatus === 'succeeded' || editSubmitStatus === 'succeeded') {
     return (
       <div className="bg-[#f5f5f4] min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md px-6">
@@ -272,24 +337,29 @@ const OrganizerPage = () => {
           />
 
           <h2 className="font-black text-2xl text-gray-900 mb-2">
-            Event Submitted!
+            {isEditMode ? 'Event Resubmitted!' : 'Event Submitted!'}
           </h2>
 
           <p className="text-gray-500 mb-6">
-            Your event is now in the review queue. Our team will approve it
-            within 24 hours and it'll appear in the feed.
+            {isEditMode
+              ? 'Your changes have been sent back for review. Our team will approve it within 24 hours.'
+              : "Your event is now in the review queue. Our team will approve it within 24 hours and it'll appear in the feed."}
           </p>
 
           <button
             onClick={() => {
-              dispatch(resetSubmitStatus());
-              reset();
-              setSelectedFiles([]);
-              setUploadError('');
+              if (isEditMode) {
+                navigate(ROUTES.MY_EVENTS);
+              } else {
+                dispatch(resetSubmitStatus());
+                reset();
+                setSelectedFiles([]);
+                setUploadError('');
+              }
             }}
             className="bg-brand-red hover:bg-brand-red-hover text-white font-bold px-6 py-3 text-sm transition-colors"
           >
-            Submit another event
+            {isEditMode ? 'Back to My Events' : 'Submit another event'}
           </button>
         </div>
       </div>
@@ -303,11 +373,13 @@ const OrganizerPage = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <h1 className="font-black text-2xl text-gray-900">
-            List an Event
+            {isEditMode ? 'Edit Event' : 'List an Event'}
           </h1>
 
           <p className="text-sm text-gray-500 mt-0.5">
-            Submit your event for review — it'll go live within 24 hours
+            {isEditMode
+              ? 'Update and resubmit your event for review'
+              : "Submit your event for review — it'll go live within 24 hours"}
           </p>
         </div>
       </div>
@@ -737,6 +809,26 @@ const OrganizerPage = () => {
                 </div>
               </div>
 
+              {existingImages.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Current images</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {existingImages.map((url, i) => (
+                      <div key={url} className="relative aspect-square">
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setExistingImages((prev) => prev.filter((u) => u !== url))}
+                          className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center"
+                        >
+                          <X size={11} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Photo upload */}
               <div className="bg-white border border-gray-200 p-6">
                 <h2 className="font-black text-base text-gray-900 mb-5">
@@ -808,7 +900,7 @@ const OrganizerPage = () => {
 
               <button
                 type="submit"
-                disabled={submitStatus === 'loading' || uploading}
+                disabled={submitStatus === 'loading' || editSubmitStatus === 'loading' || uploading}
                 className="w-full flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white font-black py-4 text-base transition-colors disabled:opacity-60"
               >
                 {uploading ? (
@@ -816,10 +908,10 @@ const OrganizerPage = () => {
                     <Loader2 size={16} className="animate-spin" />
                     Uploading images...
                   </>
-                ) : submitStatus === 'loading' ? (
+                ) : (submitStatus === 'loading' || editSubmitStatus === 'loading') ? (
                   <Spinner size="sm" />
                 ) : (
-                  'Submit for Review →'
+                  isEditMode ? 'Resubmit for Review →' : 'Submit for Review →'
                 )}
               </button>
 

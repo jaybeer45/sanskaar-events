@@ -16,18 +16,30 @@ const PUBLIC_NAV_LINKS = [
 
 
 const getNavLinks = (isLoggedIn, roles = []) => {
+  const links = isLoggedIn ? [...PUBLIC_NAV_LINKS] : PUBLIC_NAV_LINKS;
+  if (!isLoggedIn) return links;
 
-  const links = isLoggedIn ? [...PUBLIC_NAV_LINKS,] : PUBLIC_NAV_LINKS;
-  if (roles.includes("admin")) {
-    return [...links, { label: 'Admin', to: ROUTES.ADMIN }];
+  const extra = [];
+
+  // Admin can access everything — no need to also hold vendor/organizer roles
+  if (roles.includes('admin')) {
+    extra.push({ label: 'Vendors', to: ROUTES.VENDORS });
+    extra.push({ label: 'Organize', to: ROUTES.ORGANIZER_SUBMIT });
+    extra.push({ label: 'My Events', to: ROUTES.MY_EVENTS });
+    extra.push({ label: 'Admin', to: ROUTES.ADMIN });
+    return [...links, ...extra];
   }
-  if (roles.includes("vendor")) {
-return [...links, { label: 'Vendors', to: ROUTES.VENDORS }]
-}
-  if (roles.includes("organizer")) {
-    return [...links, { label: 'Organize', to: ROUTES.ORGANIZER_SUBMIT }]
+
+  // Non-admins: accumulate based on whichever roles they actually hold
+  if (roles.includes('vendor')) {
+    extra.push({ label: 'Vendors', to: ROUTES.VENDORS });
   }
-  return links;
+  if (roles.includes('organizer')) {
+    extra.push({ label: 'Organize', to: ROUTES.ORGANIZER_SUBMIT });
+    extra.push({ label: 'My Events', to: ROUTES.MY_EVENTS });
+  }
+
+  return [...links, ...extra];
 };
 
 const Navbar = () => {
@@ -39,7 +51,7 @@ const Navbar = () => {
   const { user, token } = useSelector((s) => s.auth);
 
   const isLoggedIn = Boolean(token && user);
-    const navLinks = getNavLinks(isLoggedIn, useSelector((s) => s.auth.roles));
+  const navLinks = getNavLinks(isLoggedIn, useSelector((s) => s.auth.roles));
 
   const handleLogout = () => {
     dispatch(logout());

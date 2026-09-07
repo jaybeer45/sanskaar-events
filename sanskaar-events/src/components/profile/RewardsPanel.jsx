@@ -1,19 +1,21 @@
-import { useState } from 'react';
-import { Wallet, Gift, Share2, Award, Copy, Check } from 'lucide-react';
 
-// Backend for wallet/coupons/referrals doesn't exist yet (per plan: UI first,
-// numbers confirmed , then backend). Everything here reads safe
-// defaults so the page never crashes — swap the hardcoded 0/[] values for
-// real selectors/API calls once those endpoints exist.
+import { Wallet, Gift, Share2, Award, Copy, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { rewardsService } from '../../services/rewards.service';
+
+
 const RewardsPanel = ({ user, bookingCount = 0 }) => {
   const [copied, setCopied] = useState(false);
+  const [coupons, setCoupons] = useState([]);
 
-  // TODO: replace with real wallet balance from backend once built
   const walletBalancePaise = user?.walletBalancePaise ?? 0;
-  // TODO: replace with real coupon list from backend once built
-  const coupons = user?.coupons ?? [];
-  // Loyalty threshold — will move to a Settings/config source once backend
-  // rules are finalized with the mentor (currently 3 bookings, per the PDF).
+
+  useEffect(() => {
+    if (!user) return;
+    rewardsService.getMyCoupons()
+      .then((res) => setCoupons(res.data.results || []))
+      .catch(() => setCoupons([]));
+  }, [user]);
   const LOYALTY_THRESHOLD = 3;
   const loyaltyUnlocked = bookingCount >= LOYALTY_THRESHOLD;
 
@@ -97,9 +99,16 @@ const RewardsPanel = ({ user, bookingCount = 0 }) => {
         ) : (
           <div className="space-y-2">
             {coupons.map((c) => (
-              <div key={c.code} className="border border-dashed border-gray-300 px-3 py-2 flex items-center justify-between">
+              <div
+                key={c._id}
+                className={`border border-dashed px-3 py-2 flex items-center justify-between ${c.status === 'used' ? 'border-gray-200 opacity-50' : 'border-gray-300'
+                  }`}
+              >
                 <span className="font-mono text-xs font-bold text-gray-700">{c.code}</span>
-                <span className="text-xs text-gray-500">{c.label}</span>
+                <span className="text-xs text-gray-500">
+                  ₹{(c.valuePaise / 100).toLocaleString('en-IN')}
+                  {c.status === 'used' ? ' · used' : ''}
+                </span>
               </div>
             ))}
           </div>

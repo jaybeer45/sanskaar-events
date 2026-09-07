@@ -1,139 +1,358 @@
-// src/pages/Organizer/OrganizerKycPage.jsx
+// src/pages/Organizer/OrganizerPage.jsx
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { CircleCheck, Clock, XCircle, Upload, Check, Loader2 } from 'lucide-react';
-import { submitKyc, fetchMyOrganizer, resetKycStatus } from '../../features/organizer/slices/organizerSlice';
-import { uploadService } from '../../services/upload.service';
+import { CircleCheck, Upload, Info, Lock, X, Loader2 } from 'lucide-react';
+import { submitEvent, resetSubmitStatus } from '../../features/events/slices/eventsSlice';
+import { fetchMyOrganizer } from '../../features/organizer/slices/organizerSlice';
+import { EVENT_CATEGORIES } from '../../constants/categories';
 import { ROUTES } from '../../constants/routes';
 import Spinner from '../../components/ui/Spinner/Spinner';
-import { sendContactOtp, verifyContactOtp } from '../../features/organizer/slices/organizerSlice';
-import OTP from '../../components/ui/OTP/OTP';
+import { uploadService } from '../../services/upload.service';
+import { eventsService } from '../../services/events.service';
+import { venuesService } from '../../services/venues.service';
 
-const NON_INDIVIDUAL_TYPES = ['proprietorship', 'partnership', 'pvt_ltd', 'llp', 'trust_ngo', 'government'];
-
-const OrganizerKycPage = () => {
+const OrganizerPage = () => {
   const dispatch = useDispatch();
+  const submitStatus = useSelector((s) => s.events.submitStatus);
+  const { user } = useSelector((s) => s.auth);
+  const { profile: organizerProfile, fetchStatus } = useSelector((s) => s.organizer);
+
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [ticketVariants, setTicketVariants] = useState([]);
+  const [savedVenues, setSavedVenues] = useState([]);
+  const [selectedVenueId, setSelectedVenueId] = useState('');
+  const [saveThisVenue, setSaveThisVenue] = useState(false);
+  const [eventDates, setEventDates] = useState([]);
+  const { eventId } = useParams();
   const navigate = useNavigate();
-  const { profile, fetchStatus, kycStatus, error } = useSelector((s) => s.organizer);
- const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-  const [docUploading, setDocUploading] = useState({ idDocUrl: false, businessDocUrl: false });
-  const [docUploaded, setDocUploaded] = useState({ idDocUrl: false, businessDocUrl: false });
-  const [otpField, setOtpField] = useState(null); // 'phone' | 'email' 
-  const [otpCode, setOtpCode] = useState('');
-  const [otpSent, setOtpSent] = useState({ phone: false, email: false });
-  const [otpError, setOtpError] = useState('');
-  const [otpBusy, setOtpBusy] = useState(false);
+  const isEditMode = !!eventId;
 
-  const handleSendOtp = async (field) => {
-    setOtpError('');
-    setOtpBusy(true);
-    try {
-      await dispatch(sendContactOtp({ organizerId: profile._id, field })).unwrap();
-      setOtpSent((s) => ({ ...s, [field]: true }));
-      setOtpField(field);
-      setOtpCode('');
-    } catch (err) {
-      setOtpError(err);
-    }
-    setOtpBusy(false);
+  const [initialLoading, setInitialLoading] = useState(isEditMode);
+  const [existingImages, setExistingImages] = useState([]); // URLs already on the event
+  const [editSubmitStatus, setEditSubmitStatus] = useState('idle'); // separate from create's redux submitStatus
+
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    eventsService.getById(eventId).then((res) => {
+      const event = res.data;
+
+      setValue('title', event.title);
+      setValue('category', event.category);
+      setValue('description', event.description);
+      setValue('date', new Date(event.date).toISOString().slice(0, 10));
+      setValue('time', event.time);
+      setValue('venueName', event.venue?.name || '');
+      setValue('venueAddress', event.venue?.address || '');
+      setValue('isFree', !!event.price?.free);
+      setValue('priceMin', event.price?.min ?? '');
+      setValue('priceMax', event.price?.max ?? '');
+      setValue('capacity', event.inventory?.total ?? '');
+      setValue('bookingUrl', event.bookingUrl || '');
+      setValue('organizerName', event.organizerName || '');
+      setValue('organizerPhone', event.organizerPhone || '');
+      setValue('organizerEmail', event.organizerEmail || '');
+
+      setEventDates(
+        (event.eventDates || []).map((d) => ({
+          date: new Date(d.date).toISOString().slice(0, 10),
+          label: d.label || '',
+          capacity: d.capacity || '',
+        }))
+      );
+
+      setExistingImages(event.images || []);
+      setInitialLoading(false);
+    }).catch(() => {
+      setUploadError('Failed to load event for editing.');
+      setInitialLoading(false);
+    });
+  }, [eventId]);
+
+  useEffect(() => {
+    venuesService.getMine().then((res) => setSavedVenues(res.data.results || []));
+  }, []);
+
+  const addVariantRow = () => {
+    setTicketVariants((prev) => [...prev, { name: '', price: '', capacity: '' }]);
   };
 
-  const handleVerifyOtp = async () => {
-    setOtpError('');
-    setOtpBusy(true);
-    try {
-      await dispatch(verifyContactOtp({ organizerId: profile._id, field: otpField, code: otpCode })).unwrap();
-      setOtpField(null);
-      setOtpCode('');
-    } catch (err) {
-      setOtpError(err);
-    }
-    setOtpBusy(false);
+  const updateVariantRow = (index, field, value) => {
+    setTicketVariants((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
   };
 
-const handleDocUpload = async (e, field) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const removeVariantRow = (index) => {
+    setTicketVariants((prev) => prev.filter((_, i) => i !== index));
+  };
 
-  if (file.size > 10 * 1024 * 1024) {
-    console.error('File size must be less than 10MB');
+  useEffect(() => {
+    return () => dispatch(resetSubmitStatus());
+  }, []);
+
+  const handleVenueSelect = (venueId) => {
+    setSelectedVenueId(venueId);
+    const venue = savedVenues.find((v) => v._id === venueId);
+    if (venue) {
+      setValue('venueName', venue.name);
+      setValue('venueAddress', venue.address);
+    }
+  };
+
+  const addDateRow = () => {
+    setEventDates((prev) => [...prev, { date: '', label: '', capacity: '' }]);
+  };
+
+  const updateDateRow = (index, field, value) => {
+    setEventDates((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const removeDateRow = (index) => {
+    setEventDates((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+
+    setUploadError('');
+
+    // Maximum 5 images total
+    const remainingSlots = 5 - selectedFiles.length;
+
+    if (remainingSlots <= 0) {
+      setUploadError('You can upload a maximum of 5 images.');
+      e.target.value = '';
+      return;
+    }
+
+    const selected = files.slice(0, remainingSlots);
+
+    // Check file size and type
+    const validFiles = [];
+
+    for (const file of selected) {
+      const allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp'
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        setUploadError(
+          `${file.name} is not a valid image. Only JPG, PNG and WebP are allowed.`
+        );
+        continue;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        setUploadError(
+          `${file.name} is larger than 5MB. Please select a smaller image.`
+        );
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    setSelectedFiles((prev) => [...prev, ...validFiles].slice(0, 5));
+
     e.target.value = '';
-    return;
-  }
+  };
 
-  setDocUploading((s) => ({ ...s, [field]: true }));
-  setDocUploaded((s) => ({ ...s, [field]: false }));
+  const removeFile = (index) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
-  try {
-    const res = await uploadService.uploadKycDocument(file);
-    setValue(field, res.data.url, { shouldValidate: true });
-    setDocUploaded((s) => ({ ...s, [field]: true }));
-  } catch (err) {
-    console.error(
-      'Document upload failed:',
-      err.response?.data?.message || err.message
+  const onSubmit = async (data) => {
+    setUploadError('');
+    let images = [];
+
+    if (selectedFiles.length > 0) {
+      setUploading(true);
+
+      try {
+        const res = await uploadService.uploadEventImages(selectedFiles);
+        images = res.data.urls;
+      } catch (err) {
+        setUploadError(
+          err.response?.data?.message || 'Image upload failed.'
+        );
+        setUploading(false);
+        return;
+      }
+
+      setUploading(false);
+    }
+
+    // Transform the flat form fields into the nested shape the backend expects
+    const eventPayload = {
+      title: data.title,
+      category: data.category,
+      description: data.description,
+      date: data.date,
+      time: data.time,
+      eventDates: eventDates
+        .filter((d) => d.date) // date empty row skip
+        .map((d) => ({
+          date: d.date,
+          label: d.label || '',
+          capacity: Number(d.capacity) || 0,
+        })),
+      venue: {
+        name: data.venueName,
+        address: data.venueAddress,
+      },
+      price: {
+        free: !!data.isFree,
+        min: Number(data.priceMin) || 0,
+        max: Number(data.priceMax) || 0,
+      },
+      inventory: {
+        total: Number(data.capacity) || 0,
+        remaining: Number(data.capacity) || 0,
+      },
+      bookingUrl: data.bookingUrl || '',
+      organizerName: data.organizerName || '',
+      organizerPhone: data.organizerPhone || '',
+      organizerEmail: data.organizerEmail || '',
+      images: isEditMode ? [...existingImages, ...images] : images,
+    };
+
+    if (isEditMode) {
+      setEditSubmitStatus('loading');
+      try {
+        await eventsService.update(eventId, eventPayload);
+        setEditSubmitStatus('succeeded');
+      } catch (err) {
+        setEditSubmitStatus('failed');
+        setUploadError(err?.response?.data?.message || err?.message || 'Failed to update event.');
+      }
+      return;
+    }
+
+    try {
+      const createdEvent = await dispatch(submitEvent(eventPayload)).unwrap();
+
+      if (saveThisVenue && !selectedVenueId) {
+        venuesService.create({
+          name: data.venueName,
+          address: data.venueAddress,
+        }).then((res) => {
+          setSavedVenues((prev) => [...prev, res.data]);
+        }).catch((err) => console.error('Venue save failed:', err.response?.data || err.message));
+      }
+
+      // Ticket variants are optional — create them after the event exists.
+      // Empty rows (no name typed) are skipped rather than blocking submission.
+      const validVariants = ticketVariants.filter((v) => v.name && v.price && v.capacity);
+      if (validVariants.length > 0) {
+        await Promise.all(
+          validVariants.map((v) =>
+            eventsService.createVariant(createdEvent._id, {
+              name: v.name,
+              price: Number(v.price),
+              capacity: Number(v.capacity),
+            })
+          )
+        );
+      }
+    } catch (err) {
+      setUploadError(err?.response?.data?.message || err?.message || 'Failed to create event or ticket variants.');
+    }
+  };
+
+  const isAdmin = user?.roles?.includes('admin');
+  const isVerifiedOrganizer = organizerProfile?.kycStatus === 'verified';
+  const canSubmitEvents = isAdmin || isVerifiedOrganizer;
+
+  if (fetchStatus === 'loading' || initialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="lg" />
+      </div>
     );
   }
 
-  setDocUploading((s) => ({ ...s, [field]: false }));
-};
-
-  useEffect(() => { dispatch(fetchMyOrganizer()); }, [dispatch]);
-  useEffect(() => () => dispatch(resetKycStatus()), [dispatch]);
-
-  // Agar organizer register hi nahi hai, to pehle register page pe bhejo
-  useEffect(() => {
-    if (fetchStatus === 'succeeded' && !profile) navigate(ROUTES.ORGANIZER_REGISTER, { replace: true });
-  }, [fetchStatus, profile, navigate]);
-
-  const onSubmit = (data) => {
-    dispatch(submitKyc({
-      organizerId: profile._id,
-      data: {
-        ...data,
-        address: {
-          line1: data.line1,
-          line2: data.line2,
-          city: data.city,
-          state: data.state,
-          pincode: data.pincode,
-        },
-      },
-    }));
-  };
-
-  if (fetchStatus === 'loading' || !profile) {
-    return <div className="flex items-center justify-center min-h-screen"><Spinner size="lg" /></div>;
-  }
-
-  const isNonIndividual = NON_INDIVIDUAL_TYPES.includes(profile.organizerType);
-
-  // Already verified — koi form nahi, seedha status dikhao
-  if (profile.kycStatus === 'verified') {
+  if (!canSubmitEvents) {
     return (
       <div className="bg-[#f5f5f4] min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md px-6">
-          <CircleCheck size={64} className="text-green-600 mx-auto mb-4" />
-          <h2 className="font-black text-2xl text-gray-900 mb-2">KYC Verified!</h2>
-          <p className="text-gray-500 mb-6">You can now publish events.</p>
-          <Link to={ROUTES.ORGANIZER_SUBMIT} className="inline-block bg-brand-red hover:bg-brand-red-hover text-white font-bold px-6 py-3 text-sm transition-colors">
-            List an Event →
+          <Lock size={56} className="text-gray-300 mx-auto mb-4" />
+
+          <h2 className="font-black text-2xl text-gray-900 mb-2">
+            Organizer verification is required.
+          </h2>
+
+          <p className="text-gray-500 mb-6">
+            {!organizerProfile
+              ? 'You need to register as an organizer before submitting an event.'
+              : `Your KYC status is "${organizerProfile.kycStatus}". Your KYC must be verified before you can submit an event.`}
+          </p>
+
+          <Link
+            to={
+              !organizerProfile
+                ? ROUTES.ORGANIZER_REGISTER
+                : ROUTES.ORGANIZER_KYC
+            }
+            className="inline-block bg-brand-red hover:bg-brand-red-hover text-white font-bold px-6 py-3 text-sm transition-colors"
+          >
+            {!organizerProfile
+              ? 'Register as Organizer →'
+              : 'Check KYC Status →'}
           </Link>
         </div>
       </div>
     );
   }
 
-  // Submitted, admin review pending
-  if (profile.kycStatus === 'submitted' && kycStatus !== 'succeeded') {
+  if (submitStatus === 'succeeded' || editSubmitStatus === 'succeeded') {
     return (
       <div className="bg-[#f5f5f4] min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md px-6">
-          <Clock size={64} className="text-amber-500 mx-auto mb-4" />
-          <h2 className="font-black text-2xl text-gray-900 mb-2"> Under Review </h2>
-          <p className="text-gray-500">Your KYC has been submitted and is being verified by our team. This usually takes 24–48 hours</p>
+          <CircleCheck
+            size={64}
+            className="text-brand-red mx-auto mb-4"
+          />
+
+          <h2 className="font-black text-2xl text-gray-900 mb-2">
+            {isEditMode ? 'Event Resubmitted!' : 'Event Submitted!'}
+          </h2>
+
+          <p className="text-gray-500 mb-6">
+            {isEditMode
+              ? 'Your changes have been sent back for review. Our team will approve it within 24 hours.'
+              : "Your event is now in the review queue. Our team will approve it within 24 hours and it'll appear in the feed."}
+          </p>
+
+          <button
+            onClick={() => {
+              if (isEditMode) {
+                navigate(ROUTES.MY_EVENTS);
+              } else {
+                dispatch(resetSubmitStatus());
+                reset();
+                setSelectedFiles([]);
+                setUploadError('');
+              }
+            }}
+            className="bg-brand-red hover:bg-brand-red-hover text-white font-bold px-6 py-3 text-sm transition-colors"
+          >
+            {isEditMode ? 'Back to My Events' : 'Submit another event'}
+          </button>
         </div>
       </div>
     );
@@ -141,231 +360,616 @@ const handleDocUpload = async (e, field) => {
 
   return (
     <div className="bg-[#f5f5f4] min-h-screen">
+
+      {/* Page header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-6 py-5">
-          <h1 className="font-black text-2xl text-gray-900">KYC & Bank Details</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Step 2 of 2 — Events can only be published after verification.</p>
+        <div className="max-w-7xl mx-auto px-6 py-5">
+          <h1 className="font-black text-2xl text-gray-900">
+            {isEditMode ? 'Edit Event' : 'List an Event'}
+          </h1>
+
+          <p className="text-sm text-gray-500 mt-0.5">
+            {isEditMode
+              ? 'Update and resubmit your event for review'
+              : "Submit your event for review — it'll go live within 24 hours"}
+          </p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-8">
-        {profile.kycStatus === 'rejected' && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 mb-5 flex items-start gap-2">
-            <XCircle size={16} className="shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold">KYC was rejected</p>
-              <p>{profile.kycRejectionReason || 'Dobara sahi details bhar ke submit karo.'}</p>
-            </div>
-          </div>
-        )}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        <div className="bg-white border border-gray-200 p-5 space-y-4">
-            <h3 className="text-sm font-black text-gray-900">Verify contact details</h3>
+          {/* Form */}
+          <div className="lg:col-span-2">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6"
+            >
 
-            {[
-              { field: 'phone', label: 'Contact phone', value: profile.contactPhone, verified: profile.contactPhoneVerified },
-              { field: 'email', label: 'Contact email', value: profile.contactEmail, verified: profile.contactEmailVerified },
-            ].map(({ field, label, value, verified }) => (
-              <div key={field} className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500">{label}</p>
-                  <p className="text-sm text-gray-800">{value}</p>
+              {/* Basic info */}
+              <div className="bg-white border border-gray-200 p-6">
+                <h2 className="font-black text-base text-gray-900 mb-5"> Event Details </h2>
+
+                <div className="space-y-4">
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Event Title *
+                    </label>
+
+                    <input
+                      {...register('title', {
+                        required: 'Title is required'
+                      })}
+                      placeholder="e.g. Sufi Night at Rajmahal Rooftop"
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+
+                    {errors.title && (
+                      <p className="text-brand-red text-xs mt-1">
+                        {errors.title.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Category *
+                    </label>
+
+                    <select
+                      {...register('category', { required: true })}
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors bg-white"
+                    >
+                      <option value="">Select category</option>
+
+                      {EVENT_CATEGORIES
+                        .filter((c) => c.id !== 'all')
+                        .map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.label}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Description *
+                    </label>
+
+                    <textarea
+                      {...register('description', {
+                        required: 'Description is required',
+                        minLength: 50
+                      })}
+                      rows={4}
+                      placeholder="Describe your event — what, who, why it's special..."
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors resize-none"
+                    />
+
+                    {errors.description && (
+                      <p className="text-brand-red text-xs mt-1">
+                        Minimum 50 characters
+                      </p>
+                    )}
+                  </div>
+
                 </div>
-                {verified ? (
-                  <span className="flex items-center gap-1 text-green-600 text-xs font-bold"><Check size={14} /> Verified</span>
-                ) : (
+              </div>
+
+              {/* Date, time, venue */}
+              <div className="bg-white border border-gray-200 p-6">
+                <h2 className="font-black text-base text-gray-900 mb-5">
+                  When & Where
+                </h2>
+
+                <div className="space-y-4">
+
+                  <div className="grid grid-cols-2 gap-4">
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                        Date *
+                      </label>
+
+                      <input
+                        {...register('date', { required: true })}
+                        type="date"
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                        Start time *
+                      </label>
+
+                      <input
+                        {...register('time', { required: true })}
+                        type="time"
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                      />
+                    </div>
+                    {/* Multiple dates (optional) — for multi-day/recurring events */}
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold uppercase tracking-wide text-gray-500">
+                          Additional dates (optional)
+                        </label>
+                        <button
+                          type="button"
+                          onClick={addDateRow}
+                          className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5"
+                        >
+                          + Add date
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-400 mb-4">
+                        Leave empty for a single-date event. Add rows if this event runs across multiple dates —
+                        attendees will be able to pick a date, and you'll be able to reschedule bookings between them.
+                      </p>
+
+                      {eventDates.map((d, i) => (
+                        <div key={i} className="grid grid-cols-[1.2fr_1fr_1fr_auto] gap-3 mb-3 items-end">
+                          <div>
+                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Date</label>
+                            <input
+                              type="date"
+                              value={d.date}
+                              onChange={(e) => updateDateRow(i, 'date', e.target.value)}
+                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Label</label>
+                            <input
+                              value={d.label}
+                              onChange={(e) => updateDateRow(i, 'label', e.target.value)}
+                              placeholder="e.g. Day 1"
+                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Capacity</label>
+                            <input
+                              type="number"
+                              value={d.capacity}
+                              onChange={(e) => updateDateRow(i, 'capacity', e.target.value)}
+                              placeholder="0 = no per-day cap"
+                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeDateRow(i)}
+                            className="h-[42px] px-3 border border-gray-300 text-gray-500 hover:border-red-400 hover:text-red-500 transition-colors"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                  </div>
+
+                  {savedVenues.length > 0 && (
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                        Use a saved venue
+                      </label>
+                      <select
+                        value={selectedVenueId}
+                        onChange={(e) => handleVenueSelect(e.target.value)}
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors bg-white"
+                      >
+                        <option value="">— Type a new venue below —</option>
+                        {savedVenues.map((v) => (
+                          <option key={v._id} value={v._id}>{v.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Venue name *
+                    </label>
+
+                    <input
+                      {...register('venueName', { required: true })}
+                      placeholder="e.g. Rajmahal Rooftop"
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Address *
+                    </label>
+
+                    <input
+                      {...register('venueAddress', { required: true })}
+                      placeholder="Full address, Bareilly"
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+                  </div>
+
+                  {!selectedVenueId && (
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="save-venue"
+                        checked={saveThisVenue}
+                        onChange={(e) => setSaveThisVenue(e.target.checked)}
+                        className="w-4 h-4 accent-brand-red"
+                      />
+                      <label htmlFor="save-venue" className="text-sm font-medium text-gray-700">
+                        Save this venue for future events
+                      </label>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
+              {/* Tickets & price */}
+              <div className="bg-white border border-gray-200 p-6">
+                <h2 className="font-black text-base text-gray-900 mb-5">
+                  Tickets & Price
+                </h2>
+
+                <div className="space-y-4">
+
+                  <div className="flex items-center gap-3">
+                    <input
+                      {...register('isFree')}
+                      type="checkbox"
+                      id="free-event"
+                      className="w-4 h-4 accent-brand-red"
+                    />
+
+                    <label
+                      htmlFor="free-event"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      This is a free event
+                    </label>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                        Price from (₹)
+                      </label>
+
+                      <input
+                        {...register('priceMin')}
+                        type="number"
+                        placeholder="0"
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                        Price to (₹)
+                      </label>
+
+                      <input
+                        {...register('priceMax')}
+                        type="number"
+                        placeholder="999"
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                      />
+                    </div>
+
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Capacity
+                    </label>
+
+                    <input
+                      {...register('capacity')}
+                      type="number"
+                      placeholder="200"
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Booking URL
+                    </label>
+
+                    <input
+                      {...register('bookingUrl')}
+                      placeholder="https://..."
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Ticket variants (optional) */}
+              <div className="bg-white border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="font-black text-base text-gray-900">Ticket Types (optional)</h2>
                   <button
                     type="button"
-                    disabled={otpBusy}
-                    onClick={() => handleSendOtp(field)}
-                    className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5 disabled:opacity-60"
+                    onClick={addVariantRow}
+                    className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5"
                   >
-                    {otpSent[field] ? 'Resend OTP' : 'Send OTP'}
+                    + Add ticket type
                   </button>
-                )}
+                </div>
+                <p className="text-xs text-gray-400 mb-4">
+                  Leave empty to use the single price above. Add rows here for multiple ticket tiers (e.g. Silver, Gold, VIP).
+                </p>
+
+                {ticketVariants.map((v, i) => (
+                  <div key={i} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-3 mb-3 items-end">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Name</label>
+                      <input
+                        value={v.name}
+                        onChange={(e) => updateVariantRow(i, 'name', e.target.value)}
+                        placeholder="e.g. Silver"
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Price (₹)</label>
+                      <input
+                        type="number"
+                        value={v.price}
+                        onChange={(e) => updateVariantRow(i, 'price', e.target.value)}
+                        placeholder="500"
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Capacity</label>
+                      <input
+                        type="number"
+                        value={v.capacity}
+                        onChange={(e) => updateVariantRow(i, 'capacity', e.target.value)}
+                        placeholder="100"
+                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeVariantRow(i)}
+                      className="h-[42px] px-3 border border-gray-300 text-gray-500 hover:border-red-400 hover:text-red-500 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
 
-            {otpField && (
-              <div className="pt-2 border-t border-gray-100 space-y-2">
-                <p className="text-xs text-gray-500">Enter the code sent to your {otpField}</p>
-                <OTP value={otpCode} onChange={setOtpCode} error={otpError} disabled={otpBusy} />
-                <button
-                  type="button"
-                  disabled={otpBusy || otpCode.length !== 6}
-                  onClick={handleVerifyOtp}
-                  className="bg-brand-red hover:bg-brand-red-hover text-white text-xs font-bold px-4 py-2 disabled:opacity-60"
-                >
-                  Verify
-                </button>
+              {/* Organizer */}
+              <div className="bg-white border border-gray-200 p-6">
+                <h2 className="font-black text-base text-gray-900 mb-5">
+                  Organizer Info
+                </h2>
+
+                <div className="space-y-4">
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Organizer / Company name *
+                    </label>
+
+                    <input
+                      {...register('organizerName', { required: true })}
+                      placeholder="Your name or company"
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Contact phone *
+                    </label>
+
+                    <input
+                      {...register('organizerPhone', { required: true })}
+                      placeholder="+91 XXXXX XXXXX"
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                      Contact email
+                    </label>
+
+                    <input
+                      {...register('organizerEmail')}
+                      type="email"
+                      placeholder="you@example.com"
+                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
+                    />
+                  </div>
+
+                </div>
               </div>
-            )}
-          </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-gray-200 p-6 space-y-5">
-          {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3">{error}</div>}
-
-          <h2 className="font-black text-base text-gray-900">Legal identity</h2>
-
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Legal entity name * (PAN ke saath match hona chahiye)</label>
-            <input {...register('legalName', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">PAN *</label>
-              <input
-                {...register('pan', { required: true, pattern: /^[A-Z]{5}[0-9]{4}[A-Z]$/ })}
-                placeholder="ABCDE1234F"
-                style={{ textTransform: 'uppercase' }}
-                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-              />
-              {errors.pan && <p className="text-brand-red text-xs mt-1">PAN format is wrong </p>}
-            </div>
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                GSTIN {isNonIndividual && '*'}
-              </label>
-              <input
-                {...register('gstin', { required: isNonIndividual })}
-                style={{ textTransform: 'uppercase' }}
-                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-              />
-            </div>
-          </div>
-<div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Identity document *</label>
-            <input type="hidden" {...register('idDocUrl', { required: true })} />
-            <label
-              htmlFor="id-doc-input"
-              className="border border-dashed border-gray-300 flex items-center gap-3 px-4 py-3 cursor-pointer hover:border-brand-red transition-colors"
-            >
-              {docUploading.idDocUrl ? (
-                <Loader2 size={18} className="text-gray-400 animate-spin" />
-              ) : docUploaded.idDocUrl ? (
-                <Check size={18} className="text-green-600" />
-              ) : (
-                <Upload size={18} className="text-gray-400" />
+              {existingImages.length > 0 && (
+                <div className="bg-white border border-gray-200 p-6">
+                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Current images</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {existingImages.map((url, i) => (
+                      <div key={url} className="relative aspect-square">
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setExistingImages((prev) => prev.filter((u) => u !== url))}
+                          className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center"
+                        >
+                          <X size={11} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
-              <span className="text-sm text-gray-600">
-                {docUploading.idDocUrl ? 'Uploading...' : docUploaded.idDocUrl ? 'Uploaded — click to change' : 'Upload Aadhaar / Passport / Voter ID / Licence (PDF/JPG/PNG, max 10MB)'}
-              </span>
-              <input
-                id="id-doc-input"
-                type="file"
-                accept="image/jpeg,image/png,application/pdf"
-                onChange={(e) => handleDocUpload(e, 'idDocUrl')}
-                className="hidden"
-              />
-            </label>
-            {errors.idDocUrl && <p className="text-brand-red text-xs mt-1">Identity document is required</p>}
-          </div>
 
-          {isNonIndividual && (
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Business proof *</label>
-              <input type="hidden" {...register('businessDocUrl', { required: isNonIndividual })} />
-              <label
-                htmlFor="business-doc-input"
-                className="border border-dashed border-gray-300 flex items-center gap-3 px-4 py-3 cursor-pointer hover:border-brand-red transition-colors"
-              >
-                {docUploading.businessDocUrl? (
-                  <Loader2 size={18} className="text-gray-400 animate-spin" />
-                ) : docUploaded.businessDocUrl? (
-                  <Check size={18} className="text-green-600" />
-                ) : (
-                  <Upload size={18} className="text-gray-400" />
+              {/* Photo upload */}
+              <div className="bg-white border border-gray-200 p-6">
+                <h2 className="font-black text-base text-gray-900 mb-5">
+                  Event Images
+                </h2>
+
+                {uploadError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 mb-4">
+                    {uploadError}
+                  </div>
                 )}
-                <span className="text-sm text-gray-600">
-                  {docUploading.businessDocUrl? 'Uploading...' : docUploaded.businessDocUrl? 'Uploaded — click to change' : 'Upload incorporation cert / GST cert / shop licence (PDF/JPG/PNG, max 10MB)'}
-                </span>
-                <input
-                  id="business-doc-input"
-                  type="file"
-                  accept="image/jpeg,image/png,application/pdf"
-                  onChange={(e) => handleDocUpload(e, 'businessDocUrl')}
-                  className="hidden"
-                />
-              </label>
-              {errors.businessDocUrl && <p className="text-brand-red text-xs mt-1">Business proof is required</p>}
+
+                <label
+                  htmlFor="event-image-input"
+                  className="border-2 border-dashed border-gray-300 flex flex-col items-center justify-center py-12 cursor-pointer hover:border-brand-red transition-colors"
+                  style={{
+                    backgroundImage:
+                      'repeating-linear-gradient(135deg, #f9fafb 0px, #f9fafb 2px, #f3f4f6 2px, #f3f4f6 12px)'
+                  }}
+                >
+                  <Upload size={28} className="text-gray-400 mb-2" />
+
+                  <p className="text-sm font-semibold text-gray-600">
+                    Click to upload images
+                  </p>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    JPG, PNG, WebP up to 5MB each · 5 images max
+                  </p>
+
+                  <input
+                    id="event-image-input"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={handleFileSelect}
+                    disabled={selectedFiles.length >= 5}
+                    className="hidden"
+                  />
+                </label>
+
+                {selectedFiles.length > 0 && (
+                  <div className="grid grid-cols-5 gap-2 mt-4">
+
+                    {selectedFiles.map((file, i) => (
+                      <div
+                        key={i}
+                        className="relative aspect-square"
+                      >
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => removeFile(i)}
+                          className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center"
+                        >
+                          <X size={11} />
+                        </button>
+                      </div>
+                    ))}
+
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitStatus === 'loading' || editSubmitStatus === 'loading' || uploading}
+                className="w-full flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white font-black py-4 text-base transition-colors disabled:opacity-60"
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Uploading images...
+                  </>
+                ) : (submitStatus === 'loading' || editSubmitStatus === 'loading') ? (
+                  <Spinner size="sm" />
+                ) : (
+                  isEditMode ? 'Resubmit for Review →' : 'Submit for Review →'
+                )}
+              </button>
+
+            </form>
+          </div>
+
+          {/* Sidebar — guidelines */}
+          <div className="lg:col-span-1 space-y-4">
+
+            <div className="bg-white border border-gray-200 p-5 sticky top-20">
+
+              <div className="flex items-center gap-2 mb-4">
+                <Info size={15} className="text-brand-red" />
+
+                <h3 className="font-black text-sm text-gray-900">
+                  Submission Guidelines
+                </h3>
+              </div>
+
+              <ul className="space-y-3 text-xs text-gray-600">
+
+                {[
+                  'Events must be in or near Bareilly',
+                  'Approval takes 24-48 hours on weekdays',
+                  'Include a clear event image for better visibility',
+                  'Free events get 2× more clicks',
+                  'Add a working booking URL for paid events',
+                  'Events with complete info are prioritised',
+                ].map((tip, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2"
+                  >
+                    <span className="w-4 h-4 shrink-0 bg-brand-red text-white text-[9px] font-bold flex items-center justify-center mt-0.5">
+                      {i + 1}
+                    </span>
+
+                    {tip}
+                  </li>
+                ))}
+
+              </ul>
+
+              <div className="mt-5 pt-5 border-t border-gray-100">
+
+                <p className="text-xs font-bold text-gray-900 mb-1">
+                  Need help?
+                </p>
+
+                <p className="text-xs text-gray-500">
+                  WhatsApp us at{' '}
+                  <span className="font-semibold text-brand-red">
+                    +91 98765 43210
+                  </span>
+                </p>
+
+              </div>
+
             </div>
-          )}
 
-          <h2 className="font-black text-base text-gray-900 pt-2">Registered address</h2>
-
-          <div className="grid grid-cols-2 gap-4">
-            <input {...register('line1', { required: true })} placeholder="Address line 1 *" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <input {...register('line2')} placeholder="Address line 2" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <input {...register('city', { required: true })} placeholder="City *" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <input {...register('state', { required: true })} placeholder="State *" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-          </div>
-          <div>
-            <input
-              {...register('pincode', { required: true, pattern: /^[1-9][0-9]{5}$/ })}
-              placeholder="Pincode *"
-              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-            />
-            {errors.pincode && <p className="text-brand-red text-xs mt-1">Pincode galat hai</p>}
           </div>
 
-          <h2 className="font-black text-base text-gray-900 pt-2">Bank details</h2>
-
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Account holder name *</label>
-            <input {...register('bankAccountName', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Account number *</label>
-              <input {...register('bankAccountNumber', { required: true, minLength: 9, maxLength: 18 })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            </div>
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Confirm account number *</label>
-              <input {...register('bankAccountNumberConfirm', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">IFSC *</label>
-              <input
-                {...register('ifsc', { required: true, pattern: /^[A-Z]{4}0[A-Z0-9]{6}$/ })}
-                style={{ textTransform: 'uppercase' }}
-                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-              />
-              {errors.ifsc && <p className="text-brand-red text-xs mt-1">IFSC format galat hai</p>}
-            </div>
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Account type *</label>
-              <select {...register('accountType', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-brand-red">
-                <option value="">Select</option>
-                <option value="savings">Savings</option>
-                <option value="current">Current</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Payout frequency *</label>
-            <select {...register('payoutFrequency', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-brand-red">
-              <option value="per_event_t2">Per event (T+2)</option>
-              <option value="weekly">Weekly consolidated</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-           disabled={kycStatus === 'loading' || !profile.contactPhoneVerified || !profile.contactEmailVerified}
-            className="w-full flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white font-black py-3.5 text-sm transition-colors disabled:opacity-60"
-          >
-            {kycStatus === 'loading' ? <Spinner size="sm" /> : 'Submit KYC →'}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
 
-export default OrganizerKycPage;
+export default OrganizerPage;

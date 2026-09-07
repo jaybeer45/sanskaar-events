@@ -107,7 +107,8 @@ const bookingsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
       })
-
+      
+      
       // ── createRazorpayOrder ─────────────────────────
       .addCase(createRazorpayOrder.pending, (state) => { state.paymentStatus = 'loading'; state.error = null; })
       .addCase(createRazorpayOrder.fulfilled, (state, action) => { state.razorpayOrder = action.payload; })
@@ -133,9 +134,9 @@ const bookingsSlice = createSlice({
       .addCase(cancelBooking.pending, (state) => { state.myBookingsStatus = 'loading'; state.error = null; })
       .addCase(cancelBooking.fulfilled, (state, action) => {
         state.myBookingsStatus = 'succeeded';
-        const updated = action.payload.booking; // backend sends { success, booking }
+        const updated = action.payload.booking;
         state.myBookings = state.myBookings.map((b) =>
-          b._id === updated._id ? { ...b, ...updated } : b
+          b._id === updated._id ? { ...b, ...updated, event: b.event } : b
         );
       })
       .addCase(cancelBooking.rejected, (state, action) => { state.myBookingsStatus = 'failed'; state.error = action.payload; })
@@ -144,11 +145,12 @@ const bookingsSlice = createSlice({
       .addCase(rescheduleBooking.pending, (state) => { state.myBookingsStatus = 'loading'; state.error = null; })
       .addCase(rescheduleBooking.fulfilled, (state, action) => {
         state.myBookingsStatus = 'succeeded';
-        const updated = action.payload.booking; // backend sends { success, booking }
+        const updated = action.payload.booking;
         state.myBookings = state.myBookings.map((b) =>
-          b._id === updated._id ? { ...b, ...updated } : b
+          b._id === updated._id ? { ...b, ...updated, event: b.event } : b
         );
       })
+
       .addCase(rescheduleBooking.rejected, (state, action) => { state.myBookingsStatus = 'failed'; state.error = action.payload; });
   },
 });

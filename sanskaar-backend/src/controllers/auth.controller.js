@@ -1,12 +1,13 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 const Otp = require('../models/Otp');
 const generateToken = require('../utils/generateToken');
 const { sendOtpMessage } = require('../services/otpDelivery.service');
 
 // @route POST /api/v1/auth/register
 const register = asyncHandler(async (req, res) => {
-  const { name, email, phone, password, acceptedTerms, termsVersion, acceptedPrivacy, privacyVersion } = req.body;
+  const { name, email, phone, password, acceptedTerms, termsVersion, acceptedPrivacy, privacyVersion , referredBy } = req.body;
 
   if (!name || !email || !phone || !password) {
     res.status(400);
@@ -29,7 +30,17 @@ const register = asyncHandler(async (req, res) => {
     { type: 'privacy', version: privacyVersion || 'v1', accepted: true, ip: req.ip },
   ];
 
-  const user = await User.create({ name, email, phone, password, consents });
+  let referrer = null;
+  if (referredBy && mongoose.Types.ObjectId.isValid(referredBy)) {
+    referrer = await User.findById(referredBy).select('_id');
+  }
+
+  const user = await User.create(
+    {
+      name, email, phone, password, consents,
+      referredBy: referrer ? referrer._id : null,
+    }
+  );
   const token = generateToken(user._id);
 
   res.status(201).json({ user: user.toSafeObject(), token });
@@ -105,7 +116,7 @@ const getMe = asyncHandler(async (req, res) => {
 
 // @route POST /api/v1/auth/send-otp
 const sendOtp = asyncHandler(async (req, res) => {
-   const identifier = req.body.identifier?.trim();
+  const identifier = req.body.identifier?.trim();
   const { purpose } = req.body;
   if (!identifier) {
     res.status(400);
@@ -115,7 +126,7 @@ const sendOtp = asyncHandler(async (req, res) => {
   const code = String(Math.floor(100000 + Math.random() * 900000));
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-   await Otp.create({ identifier, code, purpose: purpose || 'signup', expiresAt });
+  await Otp.create({ identifier, code, purpose: purpose || 'signup', expiresAt });
 
   const result = await sendOtpMessage(identifier, code);
 
@@ -129,7 +140,7 @@ const sendOtp = asyncHandler(async (req, res) => {
 
 // @route POST /api/v1/auth/verify-otp
 const verifyOtp = asyncHandler(async (req, res) => {
-   const identifier = req.body.identifier?.trim();
+  const identifier = req.body.identifier?.trim();
   const code = req.body.code?.trim();
   if (!identifier || !code) {
     res.status(400);
@@ -175,4 +186,4 @@ const resetPassword = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true });
 });
 
-module.exports = { register, login, otpLogin , getMe, sendOtp, verifyOtp, logout, resetPassword };
+module.exports = { register, login, otpLogin, getMe, sendOtp, verifyOtp, logout, resetPassword };

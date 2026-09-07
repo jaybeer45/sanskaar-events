@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {getStats, getPendingEvents, approveEvent, rejectEvent, getPendingVendors, verifyVendor,getPendingOrganizers, verifyOrganizer, rejectOrganizer,} = require('../controllers/admin.controller');
+const {getStats, getPendingEvents, approveEvent, rejectEvent, getPendingVendors, 
+    verifyVendor,getPendingOrganizers, verifyOrganizer, rejectOrganizer,createManualCoupon,getManualCoupons} = require('../controllers/admin.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 const { getAllPayouts, markPayoutPaid } = require('../controllers/vendorPayout.controller');
 const { getAllDisputes, resolveDispute } = require('../controllers/dispute.controller');
@@ -21,5 +22,7 @@ router.patch('/organizers/:id/verify', verifyOrganizer);
 router.patch('/organizers/:id/reject', rejectOrganizer);
 router.get('/vendor-payouts', getAllPayouts); 
 router.patch('/vendor-payouts/:id/mark-paid', markPayoutPaid);
+router.post('/coupons', createManualCoupon);
+router.get('/coupons', getManualCoupons);
 
 module.exports = router;

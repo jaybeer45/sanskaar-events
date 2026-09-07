@@ -9,10 +9,10 @@ const statusColors = {
   draft: 'bg-gray-100 text-gray-600',
   pending_approval: 'bg-amber-100 text-amber-700',
   published: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
+  rejected: 'bg-red-100 text-red-700',
+  cancelled: 'bg-gray-200 text-gray-500',
   completed: 'bg-blue-100 text-blue-700',
 };
-
 const MyEventsPage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +51,17 @@ const MyEventsPage = () => {
               </div>
               <p className="font-bold text-gray-900 truncate">{event.title}</p>
               <p className="text-xs text-gray-500">{new Date(event.date).toLocaleDateString('en-IN')} · {event.venue?.name || 'No venue'}</p>
+              {event.status === 'rejected' && event.rejectionReason && (
+                <>
+                  <p className="text-xs text-red-500 mt-1">Reason: {event.rejectionReason}</p>
+                  <Link
+                    to={buildRoute.eventEdit(event._id)}
+                    className="inline-block text-xs font-bold text-white bg-brand-red px-3 py-1.5 mt-2"
+                  >
+                    Edit & Resubmit
+                  </Link>
+                </>
+              )}
             </div>
             <div className="flex gap-2 shrink-0">
               <Link

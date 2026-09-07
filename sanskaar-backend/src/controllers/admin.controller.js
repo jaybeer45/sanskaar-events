@@ -3,6 +3,7 @@ const Event = require('../models/Event');
 const Vendor = require('../models/Vendor');
 const User = require('../models/User');
 const Organizer = require('../models/Organizer');
+const Coupon = require('../models/Coupon');
 
 // @route GET /api/v1/admin/stats
 const getStats = asyncHandler(async (req, res) => {
@@ -33,7 +34,17 @@ const approveEvent = asyncHandler(async (req, res) => {
 
 // @route PATCH /api/v1/admin/events/:id/reject
 const rejectEvent = asyncHandler(async (req, res) => {
-  const event = await Event.findByIdAndUpdate(req.params.id, { status: 'cancelled' }, { new: true });
+  const { reason } = req.body;
+  if (!reason || reason.trim().length < 5) {
+    res.status(400);
+    throw new Error('A valid reason (min 5 characters) is required to reject an event.');
+  }
+
+  const event = await Event.findByIdAndUpdate(
+    req.params.id,
+    { status: 'rejected', rejectionReason: reason.trim() },
+    { new: true }
+  );
   if (!event) {
     res.status(404);
     throw new Error('Event nahi mila.');
@@ -88,12 +99,12 @@ const verifyOrganizer = asyncHandler(async (req, res) => {
 
   await organizer.save();
 
-    await User.findByIdAndUpdate(
+  await User.findByIdAndUpdate(
     organizer.owner,
     { $addToSet: { roles: 'organizer' } }
   );
 
-  
+
 
   res.status(200).json({ success: true, id: organizer._id, kycStatus: organizer.kycStatus });
 });
@@ -123,7 +134,62 @@ const rejectOrganizer = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, id: organizer._id, kycStatus: organizer.kycStatus });
 });
 
+// @route POST /api/v1/admin/coupons
+// Creates a public, admin-issued coupon — any user can redeem it (up to maxUses).
+const VALID_TARGET_ROLES = ['user', 'organizer', 'vendor'];
+
+const createManualCoupon = asyncHandler(async (req, res) => {
+  const { code, valuePaise, maxUses, expiresAt, userEmail, targetRole } = req.body;
+
+  if (!code || !valuePaise || valuePaise <= 0) {
+    res.status(400);
+    throw new Error('Code aur valid valuePaise required hain.');
+  }
+
+  if (targetRole && !VALID_TARGET_ROLES.includes(targetRole)) {
+    res.status(400);
+    throw new Error(`targetRole in me se ek hona chahiye: ${VALID_TARGET_ROLES.join(', ')}`);
+  }
+
+  const existing = await Coupon.findOne({ code: code.trim().toUpperCase() });
+  if (existing) {
+    res.status(400);
+    throw new Error('Is code ka coupon pehle se maujood hai.');
+  }
+
+  // Priority: specific user (userEmail) > role restriction (targetRole) > fully public
+  let owner = null;
+  if (userEmail) {
+    const targetUser = await User.findOne({ email: userEmail.trim().toLowerCase() });
+    if (!targetUser) {
+      res.status(404);
+      throw new Error('Is email se koi user nahi mila.');
+    }
+    owner = targetUser._id;
+  }
+
+  const coupon = await Coupon.create({
+    code: code.trim().toUpperCase(),
+    owner,
+    targetRole: owner ? null : (targetRole || null), // agar specific owner hai, role restriction irrelevant hai
+    type: 'admin_manual',
+    valuePaise,
+    maxUses: maxUses && maxUses > 0 ? maxUses : 1,
+    expiresAt: expiresAt || null,
+    createdBy: req.user._id,
+  });
+
+  res.status(201).json({ success: true, coupon });
+});
+
+// @route GET /api/v1/admin/coupons
+// Lists all admin-created (manual/public) coupons, for the admin dashboard.
+const getManualCoupons = asyncHandler(async (req, res) => {
+  const coupons = await Coupon.find({ type: 'admin_manual' }).sort({ createdAt: -1 });
+  res.status(200).json({ results: coupons });
+});
+
 module.exports = {
   getStats, getPendingEvents, approveEvent, rejectEvent, getPendingVendors, verifyVendor,
-  getPendingOrganizers, verifyOrganizer, rejectOrganizer,
+  getPendingOrganizers, verifyOrganizer, rejectOrganizer, createManualCoupon, getManualCoupons,
 };

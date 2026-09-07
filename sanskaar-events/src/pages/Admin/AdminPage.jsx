@@ -10,6 +10,7 @@ import { adminService } from '../../services/admin.service';
 import Spinner from '../../components/ui/Spinner/Spinner';
 import toast from 'react-hot-toast';
 import { formatPaise } from '../../utils/formatPrice';
+import CouponManager from '../../components/admin/CouponManager';
 
 const AdminPage = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,8 @@ const AdminPage = () => {
   const [payoutsLoading, setPayoutsLoading] = useState(true);
   const [markingId, setMarkingId] = useState(null);
   const [bankRefInput, setBankRefInput] = useState({});
+  const [rejectingEventId, setRejectingEventId] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   const loadOrganizers = () => {
     setOrganizersLoading(true);
@@ -34,7 +37,7 @@ const AdminPage = () => {
     adminService.getPendingVendors().then(setVendors).finally(() => setVendorsLoading(false));
   };
 
-    const loadPayouts = () => {
+  const loadPayouts = () => {
     setPayoutsLoading(true);
     adminService.getVendorPayouts('pending').then(setPayouts).finally(() => setPayoutsLoading(false));
   };
@@ -47,7 +50,24 @@ const AdminPage = () => {
   }, [dispatch]);
 
   const handleApproveEvent = (id) => { dispatch(approveEvent(id)); toast.success('Event approved'); };
-  const handleRejectEvent = (id) => { dispatch(rejectEvent(id)); toast.error('Event rejected'); };
+  const handleOpenRejectEvent = (id) => {
+    setRejectingEventId(id);
+    setRejectReason('');
+  };
+
+  const handleConfirmRejectEvent = () => {
+    if (rejectReason.trim().length < 5) {
+      toast.error('Reason kam se kam 5 characters ka hona chahiye');
+      return;
+    }
+    dispatch(rejectEvent({ id: rejectingEventId, reason: rejectReason.trim() }))
+      .unwrap()
+      .then(() => {
+        toast.error('Event rejected');
+        setRejectingEventId(null);
+      })
+      .catch((err) => toast.error(typeof err === 'string' ? err : 'Reject fail ho gaya'));
+  };
 
   const handleVerifyOrganizer = async (id) => {
     try {
@@ -78,7 +98,7 @@ const AdminPage = () => {
     }
   };
 
-    const handleMarkPaid = async (id) => {
+  const handleMarkPaid = async (id) => {
     const bankRef = (bankRefInput[id] || '').trim();
     if (!bankRef) {
       toast.error('Enter a UTR / bank reference before marking paid.');
@@ -107,7 +127,7 @@ const AdminPage = () => {
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
 
         {/* Stats */}
-          <div className="grid grid-cols-4 gap-px bg-gray-200">
+        <div className="grid grid-cols-4 gap-px bg-gray-200">
           {[
             { label: 'Pending events', count: events.length, color: 'text-amber-600' },
             { label: 'Pending organizers', count: organizers.length, color: 'text-blue-600' },
@@ -165,7 +185,7 @@ const AdminPage = () => {
                           <button onClick={() => handleApproveEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-green-500 hover:bg-green-600 transition-colors" title="Approve">
                             <CheckCircle size={13} className="text-white" />
                           </button>
-                          <button onClick={() => handleRejectEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-brand-red hover:bg-brand-red-hover transition-colors" title="Reject">
+                          <button onClick={() => handleOpenRejectEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-brand-red hover:bg-brand-red-hover transition-colors" title="Reject">
                             <XCircle size={13} className="text-white" />
                           </button>
                         </div>
@@ -223,7 +243,7 @@ const AdminPage = () => {
           )}
         </section>
 
-                {/* ── Vendor Payouts ── */}
+        {/* ── Vendor Payouts ── */}
         <section>
           <h2 className="font-black text-lg text-gray-900 mb-4">Pending Vendor Payouts</h2>
           {payoutsLoading ? (
@@ -268,6 +288,36 @@ const AdminPage = () => {
           )}
         </section>
 
+        <CouponManager />
+        {rejectingEventId && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+            <div className="bg-white w-full max-w-sm p-6 border border-gray-200">
+              <h3 className="font-black text-base text-gray-900 mb-1">Reject event</h3>
+              <p className="text-xs text-gray-500 mb-4">Organizer ko yeh reason dikhega — clear likhna.</p>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="e.g. Venue address incomplete, please add full address"
+                rows={4}
+                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red mb-4"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setRejectingEventId(null)}
+                  className="flex-1 border border-gray-300 text-gray-600 font-bold py-2.5 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmRejectEvent}
+                  className="flex-1 bg-brand-red hover:bg-brand-red-hover text-white font-bold py-2.5 text-sm"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

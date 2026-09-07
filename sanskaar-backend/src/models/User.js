@@ -54,6 +54,9 @@ const userSchema = new mongoose.Schema(
     vendorKyc: vendorKycSchema,
     isActive: { type: Boolean, default: true },
     walletBalancePaise: { type: Number, default: 0 },
+    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    referralRewardGiven: { type: Boolean, default: false }, // prevents double-crediting the referrer
+    loyaltyCouponIssued: { type: Boolean, default: false },
   }, { timestamps: true }
 );
 
