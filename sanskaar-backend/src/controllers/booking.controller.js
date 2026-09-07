@@ -1,12 +1,15 @@
-const asyncHandler = require('express-async-handler');
-const crypto = require('crypto');
-const Booking = require('../models/Booking');
-const razorpay = require('../config/razorpay');
-const Event = require('../models/Event');
-const TicketVariant = require('../models/TicketVariant');
-const { REFUND_TIERS } = require('../config/rewardsConfig');
-const { adjustWallet } = require('./rewards.controller');
-const { awardBookingRewards, checkCouponEligibility } = require('./rewards.controller');
+const asyncHandler = require("express-async-handler");
+const crypto = require("crypto");
+const Booking = require("../models/Booking");
+const razorpay = require("../config/razorpay");
+const Event = require("../models/Event");
+const TicketVariant = require("../models/TicketVariant");
+const { REFUND_TIERS } = require("../config/rewardsConfig");
+const { adjustWallet } = require("./rewards.controller");
+const {
+  awardBookingRewards,
+  checkCouponEligibility,
+} = require("./rewards.controller");
 
 // @route POST /api/v1/bookings
 const createBooking = asyncHandler(async (req, res) => {
@@ -26,7 +29,7 @@ const createBooking = asyncHandler(async (req, res) => {
   if (!eventId || !fullName || !phone || !email || !quantity || quantity < 1) {
     res.status(400);
     throw new Error(
-      'eventId, fullName, phone, email aur valid quantity required hain.'
+      "eventId, fullName, phone, email aur valid quantity required hain.",
     );
   }
 
@@ -34,7 +37,7 @@ const createBooking = asyncHandler(async (req, res) => {
 
   if (!event) {
     res.status(404);
-    throw new Error('Event not found.');
+    throw new Error("Event not found.");
   }
 
   let dateUpdated = false;
@@ -52,7 +55,7 @@ const createBooking = asyncHandler(async (req, res) => {
     if (!eventDateId) {
       res.status(400);
       throw new Error(
-        'This event runs across multiple dates — eventDateId is required.'
+        "This event runs across multiple dates — eventDateId is required.",
       );
     }
 
@@ -60,7 +63,7 @@ const createBooking = asyncHandler(async (req, res) => {
 
     if (!targetDate) {
       res.status(400);
-      throw new Error('Invalid eventDateId for this event.');
+      throw new Error("Invalid eventDateId for this event.");
     }
 
     const hasCapacityLimit = targetDate.capacity > 0;
@@ -71,36 +74,36 @@ const createBooking = asyncHandler(async (req, res) => {
 
     const dateFilter = hasCapacityLimit
       ? {
-        _id: event._id,
-        eventDates: {
-          $elemMatch: {
-            _id: eventDateId,
-            soldCount: {
-              $lte: maxAllowedSoldCount,
+          _id: event._id,
+          eventDates: {
+            $elemMatch: {
+              _id: eventDateId,
+              soldCount: {
+                $lte: maxAllowedSoldCount,
+              },
             },
           },
-        },
-      }
+        }
       : {
-        _id: event._id,
-        'eventDates._id': eventDateId,
-      };
+          _id: event._id,
+          "eventDates._id": eventDateId,
+        };
 
     const updatedEvent = await Event.findOneAndUpdate(
       dateFilter,
       {
         $inc: {
-          'eventDates.$.soldCount': quantity,
+          "eventDates.$.soldCount": quantity,
         },
       },
       {
         new: true,
-      }
+      },
     );
 
     if (!updatedEvent) {
       res.status(400);
-      throw new Error('Not enough seats left for this date.');
+      throw new Error("Not enough seats left for this date.");
     }
 
     dateUpdated = true;
@@ -117,14 +120,14 @@ const createBooking = asyncHandler(async (req, res) => {
         _id: variantId,
         event: event._id,
         isActive: true,
-        status: 'approved',
+        status: "approved",
 
         $expr: {
           $lte: [
             {
-              $add: ['$soldCount', quantity],
+              $add: ["$soldCount", quantity],
             },
-            '$capacity',
+            "$capacity",
           ],
         },
       },
@@ -135,13 +138,13 @@ const createBooking = asyncHandler(async (req, res) => {
       },
       {
         new: true,
-      }
+      },
     );
 
     if (!variant) {
       res.status(400);
       throw new Error(
-        'This ticket type is unavailable or does not have enough seats left.'
+        "This ticket type is unavailable or does not have enough seats left.",
       );
     }
 
@@ -153,7 +156,7 @@ const createBooking = asyncHandler(async (req, res) => {
 
     if (!event.inventory || event.inventory.remaining < quantity) {
       res.status(400);
-      throw new Error('Not enough seats available.');
+      throw new Error("Not enough seats available.");
     }
 
     amount = event.price.free ? 0 : event.price.min * quantity;
@@ -198,8 +201,8 @@ const createBooking = asyncHandler(async (req, res) => {
       amount,
       gst,
       totalAmount,
-      ticketCode: crypto.randomBytes(6).toString('hex').toUpperCase(),
-      paymentStatus: amount === 0 ? 'paid' : 'pending',
+      ticketCode: crypto.randomBytes(6).toString("hex").toUpperCase(),
+      paymentStatus: amount === 0 ? "paid" : "pending",
     });
 
     if (redeemedCoupon) {
@@ -207,12 +210,12 @@ const createBooking = asyncHandler(async (req, res) => {
       redeemedCoupon.redeemedBy.push(req.user._id);
       redeemedCoupon.usedOnBooking = booking._id;
       if (redeemedCoupon.usedCount >= redeemedCoupon.maxUses) {
-        redeemedCoupon.status = 'used';
+        redeemedCoupon.status = "used";
       }
       await redeemedCoupon.save();
     }
 
-    if (booking.paymentStatus === 'paid') {
+    if (booking.paymentStatus === "paid") {
       await awardBookingRewards(booking);
     }
 
@@ -224,7 +227,7 @@ const createBooking = asyncHandler(async (req, res) => {
     if (variant) {
       await TicketVariant.updateOne(
         { _id: variant._id },
-        { $inc: { soldCount: -quantity } }
+        { $inc: { soldCount: -quantity } },
       );
     }
 
@@ -235,8 +238,8 @@ const createBooking = asyncHandler(async (req, res) => {
 
     if (dateUpdated && eventDateId && isMultiDate) {
       await Event.updateOne(
-        { _id: event._id, 'eventDates._id': eventDateId },
-        { $inc: { 'eventDates.$.soldCount': -quantity } }
+        { _id: event._id, "eventDates._id": eventDateId },
+        { $inc: { "eventDates.$.soldCount": -quantity } },
       );
     }
 
@@ -250,8 +253,10 @@ const getMyBookings = asyncHandler(async (req, res) => {
     user: req.user._id,
   })
     .populate({
-      path: 'event', select: 'title date time venue images eventDates organizerName organizerPhone organizer',
-      populate: { path: 'organizer', select: 'displayName contactPhone' },
+      path: "event",
+      select:
+        "title date time venue images eventDates organizerName organizerPhone organizer",
+      populate: { path: "organizer", select: "displayName contactPhone" },
     })
     .sort({ createdAt: -1 });
 
@@ -268,21 +273,21 @@ const getMyBookings = asyncHandler(async (req, res) => {
 // @route GET /api/v1/bookings/:id
 const getBookingById = asyncHandler(async (req, res) => {
   const booking = await Booking.findById(req.params.id).populate(
-    'event',
-    'title date time venue images'
+    "event",
+    "title date time venue images",
   );
 
   if (!booking) {
     res.status(404);
-    throw new Error('Booking not found.');
+    throw new Error("Booking not found.");
   }
 
   if (
     booking.user.toString() !== req.user._id.toString() &&
-    !req.user.roles.includes('admin')
+    !req.user.roles.includes("admin")
   ) {
     res.status(403);
-    throw new Error('Only can check out booking.');
+    throw new Error("Only can check out booking.");
   }
 
   res.status(200).json(booking);
@@ -298,22 +303,22 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
 
   if (!booking) {
     res.status(404);
-    throw new Error('Booking nahi mili.');
+    throw new Error("Booking nahi mili.");
   }
 
   if (booking.user.toString() !== req.user._id.toString()) {
     res.status(403);
-    throw new Error('Sirf apni booking hi pay kar sakte ho.');
+    throw new Error("Sirf apni booking hi pay kar sakte ho.");
   }
 
-  if (booking.paymentStatus === 'paid') {
+  if (booking.paymentStatus === "paid") {
     res.status(400);
-    throw new Error('Ye booking pehle se paid hai.');
+    throw new Error("Ye booking pehle se paid hai.");
   }
 
   const order = await razorpay.orders.create({
     amount: Math.round(booking.totalAmount * 100),
-    currency: 'INR',
+    currency: "INR",
     receipt: booking._id.toString(),
   });
 
@@ -334,20 +339,13 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
 // ===========================================================
 
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
-  const {
-    razorpay_order_id,
-    razorpay_payment_id,
-    razorpay_signature,
-  } = req.body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
 
-  if (
-    !razorpay_order_id ||
-    !razorpay_payment_id ||
-    !razorpay_signature
-  ) {
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
     res.status(400);
     throw new Error(
-      'razorpay_order_id, razorpay_payment_id aur razorpay_signature required hain.'
+      "razorpay_order_id, razorpay_payment_id aur razorpay_signature required hain.",
     );
   }
 
@@ -355,42 +353,35 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
 
   if (!booking) {
     res.status(404);
-    throw new Error('Booking nahi mili.');
+    throw new Error("Booking nahi mili.");
   }
 
   if (booking.user.toString() !== req.user._id.toString()) {
     res.status(403);
-    throw new Error('Sirf apni booking hi pay kar sakte ho.');
+    throw new Error("Sirf apni booking hi pay kar sakte ho.");
   }
 
   if (booking.razorpayOrderId !== razorpay_order_id) {
     res.status(400);
-    throw new Error('Order id booking se match nahi karti.');
+    throw new Error("Order id booking se match nahi karti.");
   }
 
   const expectedSignature = crypto
-    .createHmac(
-      'sha256',
-      process.env.RAZORPAY_KEY_SECRET
-    )
-    .update(
-      `${razorpay_order_id}|${razorpay_payment_id}`
-    )
-    .digest('hex');
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest("hex");
 
   if (expectedSignature !== razorpay_signature) {
-    booking.paymentStatus = 'failed';
+    booking.paymentStatus = "failed";
 
     await booking.save();
 
     res.status(400);
-    throw new Error(
-      'Payment verification fail ho gayi — signature match nahi hui.'
-    );
+    throw new Error("Payment verification failed signature not match .");
   }
 
-  booking.paymentStatus = 'paid';
-  booking.paymentMethod = 'razorpay';
+  booking.paymentStatus = "paid";
+  booking.paymentMethod = "razorpay";
   booking.razorpayPaymentId = razorpay_payment_id;
 
   await booking.save();
@@ -402,36 +393,29 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
 
 // @route POST /api/v1/bookings/:id/cancel
 const cancelBooking = asyncHandler(async (req, res) => {
-  const booking = await Booking.findById(
-    req.params.id
-  ).populate('event', 'date');
+  const booking = await Booking.findById(req.params.id).populate(
+    "event",
+    "date",
+  );
 
   if (!booking) {
     res.status(404);
-    throw new Error('Booking not found.');
+    throw new Error("Booking not found.");
   }
 
-  if (
-    booking.user.toString() !== req.user._id.toString()
-  ) {
+  if (booking.user.toString() !== req.user._id.toString()) {
     res.status(403);
-    throw new Error(
-      'You can only cancel your own booking.'
-    );
+    throw new Error("You can only cancel your own booking.");
   }
 
-  if (booking.status === 'cancelled') {
+  if (booking.status === "cancelled") {
     res.status(400);
-    throw new Error(
-      'This booking is already cancelled.'
-    );
+    throw new Error("This booking is already cancelled.");
   }
 
-  if (booking.paymentStatus !== 'paid') {
+  if (booking.paymentStatus !== "paid") {
     res.status(400);
-    throw new Error(
-      'Only paid bookings can be cancelled through this flow.'
-    );
+    throw new Error("Only paid bookings can be cancelled through this flow.");
   }
 
   const eventDate = new Date(booking.event.date);
@@ -440,17 +424,13 @@ const cancelBooking = asyncHandler(async (req, res) => {
   const daysLeft = Math.floor((eventDate - now) / (1000 * 60 * 60 * 24));
 
   const tier =
-    REFUND_TIERS.find(
-      (t) => daysLeft >= t.daysBeforeEvent
-    ) ||
+    REFUND_TIERS.find((t) => daysLeft >= t.daysBeforeEvent) ||
     REFUND_TIERS[REFUND_TIERS.length - 1];
 
   const refundPercent = tier.refundPercent;
 
   const refundedPaise = Math.round(
-    booking.totalAmount *
-    100 *
-    (refundPercent / 100)
+    booking.totalAmount * 100 * (refundPercent / 100),
   );
 
   // =======================================================
@@ -466,24 +446,22 @@ const cancelBooking = asyncHandler(async (req, res) => {
         $inc: {
           soldCount: -booking.quantity,
         },
-      }
+      },
     );
   } else if (booking.eventDateId) {
     await Event.updateOne(
       {
         _id: booking.event._id,
-        'eventDates._id': booking.eventDateId,
+        "eventDates._id": booking.eventDateId,
       },
       {
         $inc: {
-          'eventDates.$.soldCount': -booking.quantity,
+          "eventDates.$.soldCount": -booking.quantity,
         },
-      }
+      },
     );
   } else {
-    const event = await Event.findById(
-      booking.event._id
-    );
+    const event = await Event.findById(booking.event._id);
 
     event.inventory.remaining += booking.quantity;
 
@@ -494,15 +472,13 @@ const cancelBooking = asyncHandler(async (req, res) => {
   // UPDATE BOOKING
   // =======================================================
 
-  booking.status = 'cancelled';
+  booking.status = "cancelled";
   booking.cancelledAt = new Date();
   booking.refundPercent = refundPercent;
   booking.refundedPaise = refundedPaise;
 
   booking.paymentStatus =
-    refundedPaise > 0
-      ? 'refunded'
-      : booking.paymentStatus;
+    refundedPaise > 0 ? "refunded" : booking.paymentStatus;
 
   await booking.save();
 
@@ -510,9 +486,9 @@ const cancelBooking = asyncHandler(async (req, res) => {
     await adjustWallet(
       req.user._id,
       refundedPaise,
-      'credit',
-      'booking_cancellation_refund',
-      booking._id
+      "credit",
+      "booking_cancellation_refund",
+      booking._id,
     );
   }
 
@@ -534,84 +510,60 @@ const rescheduleBooking = asyncHandler(async (req, res) => {
 
   if (!newEventDateId) {
     res.status(400);
-    throw new Error(
-      'newEventDateId is required.'
-    );
+    throw new Error("newEventDateId is required.");
   }
 
-  const booking = await Booking.findById(
-    req.params.id
-  );
+  const booking = await Booking.findById(req.params.id);
 
   if (!booking) {
     res.status(404);
-    throw new Error('Booking not found.');
+    throw new Error("Booking not found.");
   }
 
-  if (
-    booking.user.toString() !== req.user._id.toString()
-  ) {
+  if (booking.user.toString() !== req.user._id.toString()) {
     res.status(403);
-    throw new Error(
-      'You can only reschedule your own booking.'
-    );
+    throw new Error("You can only reschedule your own booking.");
   }
 
-  if (booking.status === 'cancelled') {
+  if (booking.status === "cancelled") {
     res.status(400);
-    throw new Error(
-      'A cancelled booking cannot be rescheduled.'
-    );
+    throw new Error("A cancelled booking cannot be rescheduled.");
   }
 
   if (!booking.eventDateId) {
     res.status(400);
     throw new Error(
-      'This booking is not for a multi-day event, so there is nothing to reschedule between.'
+      "This booking is not for a multi-day event, so there is nothing to reschedule between.",
     );
   }
 
-  if (
-    booking.eventDateId.toString() ===
-    newEventDateId
-  ) {
+  if (booking.eventDateId.toString() === newEventDateId) {
     res.status(400);
-    throw new Error(
-      'This is already the date on your booking.'
-    );
+    throw new Error("This is already the date on your booking.");
   }
 
-  const event = await Event.findById(
-    booking.event
-  );
+  const event = await Event.findById(booking.event);
 
   if (!event) {
     res.status(404);
-    throw new Error('Event not found.');
+    throw new Error("Event not found.");
   }
 
-  const newDate = event.eventDates.id(
-    newEventDateId
-  );
+  const newDate = event.eventDates.id(newEventDateId);
 
   if (!newDate) {
     res.status(400);
-    throw new Error(
-      'Invalid date for this event.'
-    );
+    throw new Error("Invalid date for this event.");
   }
 
-  const hasCapacityLimit =
-    newDate.capacity > 0;
+  const hasCapacityLimit = newDate.capacity > 0;
 
-  const maxAllowedSoldCount =
-    hasCapacityLimit
-      ? newDate.capacity - booking.quantity
-      : null;
+  const maxAllowedSoldCount = hasCapacityLimit
+    ? newDate.capacity - booking.quantity
+    : null;
 
-  const reserveFilter =
-    hasCapacityLimit
-      ? {
+  const reserveFilter = hasCapacityLimit
+    ? {
         _id: event._id,
         eventDates: {
           $elemMatch: {
@@ -622,44 +574,39 @@ const rescheduleBooking = asyncHandler(async (req, res) => {
           },
         },
       }
-      : {
+    : {
         _id: event._id,
-        'eventDates._id': newEventDateId,
+        "eventDates._id": newEventDateId,
       };
 
-  const reserved =
-    await Event.findOneAndUpdate(
-      reserveFilter,
-      {
-        $inc: {
-          'eventDates.$.soldCount':
-            booking.quantity,
-        },
+  const reserved = await Event.findOneAndUpdate(
+    reserveFilter,
+    {
+      $inc: {
+        "eventDates.$.soldCount": booking.quantity,
       },
-      {
-        new: true,
-      }
-    );
+    },
+    {
+      new: true,
+    },
+  );
 
   if (!reserved) {
     res.status(400);
-    throw new Error(
-      'Not enough seats left on the date you want to move to.'
-    );
+    throw new Error("Not enough seats left on the date you want to move to.");
   }
 
   // Release old date
   await Event.updateOne(
     {
       _id: event._id,
-      'eventDates._id': booking.eventDateId,
+      "eventDates._id": booking.eventDateId,
     },
     {
       $inc: {
-        'eventDates.$.soldCount':
-          -booking.quantity,
+        "eventDates.$.soldCount": -booking.quantity,
       },
-    }
+    },
   );
 
   booking.eventDateId = newEventDateId;
@@ -671,7 +618,6 @@ const rescheduleBooking = asyncHandler(async (req, res) => {
     booking,
   });
 });
-
 
 module.exports = {
   createBooking,

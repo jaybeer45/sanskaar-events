@@ -35,7 +35,7 @@ const ProfilePage = () => {
   }, [dispatch]);
 
   const handleCancelBooking = (bookingId) => {
-    if (!window.confirm('Kya aap sach mein yeh booking cancel karna chahte ho? Refund policy ke hisaab se refund hoga.')) return;
+    if (!window.confirm('Are you sure you want to cancel this booking? A refund will be processed according to the refund policy.')) return;
     dispatch(cancelBooking(bookingId));
   };
 
@@ -47,7 +47,7 @@ const ProfilePage = () => {
       const allDates = res.data.eventDates || [];
       const otherDates = allDates.filter((d) => d._id !== booking.eventDateId);
       if (otherDates.length === 0) {
-        alert('Is event ke liye koi aur date available nahi hai.');
+        alert('No Date is avalible for this event ');
         return;
       }
       setRescheduleModal({ booking, dates: otherDates });
