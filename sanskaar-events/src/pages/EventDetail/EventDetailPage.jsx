@@ -40,6 +40,7 @@ const EventDetailPage = () => {
   const [exportingVideo, setExportingVideo] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [initialFilter, setInitialFilter] = useState('none');
+  const [videoRefreshKey, setVideoRefreshKey] = useState(0);
 
 
   useEffect(() => {
@@ -72,6 +73,15 @@ const EventDetailPage = () => {
     navigate(buildRoute.confirmBooking(event.id), {
       state: { variantId: selectedVariantId, eventDateId: selectedEventDateId },
     });
+  };
+
+  const handleCreateVideoClick = () => {
+    if (!user) {
+      toast.error('Please log in to create a video');
+      navigate('/login', { state: { from: { pathname: `/events/${event.id}` } } });
+      return;
+    }
+    setShowCreateVideo(true);
   };
 
   if (status === 'loading') return <div className="flex justify-center items-center min-h-[60vh]"><Spinner size="lg" /></div>;
@@ -135,7 +145,7 @@ const EventDetailPage = () => {
                 </h1>
 
                 <div className="mt-4">
-                  <CreateVideoButton onClick={() => setShowCreateVideo(true)} />
+                  <CreateVideoButton onClick={handleCreateVideoClick} />
                 </div>
               </div>
 
@@ -180,7 +190,7 @@ const EventDetailPage = () => {
             </div>
 
             <EventArtists artists={event.artists} />
-            <CommunityCreations eventId={event.id} />
+            <CommunityCreations key={videoRefreshKey} eventId={event.id} />
 
             {/* Tags */}
             {event.tags?.length > 0 && (
@@ -391,6 +401,7 @@ const EventDetailPage = () => {
 
                 toast.success('Your event video is ready!');
                 setCreatorFile(null);
+                setVideoRefreshKey((k) => k + 1);
               } catch (err) {
                 toast.error(err.response?.data?.message || 'Failed to save your video. Please try again.');
               } finally {
