@@ -7,15 +7,15 @@ import { ROUTES } from "../../constants/routes";
 import LeafletMap from "./components/LeafletMap";
 
 export const CATEGORY_META = {
-  "live-music":        { label: "Music",     color: "#DC2626" },
-  "meetups":           { label: "Meetups",   color: "#2563EB" },
-  "comedy":            { label: "Comedy",    color: "#F59E0B" },
-  "spiritual":         { label: "Spiritual", color: "#7C3AED" },
-  "workshops":         { label: "Workshops", color: "#0891B2" },
-  "restaurant-events": { label: "Food",      color: "#EA580C" },
-  "art-culture":       { label: "Culture",   color: "#111827" },
-  "sports":            { label: "Sports",    color: "#16A34A" },
-  "kids-activities":   { label: "Kids",      color: "#DB2777" },
+  "live-music": { label: "Music", color: "#DC2626" },
+  "meetups": { label: "Meetups", color: "#2563EB" },
+  "comedy": { label: "Comedy", color: "#F59E0B" },
+  "spiritual": { label: "Spiritual", color: "#7C3AED" },
+  "workshops": { label: "Workshops", color: "#0891B2" },
+  "restaurant-events": { label: "Food", color: "#EA580C" },
+  "art-culture": { label: "Culture", color: "#111827" },
+  "sports": { label: "Sports", color: "#16A34A" },
+  "kids-activities": { label: "Kids", color: "#DB2777" },
 };
 const DEFAULT_COLOR = "#111827";
 
@@ -40,13 +40,13 @@ const MapPage = () => {
   }, [dispatch]);
 
   const cityTonightEvents = useMemo(() => {
-  const todayStr = new Date().toDateString();
-  return events.filter(
-    (e) =>
-      new Date(e.date).toDateString() === todayStr &&
-      e.venue?.address?.toLowerCase().includes(selectedCity.name.toLowerCase())
-  );
-}, [events, selectedCity]);
+    const todayStr = new Date().toDateString();
+    return events.filter(
+      (e) =>
+        new Date(e.date).toDateString() === todayStr &&
+        e.venue?.address?.toLowerCase().includes(selectedCity.name.toLowerCase())
+    );
+  }, [events, selectedCity]);
 
   const availableCategories = useMemo(() => {
     const keys = new Set(cityTonightEvents.map((e) => e.category));
@@ -65,8 +65,8 @@ const MapPage = () => {
 
   return (
     <div className="h-[calc(100vh-64px)] bg-gray-50">
-      <div className="mx-auto flex h-full max-w-7xl overflow-hidden border-x border-gray-200 bg-white shadow-sm">
-        <aside className="flex w-[380px] shrink-0 flex-col border-r border-gray-200">
+      <div className="mx-auto flex h-full max-w-7xl flex-col md:flex-row overflow-hidden border-x border-gray-200 bg-white shadow-sm">
+        <aside className="flex h-[55%] md:h-full w-full md:w-[380px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-gray-200">
           <div className="border-b border-gray-100 px-6 pt-6 pb-4">
             <Link
               to={ROUTES.HOME}
@@ -83,11 +83,10 @@ const MapPage = () => {
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 onClick={() => setCategory("all")}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                  category === "all"
-                    ? "bg-brand-red text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${category === "all"
+                  ? "bg-brand-red text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
               >
                 All
               </button>
@@ -95,9 +94,8 @@ const MapPage = () => {
                 <button
                   key={key}
                   onClick={() => setCategory(key)}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                    category === key ? "text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                  className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${category === key ? "text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
                   style={category === key ? { backgroundColor: meta.color } : undefined}
                 >
                   {meta.label}
@@ -125,9 +123,8 @@ const MapPage = () => {
                 <button
                   key={event.id}
                   onClick={() => setSelectedId(event.id)}
-                  className={`flex w-full items-start gap-3 border-b border-gray-100 px-6 py-4 text-left transition-colors ${
-                    isSelected ? "bg-red-50" : "hover:bg-gray-50"
-                  }`}
+                  className={`flex w-full items-start gap-3 border-b border-gray-100 px-6 py-4 text-left transition-colors ${isSelected ? "bg-red-50" : "hover:bg-gray-50"
+                    }`}
                 >
                   <span
                     className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded text-xs font-bold text-white"
@@ -149,7 +146,7 @@ const MapPage = () => {
           </div>
         </aside>
 
-        <div className="relative flex-1">
+        <div className="relative h-[45%] min-h-[350px] md:h-auto md:min-h-0 flex-1">
           <LeafletMap
             events={filteredEvents}
             categoryMeta={CATEGORY_META}
