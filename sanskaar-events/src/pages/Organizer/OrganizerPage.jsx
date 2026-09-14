@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { CircleCheck, Upload, Info, Lock, X, Loader2 } from 'lucide-react';
+import { CircleCheck, Lock, Loader2 } from 'lucide-react';
 import { submitEvent, resetSubmitStatus } from '../../features/events/slices/eventsSlice';
 import { fetchMyOrganizer } from '../../features/organizer/slices/organizerSlice';
 import { EVENT_CATEGORIES } from '../../constants/categories';
@@ -12,6 +12,11 @@ import Spinner from '../../components/ui/Spinner/Spinner';
 import { uploadService } from '../../services/upload.service';
 import { eventsService } from '../../services/events.service';
 import { venuesService } from '../../services/venues.service';
+import GuidelinesSidebar from '../../components/organizer/GuidelinesSidebar';
+import EventDatesInput from '../../components/organizer/EventDatesInput';
+import TicketVariantsInput from '../../components/organizer/TicketVariantsInput';
+import EventMediaUploader from '../../components/organizer/EventMediaUploader';
+import ArtistsInput from '../../components/organizer/ArtistsInput';
 
 const OrganizerPage = () => {
   const dispatch = useDispatch();
@@ -25,6 +30,7 @@ const OrganizerPage = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [ticketVariants, setTicketVariants] = useState([]);
+  const [artists, setArtists] = useState([]);
   const [savedVenues, setSavedVenues] = useState([]);
   const [selectedVenueId, setSelectedVenueId] = useState('');
   const [saveThisVenue, setSaveThisVenue] = useState(false);
@@ -36,6 +42,8 @@ const OrganizerPage = () => {
   const [initialLoading, setInitialLoading] = useState(isEditMode);
   const [existingImages, setExistingImages] = useState([]); // URLs already on the event
   const [editSubmitStatus, setEditSubmitStatus] = useState('idle'); // separate from create's redux submitStatus
+  const [selectedVideoFile, setSelectedVideoFile] = useState(null);
+  const [existingVideoUrl, setExistingVideoUrl] = useState('');
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -66,8 +74,10 @@ const OrganizerPage = () => {
           capacity: d.capacity || '',
         }))
       );
+      setArtists(event.artists || []);
 
       setExistingImages(event.images || []);
+      setExistingVideoUrl(event.promotionalVideo?.url || '');
       setInitialLoading(false);
     }).catch(() => {
       setUploadError('Failed to load event for editing.');
@@ -85,22 +95,6 @@ const OrganizerPage = () => {
     }
   }, []);
 
-  const addVariantRow = () => {
-    setTicketVariants((prev) => [...prev, { name: '', price: '', capacity: '' }]);
-  };
-
-  const updateVariantRow = (index, field, value) => {
-    setTicketVariants((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
-  };
-
-  const removeVariantRow = (index) => {
-    setTicketVariants((prev) => prev.filter((_, i) => i !== index));
-  };
-
   useEffect(() => {
     return () => dispatch(resetSubmitStatus());
   }, []);
@@ -114,90 +108,36 @@ const OrganizerPage = () => {
     }
   };
 
-  const addDateRow = () => {
-    setEventDates((prev) => [...prev, { date: '', label: '', capacity: '' }]);
-  };
-
-  const updateDateRow = (index, field, value) => {
-    setEventDates((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
-  };
-
-  const removeDateRow = (index) => {
-    setEventDates((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-
-    setUploadError('');
-
-    // Maximum 5 images total
-    const remainingSlots = 5 - selectedFiles.length;
-
-    if (remainingSlots <= 0) {
-      setUploadError('You can upload a maximum of 5 images.');
-      e.target.value = '';
-      return;
-    }
-
-    const selected = files.slice(0, remainingSlots);
-
-    // Check file size and type
-    const validFiles = [];
-
-    for (const file of selected) {
-      const allowedTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/webp'
-      ];
-
-      if (!allowedTypes.includes(file.type)) {
-        setUploadError(
-          `${file.name} is not a valid image. Only JPG, PNG and WebP are allowed.`
-        );
-        continue;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        setUploadError(
-          `${file.name} is larger than 5MB. Please select a smaller image.`
-        );
-        continue;
-      }
-
-      validFiles.push(file);
-    }
-
-    setSelectedFiles((prev) => [...prev, ...validFiles].slice(0, 5));
-
-    e.target.value = '';
-  };
-
-  const removeFile = (index) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const onSubmit = async (data) => {
     setUploadError('');
     let images = [];
+    let promotionalVideo = existingVideoUrl
+      ? { url: existingVideoUrl, mimeType: 'video/mp4' }
+      : null;
 
-    if (selectedFiles.length > 0) {
+    if (selectedFiles.length > 0 || selectedVideoFile) {
       setUploading(true);
 
-      try {
-        const res = await uploadService.uploadEventImages(selectedFiles);
-        images = res.data.urls;
-      } catch (err) {
-        setUploadError(
-          err.response?.data?.message || 'Image upload failed.'
-        );
-        setUploading(false);
-        return;
+      if (selectedFiles.length > 0) {
+        try {
+          const res = await uploadService.uploadEventImages(selectedFiles);
+          images = res.data.urls;
+        } catch (err) {
+          setUploadError(err.response?.data?.message || 'Image upload failed.');
+          setUploading(false);
+          return;
+        }
+      }
+
+      if (selectedVideoFile) {
+        try {
+          const res = await uploadService.uploadEventVideo(selectedVideoFile);
+          promotionalVideo = { url: res.data.url, mimeType: 'video/mp4' };
+        } catch (err) {
+          setUploadError(err.response?.data?.message || 'Video upload failed.');
+          setUploading(false);
+          return;
+        }
       }
 
       setUploading(false);
@@ -210,6 +150,7 @@ const OrganizerPage = () => {
       description: data.description,
       date: data.date,
       time: data.time,
+      artists: artists.filter((a) => a.name.trim()),
       eventDates: eventDates
         .filter((d) => d.date) // date empty row skip
         .map((d) => ({
@@ -235,7 +176,9 @@ const OrganizerPage = () => {
       organizerPhone: data.organizerPhone || '',
       organizerEmail: data.organizerEmail || '',
       images: isEditMode ? [...existingImages, ...images] : images,
+      promotionalVideo,
     };
+
     // ── EDIT MODE: update existing event, resubmit for review ──
     if (isEditMode) {
       setEditSubmitStatus('loading');
@@ -252,7 +195,6 @@ const OrganizerPage = () => {
     // ── CREATE MODE ──
     try {
       const createdEvent = await dispatch(submitEvent(eventPayload)).unwrap();
-
 
       if (saveThisVenue && !selectedVenueId) {
         venuesService.create({
@@ -499,65 +441,9 @@ const OrganizerPage = () => {
                         className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
                       />
                     </div>
-                    {/* Multiple dates (optional) — for multi-day/recurring events */}
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-bold uppercase tracking-wide text-gray-500">
-                          Additional dates (optional)
-                        </label>
-                        <button
-                          type="button"
-                          onClick={addDateRow}
-                          className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5"
-                        >
-                          + Add date
-                        </button>
-                      </div>
-                      <p className="text-xs text-gray-400 mb-4">
-                        Leave empty for a single-date event. Add rows if this event runs across multiple dates —
-                        attendees will be able to pick a date, and you'll be able to reschedule bookings between them.
-                      </p>
 
-                      {eventDates.map((d, i) => (
-                        <div key={i} className="grid grid-cols-[1.2fr_1fr_1fr_auto] gap-3 mb-3 items-end">
-                          <div>
-                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Date</label>
-                            <input
-                              type="date"
-                              value={d.date}
-                              onChange={(e) => updateDateRow(i, 'date', e.target.value)}
-                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Label</label>
-                            <input
-                              value={d.label}
-                              onChange={(e) => updateDateRow(i, 'label', e.target.value)}
-                              placeholder="e.g. Day 1"
-                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Capacity</label>
-                            <input
-                              type="number"
-                              value={d.capacity}
-                              onChange={(e) => updateDateRow(i, 'capacity', e.target.value)}
-                              placeholder="0 = no per-day cap"
-                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeDateRow(i)}
-                            className="h-[42px] px-3 border border-gray-300 text-gray-500 hover:border-red-400 hover:text-red-500 transition-colors"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    {/* Multiple dates (optional) — for multi-day/recurring events */}
+                    <EventDatesInput dates={eventDates} onChange={setEventDates} />
 
                   </div>
 
@@ -704,63 +590,8 @@ const OrganizerPage = () => {
               </div>
 
               {/* Ticket variants (optional) */}
-              <div className="bg-white border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="font-black text-base text-gray-900">Ticket Types (optional)</h2>
-                  <button
-                    type="button"
-                    onClick={addVariantRow}
-                    className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5"
-                  >
-                    + Add ticket type
-                  </button>
-                </div>
-                <p className="text-xs text-gray-400 mb-4">
-                  Leave empty to use the single price above. Add rows here for multiple ticket tiers (e.g. Silver, Gold, VIP).
-                </p>
-
-                {ticketVariants.map((v, i) => (
-                  <div key={i} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-3 mb-3 items-end">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Name</label>
-                      <input
-                        value={v.name}
-                        onChange={(e) => updateVariantRow(i, 'name', e.target.value)}
-                        placeholder="e.g. Silver"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Price (₹)</label>
-                      <input
-                        type="number"
-                        value={v.price}
-                        onChange={(e) => updateVariantRow(i, 'price', e.target.value)}
-                        placeholder="500"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Capacity</label>
-                      <input
-                        type="number"
-                        value={v.capacity}
-                        onChange={(e) => updateVariantRow(i, 'capacity', e.target.value)}
-                        placeholder="100"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeVariantRow(i)}
-                      className="h-[42px] px-3 border border-gray-300 text-gray-500 hover:border-red-400 hover:text-red-500 transition-colors"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
+              <TicketVariantsInput variants={ticketVariants} onChange={setTicketVariants} />
+              <ArtistsInput artists={artists} onChange={setArtists} />
               {/* Organizer */}
               <div className="bg-white border border-gray-200 p-6">
                 <h2 className="font-black text-base text-gray-900 mb-5">
@@ -809,94 +640,22 @@ const OrganizerPage = () => {
                 </div>
               </div>
 
-              {existingImages.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Current images</p>
-                  <div className="grid grid-cols-5 gap-2">
-                    {existingImages.map((url, i) => (
-                      <div key={url} className="relative aspect-square">
-                        <img src={url} alt="" className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => setExistingImages((prev) => prev.filter((u) => u !== url))}
-                          className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center"
-                        >
-                          <X size={11} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+              {/* Event media — images + promotional video */}
+              {uploadError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3">
+                  {uploadError}
                 </div>
               )}
-
-              {/* Photo upload */}
-              <div className="bg-white border border-gray-200 p-6">
-                <h2 className="font-black text-base text-gray-900 mb-5">
-                  Event Images
-                </h2>
-
-                {uploadError && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 mb-4">
-                    {uploadError}
-                  </div>
-                )}
-
-                <label
-                  htmlFor="event-image-input"
-                  className="border-2 border-dashed border-gray-300 flex flex-col items-center justify-center py-12 cursor-pointer hover:border-brand-red transition-colors"
-                  style={{
-                    backgroundImage:
-                      'repeating-linear-gradient(135deg, #f9fafb 0px, #f9fafb 2px, #f3f4f6 2px, #f3f4f6 12px)'
-                  }}
-                >
-                  <Upload size={28} className="text-gray-400 mb-2" />
-
-                  <p className="text-sm font-semibold text-gray-600">
-                    Click to upload images
-                  </p>
-
-                  <p className="text-xs text-gray-400 mt-1">
-                    JPG, PNG, WebP up to 5MB each · 5 images max
-                  </p>
-
-                  <input
-                    id="event-image-input"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    multiple
-                    onChange={handleFileSelect}
-                    disabled={selectedFiles.length >= 5}
-                    className="hidden"
-                  />
-                </label>
-
-                {selectedFiles.length > 0 && (
-                  <div className="grid grid-cols-5 gap-2 mt-4">
-
-                    {selectedFiles.map((file, i) => (
-                      <div
-                        key={i}
-                        className="relative aspect-square"
-                      >
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-
-                        <button
-                          type="button"
-                          onClick={() => removeFile(i)}
-                          className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center"
-                        >
-                          <X size={11} />
-                        </button>
-                      </div>
-                    ))}
-
-                  </div>
-                )}
-              </div>
+              <EventMediaUploader
+                existingImages={existingImages}
+                onExistingImagesChange={setExistingImages}
+                selectedFiles={selectedFiles}
+                onFilesChange={setSelectedFiles}
+                existingVideoUrl={existingVideoUrl}
+                onExistingVideoChange={setExistingVideoUrl}
+                selectedVideoFile={selectedVideoFile}
+                onVideoFileChange={setSelectedVideoFile}
+              />
 
               <button
                 type="submit"
@@ -906,7 +665,7 @@ const OrganizerPage = () => {
                 {uploading ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
-                    Uploading images...
+                    Uploading media...
                   </>
                 ) : (submitStatus === 'loading' || editSubmitStatus === 'loading') ? (
                   <Spinner size="sm" />
@@ -919,60 +678,7 @@ const OrganizerPage = () => {
           </div>
 
           {/* Sidebar — guidelines */}
-          <div className="lg:col-span-1 space-y-4">
-
-            <div className="bg-white border border-gray-200 p-5 sticky top-20">
-
-              <div className="flex items-center gap-2 mb-4">
-                <Info size={15} className="text-brand-red" />
-
-                <h3 className="font-black text-sm text-gray-900">
-                  Submission Guidelines
-                </h3>
-              </div>
-
-              <ul className="space-y-3 text-xs text-gray-600">
-
-                {[
-                  'Events must be in or near Bareilly',
-                  'Approval takes 24-48 hours on weekdays',
-                  'Include a clear event image for better visibility',
-                  'Free events get 2× more clicks',
-                  'Add a working booking URL for paid events',
-                  'Events with complete info are prioritised',
-                ].map((tip, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2"
-                  >
-                    <span className="w-4 h-4 shrink-0 bg-brand-red text-white text-[9px] font-bold flex items-center justify-center mt-0.5">
-                      {i + 1}
-                    </span>
-
-                    {tip}
-                  </li>
-                ))}
-
-              </ul>
-
-              <div className="mt-5 pt-5 border-t border-gray-100">
-
-                <p className="text-xs font-bold text-gray-900 mb-1">
-                  Need help?
-                </p>
-
-                <p className="text-xs text-gray-500">
-                  WhatsApp us at{' '}
-                  <span className="font-semibold text-brand-red">
-                    +91 98765 43210
-                  </span>
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
+          <GuidelinesSidebar />
 
         </div>
       </div>

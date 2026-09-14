@@ -8,6 +8,13 @@ export const uploadService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+  uploadEventVideo: (file) => {
+  const formData = new FormData();
+  formData.append('video', file);
+  return axiosInstance.post('/uploads/event-video', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+},
   uploadKycDocument: (file) => {
     const formData = new FormData();
     formData.append('document', file);

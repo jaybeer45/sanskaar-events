@@ -22,9 +22,18 @@ const eventSchema = new mongoose.Schema(
     description: { type: String, default: '' },
     category: { type: String, required: true },
     images: [String],
+    promotionalVideo: { url: { type: String, default: '' }, mimeType: { type: String, default: '' } },
     date: { type: Date, required: true },
     time: { type: String, required: true },
     eventDates: { type: [eventDateSchema], default: [] },
+    artists: [
+  {
+    name: { type: String, required: true },
+    photo: { type: String, default: '' },
+    bio: { type: String, default: '' },
+    socialLink: { type: String, default: '' },
+  },
+],
     venue: { name: String, address: String, lat: Number, lng: Number },
     price: { free: { type: Boolean, default: false }, min: { type: Number, default: 0 }, max: { type: Number, default: 0 } },
     inventory: { total: { type: Number, default: 0 }, remaining: { type: Number, default: 0 } },

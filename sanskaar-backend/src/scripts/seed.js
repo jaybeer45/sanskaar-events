@@ -17,7 +17,7 @@ const CATEGORY_MAP = {
 const run = async () => {
   await connectDB();
 
-  // ── Purana seeded data hatao (safe re-run ke liye) ──────────
+
   await Event.deleteMany({});
   await Vendor.deleteMany({});
   await User.deleteMany({ email: { $regex: '^seed' } });
@@ -40,18 +40,67 @@ const run = async () => {
 });
 
   // ── 2. mock events.json ko Event schema mein daalo ──────────
-  const eventsToInsert = mockEvents.map((e , i) => ({
+  const eventsToInsert = mockEvents.map((e, i) => {
+  const baseDate = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + (i % 3)); // aaj, kal, parso mein spread karega
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+
+  // Har 3rd event ko multi-date banao (reschedule/cancel testing ke liye)
+  const eventDates =
+    i % 3 === 0
+      ? [0, 1, 2].map((offset) => {
+          const d = new Date(baseDate);
+          d.setDate(d.getDate() + offset);
+          return {
+            date: d,
+            label: `Day ${offset + 1}`,
+            capacity: Math.max(10, Math.floor((e.capacity || 30) / 3)),
+          };
+        })
+      : [];
+
+  // Har doosre event ko 1-2 artists do (artist section testing ke liye)
+  const artists =
+    i % 2 === 0
+      ? [
+          {
+            name: `Artist ${i + 1}`,
+            photo: `https://picsum.photos/seed/artist${i + 1}/200/200`,
+            bio: 'A talented performer featured at this event.',
+            socialLink: i % 4 === 0 ? `https://instagram.com/artist${i + 1}` : '',
+          },
+          ...(i % 4 === 0
+            ? [
+                {
+                  name: `Artist ${i + 1}B`,
+                  photo: `https://picsum.photos/seed/artist${i + 1}b/200/200`,
+                  bio: 'Special guest performer.',
+                  socialLink: '',
+                },
+              ]
+            : []),
+        ]
+      : [];
+
+  // Sirf pehle event ko promotional video do (video-playback testing ke liye)
+  const promotionalVideo =
+    i === 0
+      ? { url: 'https://www.w3schools.com/html/mov_bbb.mp4', mimeType: 'video/mp4' }
+      : { url: '', mimeType: '' };
+
+  return {
     title: e.title,
     description: e.description || '',
     category: e.category,
     images: e.images || [],
-    date: (() => {
-  const d = new Date();
-  d.setDate(d.getDate() + (i % 3)); // aaj, kal, parso mein spread karega
-  d.setHours(0, 0, 0, 0);
-  return d;
-})(),
+    date: baseDate,
     time: e.time,
+    eventDates,
+    artists,
+    promotionalVideo,
     venue: {
       name: e.venue?.name,
       address: e.venue?.address,
@@ -71,7 +120,8 @@ const run = async () => {
     status: 'published',
     ratingAvg: 0,
     ratingCount: 0,
-  }));
+  };
+});
 
   const insertedEvents = await Event.insertMany(eventsToInsert);
   console.log(`✅ ${insertedEvents.length} events seeded`);

@@ -17,6 +17,7 @@ const venueRoutes = require('./routes/venue.routes')
 const requestRoutes = require('./routes/request.routes') 
 const quotesRoutes =  require('./routes/quote.routes');
 const vendorPaymentRoutes = require('./routes/vendorPayment.routes');
+const creatorVideoRoutes = require('./routes/creatorVideo.routes')
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/api/v1/venues', venueRoutes );
 app.use('/api/v1/requests',  requestRoutes );
 app.use('/api/v1/quotes', quotesRoutes );
 app.use('/api/v1/vendor-bookings', vendorPaymentRoutes );
+app.use('/api/v1/creator-videos', creatorVideoRoutes );
 
 // Public static serving — ONLY the events folder, never kyc/ (that stays private)
 app.use('/uploads/events', express.static(path.join(__dirname, '..', 'uploads', 'events')));

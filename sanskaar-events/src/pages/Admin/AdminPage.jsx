@@ -11,6 +11,7 @@ import Spinner from '../../components/ui/Spinner/Spinner';
 import toast from 'react-hot-toast';
 import { formatPaise } from '../../utils/formatPrice';
 import CouponManager from '../../components/admin/CouponManager';
+import VendorBookingsOverview from '../../components/admin/VendorBookingsOverview';
 
 const AdminPage = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,12 @@ const AdminPage = () => {
   const [organizersLoading, setOrganizersLoading] = useState(true);
   const [vendors, setVendors] = useState([]);
   const [vendorsLoading, setVendorsLoading] = useState(true);
+  const [eventsHistory, setEventsHistory] = useState([]);
+  const [eventsHistoryLoading, setEventsHistoryLoading] = useState(true);
+  const [organizersHistory, setOrganizersHistory] = useState([]);
+  const [organizersHistoryLoading, setOrganizersHistoryLoading] = useState(true);
+  const [vendorsHistory, setVendorsHistory] = useState([]);
+  const [vendorsHistoryLoading, setVendorsHistoryLoading] = useState(true);
   const [payouts, setPayouts] = useState([]);
   const [payoutsLoading, setPayoutsLoading] = useState(true);
   const [markingId, setMarkingId] = useState(null);
@@ -42,14 +49,34 @@ const AdminPage = () => {
     adminService.getVendorPayouts('pending').then(setPayouts).finally(() => setPayoutsLoading(false));
   };
 
+  const loadEventsHistory = () => {
+    setEventsHistoryLoading(true);
+    adminService.getEventsHistory().then(setEventsHistory).finally(() => setEventsHistoryLoading(false));
+  };
+  const loadOrganizersHistory = () => {
+    setOrganizersHistoryLoading(true);
+    adminService.getOrganizersHistory().then(setOrganizersHistory).finally(() => setOrganizersHistoryLoading(false));
+  };
+  const loadVendorsHistory = () => {
+    setVendorsHistoryLoading(true);
+    adminService.getVendorsHistory().then(setVendorsHistory).finally(() => setVendorsHistoryLoading(false));
+  };
+
   useEffect(() => {
     dispatch(fetchPendingEvents());
     loadOrganizers();
     loadVendors();
     loadPayouts();
+    loadEventsHistory();
+    loadOrganizersHistory();
+    loadVendorsHistory();
   }, [dispatch]);
 
-  const handleApproveEvent = (id) => { dispatch(approveEvent(id)); toast.success('Event approved'); };
+  const handleApproveEvent = (id) => {
+    dispatch(approveEvent(id));
+    toast.success('Event approved');
+    setTimeout(loadEventsHistory, 500);
+  };
   const handleOpenRejectEvent = (id) => {
     setRejectingEventId(id);
     setRejectReason('');
@@ -57,7 +84,7 @@ const AdminPage = () => {
 
   const handleConfirmRejectEvent = () => {
     if (rejectReason.trim().length < 5) {
-      toast.error('Reason kam se kam 5 characters ka hona chahiye');
+      toast.error('Reason atleast should be 5 words');
       return;
     }
     dispatch(rejectEvent({ id: rejectingEventId, reason: rejectReason.trim() }))
@@ -65,8 +92,9 @@ const AdminPage = () => {
       .then(() => {
         toast.error('Event rejected');
         setRejectingEventId(null);
+        loadEventsHistory();
       })
-      .catch((err) => toast.error(typeof err === 'string' ? err : 'Reject fail ho gaya'));
+      .catch((err) => toast.error(typeof err === 'string' ? err : 'Reject faild '));
   };
 
   const handleVerifyOrganizer = async (id) => {
@@ -74,6 +102,7 @@ const AdminPage = () => {
       await adminService.verifyOrganizer(id);
       toast.success('Organizer verified');
       loadOrganizers();
+      loadOrganizersHistory();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to verify organizer');
     }
@@ -83,6 +112,7 @@ const AdminPage = () => {
       await adminService.rejectOrganizer(id);
       toast.error('Organizer rejected');
       loadOrganizers();
+      loadOrganizersHistory()
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to reject organizer');
     }
@@ -93,6 +123,7 @@ const AdminPage = () => {
       await adminService.verifyVendor(id);
       toast.success('Vendor verified');
       loadVendors();
+      loadVendorsHistory();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to verify vendor');
     }
@@ -143,104 +174,168 @@ const AdminPage = () => {
 
         {/* ── Events ── */}
         <section>
-          <h2 className="font-black text-lg text-gray-900 mb-4">Pending Events</h2>
-          {eventsStatus === 'loading' ? (
-            <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-          ) : (
-            <div className="bg-white border border-gray-200 overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-200 bg-[#f5f5f4]">
-                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500">Event</th>
-                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500 hidden md:table-cell">Organizer</th>
-                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500 hidden lg:table-cell">Category</th>
-                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500 hidden lg:table-cell">Date</th>
-                    <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-gray-500">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Pending */}
+            <div>
+              <h2 className="font-black text-lg text-gray-900 mb-4">Pending Events</h2>
+              {eventsStatus === 'loading' ? (
+                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+              ) : (
+                <div className="bg-white border border-gray-200 divide-y divide-gray-100">
                   {events.length === 0 && (
-                    <tr><td colSpan={5} className="text-center py-16 text-gray-400"><Clock size={32} className="mx-auto mb-2 text-gray-300" />No events in queue</td></tr>
+                    <div className="text-center py-16 text-gray-400">
+                      <Clock size={32} className="mx-auto mb-2 text-gray-300" />No events in queue
+                    </div>
                   )}
                   {events.map((event) => (
-                    <tr key={event.id} className="hover:bg-[#f5f5f4] transition-colors">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 shrink-0" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #d1d5db 0, #d1d5db 1px, #e5e7eb 1px, #e5e7eb 6px)', backgroundColor: '#e5e7eb' }}>
-                            {event.images?.[0] && <img src={event.images[0]} alt="" className="w-full h-full object-cover" />}
-                          </div>
-                          <p className="font-bold text-gray-900 line-clamp-1">{event.title}</p>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4 text-gray-500 hidden md:table-cell">{event.organizer?.name}</td>
-                      <td className="px-5 py-4 hidden lg:table-cell">
-                        <span className="text-[10px] font-bold uppercase tracking-wide bg-black text-white px-2 py-1">{event.category?.replace(/-/g, ' ')}</span>
-                      </td>
-                      <td className="px-5 py-4 text-gray-500 hidden lg:table-cell">{new Date(event.date).toLocaleDateString('en-IN')} · {event.time}</td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link to={buildRoute.eventDetail(event.id)} className="w-7 h-7 flex items-center justify-center border border-gray-300 hover:border-gray-500 transition-colors" title="Preview">
-                            <Eye size={13} className="text-gray-500" />
-                          </Link>
-                          <button onClick={() => handleApproveEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-green-500 hover:bg-green-600 transition-colors" title="Approve">
-                            <CheckCircle size={13} className="text-white" />
-                          </button>
-                          <button onClick={() => handleOpenRejectEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-brand-red hover:bg-brand-red-hover transition-colors" title="Reject">
-                            <XCircle size={13} className="text-white" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    <div key={event.id} className="p-4 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-900 truncate">{event.title}</p>
+                        <p className="text-xs text-gray-500">{event.organizer?.name} · {new Date(event.date).toLocaleDateString('en-IN')}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Link to={buildRoute.eventDetail(event.id)} className="w-7 h-7 flex items-center justify-center border border-gray-300 hover:border-gray-500" title="Preview">
+                          <Eye size={13} className="text-gray-500" />
+                        </Link>
+                        <button onClick={() => handleApproveEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-green-500 hover:bg-green-600" title="Approve">
+                          <CheckCircle size={13} className="text-white" />
+                        </button>
+                        <button onClick={() => handleOpenRejectEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-brand-red hover:bg-brand-red-hover" title="Reject">
+                          <XCircle size={13} className="text-white" />
+                        </button>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* History */}
+            <div>
+              <h2 className="font-black text-lg text-gray-900 mb-4">Event History</h2>
+              {eventsHistoryLoading ? (
+                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+              ) : (
+                <div className="bg-white border border-gray-200 divide-y divide-gray-100 max-h-[500px] overflow-y-auto">
+                  {eventsHistory.length === 0 && <p className="text-sm text-gray-500 p-5">No decided events yet.</p>}
+                  {eventsHistory.map((event) => (
+                    <div key={event.id} className="p-4 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-900 truncate">{event.title}</p>
+                        <p className="text-xs text-gray-500">{event.organizer?.name}</p>
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold uppercase px-2 py-1 shrink-0 ${event.status === 'published' ? 'bg-green-100 text-green-700' :
+                          event.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                            'bg-gray-200 text-gray-500'
+                          }`}
+                      >
+                        {event.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </section>
 
         {/* ── Organizers ── */}
         <section>
-          <h2 className="font-black text-lg text-gray-900 mb-4">Pending Organizer KYC</h2>
-          {organizersLoading ? (
-            <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-          ) : (
-            <div className="space-y-2">
-              {organizers.length === 0 && <p className="text-sm text-gray-500">No pending organizers.</p>}
-              {organizers.map((org) => (
-                <div key={org.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-gray-900 text-sm">{org.displayName}</p>
-                    <p className="text-xs text-gray-500">{org.organizerType} · {org.cityId} · KYC: {org.kycStatus}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => handleVerifyOrganizer(org.id)} className="text-xs font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-2">Verify</button>
-                    <button onClick={() => handleRejectOrganizer(org.id)} className="text-xs font-bold bg-brand-red hover:bg-brand-red-hover text-white px-3 py-2">Reject</button>
-                  </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h2 className="font-black text-lg text-gray-900 mb-4">Pending Organizer KYC</h2>
+              {organizersLoading ? (
+                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+              ) : (
+                <div className="space-y-2">
+                  {organizers.length === 0 && <p className="text-sm text-gray-500">No pending organizers.</p>}
+                  {organizers.map((org) => (
+                    <div key={org.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{org.displayName}</p>
+                        <p className="text-xs text-gray-500">{org.organizerType} · {org.cityId} · KYC: {org.kycStatus}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleVerifyOrganizer(org.id)} className="text-xs font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-2">Verify</button>
+                        <button onClick={() => handleRejectOrganizer(org.id)} className="text-xs font-bold bg-brand-red hover:bg-brand-red-hover text-white px-3 py-2">Reject</button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
+
+            <div>
+              <h2 className="font-black text-lg text-gray-900 mb-4">Organizer History</h2>
+              {organizersHistoryLoading ? (
+                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+              ) : (
+                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                  {organizersHistory.length === 0 && <p className="text-sm text-gray-500">No decided organizers yet.</p>}
+                  {organizersHistory.map((org) => (
+                    <div key={org.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{org.displayName}</p>
+                        <p className="text-xs text-gray-500">{org.organizerType} · {org.cityId}</p>
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold uppercase px-2 py-1 ${org.kycStatus === 'verified' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          }`}
+                      >
+                        {org.kycStatus}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </section>
 
         {/* ── Vendors ── */}
         <section>
-          <h2 className="font-black text-lg text-gray-900 mb-4">Pending Vendor Verification</h2>
-          {vendorsLoading ? (
-            <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-          ) : (
-            <div className="space-y-2">
-              {vendors.length === 0 && <p className="text-sm text-gray-500">No pending vendors.</p>}
-              {vendors.map((v) => (
-                <div key={v.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-gray-900 text-sm">{v.businessName}</p>
-                    <p className="text-xs text-gray-500">{v.categories?.join(', ')} · {v.cityId}</p>
-                  </div>
-                  <button onClick={() => handleVerifyVendor(v.id)} className="text-xs font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-2">Verify</button>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h2 className="font-black text-lg text-gray-900 mb-4">Pending Vendor Verification</h2>
+              {vendorsLoading ? (
+                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+              ) : (
+                <div className="space-y-2">
+                  {vendors.length === 0 && <p className="text-sm text-gray-500">No pending vendors.</p>}
+                  {vendors.map((v) => (
+                    <div key={v.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{v.businessName}</p>
+                        <p className="text-xs text-gray-500">{v.categories?.join(', ')} · {v.cityId}</p>
+                      </div>
+                      <button onClick={() => handleVerifyVendor(v.id)} className="text-xs font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-2">Verify</button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
+
+            <div>
+              <h2 className="font-black text-lg text-gray-900 mb-4">Vendor History</h2>
+              {vendorsHistoryLoading ? (
+                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+              ) : (
+                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                  {vendorsHistory.length === 0 && <p className="text-sm text-gray-500">No approved vendors yet.</p>}
+                  {vendorsHistory.map((v) => (
+                    <div key={v.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{v.businessName}</p>
+                        <p className="text-xs text-gray-500">{v.categories?.join(', ')} · {v.cityId}</p>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase px-2 py-1 bg-green-100 text-green-700">approved</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </section>
 
         {/* ── Vendor Payouts ── */}
@@ -287,6 +382,7 @@ const AdminPage = () => {
             </div>
           )}
         </section>
+        <VendorBookingsOverview />
 
         <CouponManager />
         {rejectingEventId && (

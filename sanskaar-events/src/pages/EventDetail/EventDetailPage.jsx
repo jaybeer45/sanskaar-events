@@ -13,6 +13,15 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { eventsService } from '../../services/events.service';
+import EventMediaCarousel from '../../components/events/EventMediaCarousel';
+import EventArtists from '../../components/events/EventArtists';
+import CreateVideoButton from '../../components/creator-video/CreateVideoButton';
+import CreateVideoModal from '../../components/creator-video/CreateVideoModal';
+import CreatorEditor from '../../components/creator-video/CreatorEditor';
+import { uploadService } from '../../services/upload.service';
+import { creatorVideoService } from '../../services/creatorVideo.service';
+import CommunityCreations from '../../components/creator-video/CommunityCreations';
+import CameraCapture from '../../components/creator-video/CameraCapture';
 
 
 
@@ -26,6 +35,12 @@ const EventDetailPage = () => {
   const [variants, setVariants] = useState([]);
   const [selectedVariantId, setSelectedVariantId] = useState(null);
   const [selectedEventDateId, setSelectedEventDateId] = useState(null);
+  const [showCreateVideo, setShowCreateVideo] = useState(false);
+  const [creatorFile, setCreatorFile] = useState(null);
+  const [exportingVideo, setExportingVideo] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [initialFilter, setInitialFilter] = useState('none');
+
 
   useEffect(() => {
     if (event?.eventDates?.length > 0 && !selectedEventDateId) {
@@ -48,16 +63,16 @@ const EventDetailPage = () => {
 
   const user = useSelector((s) => s.auth.user);
 
- const handleBookNow = () => {
-  if (!user) {
-    toast.error('Please log in to book');
-    navigate('/login', { state: { from: { pathname: buildRoute.confirmBooking(event.id) } } });
-    return;
-  }
-  navigate(buildRoute.confirmBooking(event.id), {
-    state: { variantId: selectedVariantId, eventDateId: selectedEventDateId },
-  });
-};
+  const handleBookNow = () => {
+    if (!user) {
+      toast.error('Please log in to book');
+      navigate('/login', { state: { from: { pathname: buildRoute.confirmBooking(event.id) } } });
+      return;
+    }
+    navigate(buildRoute.confirmBooking(event.id), {
+      state: { variantId: selectedVariantId, eventDateId: selectedEventDateId },
+    });
+  };
 
   if (status === 'loading') return <div className="flex justify-center items-center min-h-[60vh]"><Spinner size="lg" /></div>;
   if (!event) return <EmptyState icon="❌" title="Event not found" message="This event may have been removed" action={<Link to={ROUTES.HOME} className="bg-brand-red text-white font-bold px-6 py-3">Browse Events</Link>} />;
@@ -67,14 +82,15 @@ const EventDetailPage = () => {
   const date = new Date(event.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   const totalCapacity = event.eventDates?.length > 0
-  ? event.eventDates.reduce((sum, d) => sum + (d.capacity || 0), 0)
-  : event.inventory?.total ?? 0;
+    ? event.eventDates.reduce((sum, d) => sum + (d.capacity || 0), 0)
+    : event.inventory?.total ?? 0;
 
-const totalGoing = event.eventDates?.length > 0
-  ? event.eventDates.reduce((sum, d) => sum + (d.soldCount || 0), 0)
-  : (event.inventory?.total ?? 0) - (event.inventory?.remaining ?? 0);
+  const totalGoing = event.eventDates?.length > 0
+    ? event.eventDates.reduce((sum, d) => sum + (d.soldCount || 0), 0)
+    : (event.inventory?.total ?? 0) - (event.inventory?.remaining ?? 0);
 
   return (
+
     <div className="bg-[#f5f5f4] min-h-screen">
       {/* Back nav */}
       <div className="bg-white border-b border-gray-200">
@@ -85,26 +101,19 @@ const totalGoing = event.eventDates?.length > 0
         </div>
       </div>
 
-      {/* Hero image */}
-      <div
-        className="relative h-64 md:h-80 overflow-hidden"
-        style={{
-          backgroundImage: event.images?.[0]
-            ? undefined
-            : 'repeating-linear-gradient(135deg, #d1d5db 0px, #d1d5db 1px, #e5e7eb 1px, #e5e7eb 10px)',
-          backgroundColor: '#e5e7eb',
-        }}
-      >
-        {event.images?.[0] && (
-          <img src={event.images[0]} alt={event.title} className="w-full h-full object-cover" />
-        )}
+      {/* Hero Video */}
+      <div className="relative overflow-hidden">
+        <EventMediaCarousel event={event} />
+
         {/* Live + category badges */}
-        <div className="absolute top-4 left-4 flex gap-2">
+        <div className="absolute top-4 left-4 flex gap-2 z-10">
           {event.isLive && (
             <span className="bg-brand-red text-white text-[10px] font-bold px-2.5 py-1 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse inline-block" /> LIVE
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse inline-block" />
+              LIVE
             </span>
           )}
+
           <span className="bg-black text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1">
             {event.category?.replace(/-/g, ' ')}
           </span>
@@ -118,13 +127,33 @@ const totalGoing = event.eventDates?.length > 0
           {/* Left — event details */}
           <div className="lg:col-span-2">
             {/* Title + actions */}
+            {/* Title + actions */}
             <div className="flex items-start justify-between gap-4 mb-6">
-              <h1 className="font-black text-3xl md:text-4xl text-gray-900 leading-tight">{event.title}</h1>
+              <div>
+                <h1 className="font-black text-3xl md:text-4xl text-gray-900 leading-tight">
+                  {event.title}
+                </h1>
+
+                <div className="mt-4">
+                  <CreateVideoButton onClick={() => setShowCreateVideo(true)} />
+                </div>
+              </div>
+
               <div className="flex gap-2 shrink-0">
-                <button onClick={handleSave} className="w-9 h-9 border border-gray-300 bg-white flex items-center justify-center hover:border-brand-red transition-colors">
-                  <Heart size={15} className={isSaved ? 'fill-brand-red text-brand-red' : 'text-gray-500'} />
+                <button
+                  onClick={handleSave}
+                  className="w-9 h-9 border border-gray-300 bg-white flex items-center justify-center hover:border-brand-red transition-colors"
+                >
+                  <Heart
+                    size={15}
+                    className={isSaved ? 'fill-brand-red text-brand-red' : 'text-gray-500'}
+                  />
                 </button>
-                <button onClick={handleShare} className="w-9 h-9 border border-gray-300 bg-white flex items-center justify-center hover:border-brand-red transition-colors">
+
+                <button
+                  onClick={handleShare}
+                  className="w-9 h-9 border border-gray-300 bg-white flex items-center justify-center hover:border-brand-red transition-colors"
+                >
                   <Share2 size={15} className="text-gray-500" />
                 </button>
               </div>
@@ -149,6 +178,9 @@ const totalGoing = event.eventDates?.length > 0
               <h2 className="font-black text-lg text-gray-900 mb-3">About this event</h2>
               <p className="text-gray-600 leading-relaxed text-sm">{event.description}</p>
             </div>
+
+            <EventArtists artists={event.artists} />
+            <CommunityCreations eventId={event.id} />
 
             {/* Tags */}
             {event.tags?.length > 0 && (
@@ -305,6 +337,69 @@ const totalGoing = event.eventDates?.length > 0
             </div>
           </div>
         </div>
+        <CreateVideoModal
+          isOpen={showCreateVideo}
+          onClose={() => setShowCreateVideo(false)}
+          onUpload={(file) => {
+            setCreatorFile(file);
+            setShowCreateVideo(false);
+          }}
+          onCamera={() => {
+            setShowCreateVideo(false);
+            setShowCamera(true);
+          }}
+        />
+
+        {showCamera && (
+          <CameraCapture
+            onClose={() => setShowCamera(false)}
+            onCapture={(file, filter) => {
+              setCreatorFile(file);
+              setInitialFilter(filter);
+              setShowCamera(false);
+            }}
+          />
+        )}
+
+        {creatorFile && (
+          <CreatorEditor
+            file={creatorFile}
+            event={event}
+            initialFilter={initialFilter}
+            onClose={() => setCreatorFile(null)}
+            onExport={async (data) => {
+              setExportingVideo(true);
+              try {
+                const uploadRes = await uploadService.uploadEventVideo(data.file);
+
+                await creatorVideoService.create({
+                  eventId: event.id,
+                  videoUrl: uploadRes.data.url,
+                  duration: data.trimRange.end - data.trimRange.start,
+                  visibility: data.visibility,
+                  trimStart: data.trimRange.start,
+                  trimEnd: data.trimRange.end,
+                  filterCss: data.selectedFilter,
+                  textOverlays: data.textOverlays.map((o) => ({
+                    content: o.content,
+                    x: o.x,
+                    y: o.y,
+                    fontSize: o.fontSize,
+                    color: o.color,
+                  })),
+                });
+
+                toast.success('Your event video is ready!');
+                setCreatorFile(null);
+              } catch (err) {
+                toast.error(err.response?.data?.message || 'Failed to save your video. Please try again.');
+              } finally {
+                setExportingVideo(false);
+              }
+            }}
+            isExporting={exportingVideo}
+          />
+        )}
       </div>
     </div>
   );

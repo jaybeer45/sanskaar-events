@@ -25,18 +25,15 @@ const getNavLinks = (isLoggedIn, roles = []) => {
   if (roles.includes('admin')) {
     extra.push({ label: 'Vendors', to: ROUTES.VENDORS });
     extra.push({ label: 'Organize', to: ROUTES.ORGANIZER_SUBMIT });
-    extra.push({ label: 'My Events', to: ROUTES.MY_EVENTS });
     extra.push({ label: 'Admin', to: ROUTES.ADMIN });
     return [...links, ...extra];
   }
 
-  // Non-admins: accumulate based on whichever roles they actually hold
   if (roles.includes('vendor')) {
     extra.push({ label: 'Vendors', to: ROUTES.VENDORS });
   }
   if (roles.includes('organizer')) {
     extra.push({ label: 'Organize', to: ROUTES.ORGANIZER_SUBMIT });
-    extra.push({ label: 'My Events', to: ROUTES.MY_EVENTS });
   }
 
   return [...links, ...extra];
@@ -51,7 +48,9 @@ const Navbar = () => {
   const { user, token } = useSelector((s) => s.auth);
 
   const isLoggedIn = Boolean(token && user);
-  const navLinks = getNavLinks(isLoggedIn, useSelector((s) => s.auth.roles));
+  const roles = useSelector((s) => s.auth.roles) || [];
+  const canSeeMyEvents = roles.includes('organizer') || roles.includes('admin');
+  const navLinks = getNavLinks(isLoggedIn, roles);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -119,6 +118,16 @@ const Navbar = () => {
                   >
                     My Profile
                   </Link>
+                  {canSeeMyEvents && (
+                    <Link
+                      to={ROUTES.MY_EVENTS}
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                    >
+                      My Events
+                    </Link>
+                  )}
+
                   <Link to={ROUTES.ORGANIZER_REGISTER}
                     onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
                     Become an Organizer
@@ -211,6 +220,20 @@ const Navbar = () => {
                   className="block mx-6 mt-4 mb-2 rounded-full border border-gray-300 py-3 text-center text-sm font-semibold text-gray-700"
                 >
                   My Profile ({user?.name})
+                </Link>
+                {canSeeMyEvents && (
+                  <Link
+                    to={ROUTES.MY_EVENTS}
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    My Events
+                  </Link>
+                )}
+                <Link
+                  to={ROUTES.ORGANIZER_REGISTER}
+                  onClick={() => setProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"  >
+                  Become an Organizer
                 </Link>
                 <Link
                   to={ROUTES.ORGANIZER_REGISTER}

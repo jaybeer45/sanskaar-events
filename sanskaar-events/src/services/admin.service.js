@@ -45,6 +45,26 @@ export const adminService = {
     const res = await axiosInstance.get("/admin/coupons");
     return normalizeList(res.data.results);
   },
+
+  getAllVendorBookings: async () => {
+    const res = await axiosInstance.get("/admin/vendor-booking");
+    return normalizeList(res.data.results);
+  },
+
   createManualCoupon: (payload) =>
     axiosInstance.post("/admin/coupons", payload),
+
+  // History
+  getEventsHistory: async () => {
+    const res = await axiosInstance.get("/admin/events/history");
+    return normalizeList(res.data.results);
+  },
+  getOrganizersHistory: async () => {
+    const res = await axiosInstance.get("/admin/organizers/history");
+    return normalizeList(res.data.results ?? res.data);
+  },
+  getVendorsHistory: async () => {
+    const res = await axiosInstance.get("/admin/vendors/history");
+    return normalizeList(res.data.results);
+  },
 };
