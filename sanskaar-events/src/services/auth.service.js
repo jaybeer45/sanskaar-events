@@ -126,6 +126,11 @@ otpLogin: async (identifier, code) => {
     return axiosInstance.delete(`/users/${userId}/saved-events/${eventId}`);
   },
 
+  toggleFollow: async (creatorId) => {
+  if (USE_MOCK) return { data: { following: true, followersCount: 1 } };
+  return axiosInstance.post(`/users/${creatorId}/follow`);
+ },
+
   updateProfile: async (userId, data) => {
     if (USE_MOCK) {
       const user = [...MOCK_USERS, ...REGISTERED_USERS].find((u) => u.id === userId);
@@ -140,6 +145,13 @@ otpLogin: async (identifier, code) => {
     if (USE_MOCK) return { data: { success: true, consents: [] } };
     return axiosInstance.post(`/users/${userId}/consents`, { type, version, accepted });
   },
+
+ googleLogin: async (idToken) => {
+  if (USE_MOCK) {
+    return { data: { user: MOCK_USERS[0], token: makeToken(MOCK_USERS[0].id) } };
+  }
+  return axiosInstance.post('/auth/google', { idToken });
+},
 
   getConsents: async (userId) => {
     if (USE_MOCK) return { data: { consents: [] } };

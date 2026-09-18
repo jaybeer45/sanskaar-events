@@ -5,13 +5,13 @@ const OrganizerStaff = require('../models/OrganizerStaff');
 
 // @route POST /api/v1/events/:eventId/checkin
 const checkInTicket = asyncHandler(async (req, res) => {
-  const event = await Event.findById(req.params.eventId);
+  const event = await Event.findById(req.params.eventId);  
   if (!event) {
     res.status(404);
     throw new Error('Event not found.');
   }
 
-  const isOrganizerOrAdmin = event.organizer.toString() === req.user._id.toString() || req.user.role === 'admin';
+  const isOrganizerOrAdmin = event.organizer.toString() === req.user._id.toString() || req.user.roles.includes('admin');
 
   if (!isOrganizerOrAdmin) {
     const staffAccess = await OrganizerStaff.findOne({

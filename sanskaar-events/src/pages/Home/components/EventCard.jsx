@@ -7,7 +7,7 @@
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Heart, MapPin, Users } from 'lucide-react';
-import { toggleSaveEvent } from '../../../features/auth/slices/authSlice';
+import { toggleSavedEvent } from '../../../features/auth/slices/authSlice';
 import { formatPrice } from '../../../utils/formatPrice';
 import { buildRoute } from '../../../constants/routes';
 
@@ -18,20 +18,20 @@ const CROWD_NOTE = {
 };
 
 const EventCard = ({ event }) => {
-  const dispatch    = useDispatch();
+  const dispatch = useDispatch();
   const savedEvents = useSelector((s) => s.auth.savedEvents);
-  const isSaved     = savedEvents.includes(event.id);
+  const isSaved = savedEvents.includes(event.id);
 
-  const isFree      = !event.price || event.price?.free || event.price?.min === 0;
-  const crowdNote   = CROWD_NOTE[event.crowdLevel] || '';
-  const goingCount  = event.attendees || event.going || 0;
-  const goingLabel  = goingCount > 300 ? '300+ going' : goingCount > 0 ? `${goingCount} going` : '';
-  const hasImage    = !!event.images?.[0];
+  const isFree = !event.price || event.price?.free || event.price?.min === 0;
+  const crowdNote = CROWD_NOTE[event.crowdLevel] || '';
+  const goingCount = event.attendees || event.going || 0;
+  const goingLabel = goingCount > 300 ? '300+ going' : goingCount > 0 ? `${goingCount} going` : '';
+  const hasImage = !!event.images?.[0];
 
   const handleSave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch(toggleSaveEvent(event.id));
+    dispatch(toggleSavedEvent(event.id));
   };
 
   return (

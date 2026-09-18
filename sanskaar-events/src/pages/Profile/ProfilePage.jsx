@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Heart, Bell, MapPin, LogOut, Settings, Ticket } from 'lucide-react';
-import { toggleSaveEvent, logout, updateProfile } from '../../features/auth/slices/authSlice';
+import { toggleSavedEvent, logout, updateProfile } from '../../features/auth/slices/authSlice';
 import { buildRoute, ROUTES } from '../../constants/routes';
 import { formatPrice } from '../../utils/formatPrice';
 import { selectEventsList } from '../../features/events/selectors/eventsSelectors';
@@ -274,7 +274,7 @@ const ProfilePage = () => {
                         >
                           {event.images?.[0] && <img src={event.images[0]} alt={event.title} className="w-full h-full object-cover" />}
                           <button
-                            onClick={() => dispatch(toggleSaveEvent(event.id))}
+                            onClick={() => dispatch(toggleSavedEvent(event.id))}
                             className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-white/90 hover:bg-white transition-colors"
                           >
                             <Heart size={13} className="fill-brand-red text-brand-red" />

@@ -1,9 +1,9 @@
 // src/pages/Login/LoginPage.jsx
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login , otpLogin } from "../../features/auth/slices/authSlice";
+import { login, otpLogin, googleLogin } from "../../features/auth/slices/authSlice";
 import { ROUTES } from "../../constants/routes";
 import Input from "../../components/ui/Input/Input";
 import OTP from "../../components/ui/OTP/OTP";
@@ -19,6 +19,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const googleBtnRef = useRef(null);
 
   const {
     register,
@@ -27,13 +28,51 @@ const LoginPage = () => {
     formState: { errors, isSubmitting },
   } = useForm({ mode: "onBlur" });
 
-    const redirectAfterLogin = (roles = []) => {
+  const redirectAfterLogin = (roles = []) => {
     const redirectTo = location.state?.from?.pathname;
     if (redirectTo) return navigate(redirectTo, { replace: true });
     if (roles.includes("admin")) return navigate(ROUTES.ADMIN, { replace: true });
     if (roles.includes("organizer")) return navigate(ROUTES.ORGANIZER_SUBMIT, { replace: true });
     navigate(ROUTES.HOME, { replace: true });
   };
+
+  const handleGoogleCredential = async (response) => {
+    setAuthError("");
+    try {
+      const result = await dispatch(googleLogin(response.credential)).unwrap();
+      redirectAfterLogin(result.user.roles);
+    } catch (err) {
+      setAuthError(err || "Google sign-in failed.");
+    }
+  };
+
+  useEffect(() => {
+    const initGoogle = () => {
+      if (!window.google || !googleBtnRef.current) return;
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential,
+      });
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        theme: "outline",
+        size: "large",
+        width: 320,
+        text: "continue_with",
+      });
+    };
+
+    if (window.google?.accounts?.id) {
+      initGoogle();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initGoogle;
+    document.body.appendChild(script);
+  }, []);
 
   // Password-based login (existing flow)
   const handlePasswordLogin = async (data) => {
@@ -47,6 +86,7 @@ const LoginPage = () => {
       setAuthError(err || "Invalid email/phone or password.");
     }
   };
+
 
 
   const handleSendOtp = async () => {
@@ -73,7 +113,7 @@ const LoginPage = () => {
     setOtpError("");
     setOtpStage("verifying");
     try {
-          const emailOrPhone = getValues("emailOrPhone");
+      const emailOrPhone = getValues("emailOrPhone");
       const result = await dispatch(
         otpLogin({ identifier: emailOrPhone, code: otpValue })
       ).unwrap();
@@ -244,19 +284,7 @@ const LoginPage = () => {
             <span className="text-xs text-gray-400">or</span>
             <div className="h-px flex-1 bg-gray-200" />
           </div>
-          <button
-            type="button"
-            onClick={() => setAuthError("Google sign-in not connected yet.")}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18">
-              <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92A8.78 8.78 0 0 0 17.64 9.2z" />
-              <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.98v2.33A9 9 0 0 0 9 18z" />
-              <path fill="#FBBC05" d="M3.97 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.95H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.05l2.99-2.33z" />
-              <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.95l2.99 2.33C4.68 5.16 6.66 3.58 9 3.58z" />
-            </svg>
-            Continue with Google
-          </button>
+          <div ref={googleBtnRef} className="mt-5 flex w-full justify-center" />
 
           <p className="mt-6 text-center text-sm text-gray-500">
             Don&apos;t have an account?{" "}

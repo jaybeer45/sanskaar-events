@@ -76,18 +76,23 @@ const CreatorEditor = ({ file, event, initialFilter, onClose, onExport, isExport
                 <div className="w-9" /> {/* spacer to balance the close button */}
             </div>
 
-            {/* Video preview */}
-            <div ref={previewContainerRef} className="flex-1 flex items-center justify-center bg-black overflow-hidden relative">
-                <video
-                    ref={videoRef}
-                    src={videoUrl}
-                    onLoadedMetadata={handleLoadedMetadata}
-                    controls
-                    className="max-h-full max-w-full"
-                    style={{ filter: selectedFilter === 'none' ? 'none' : selectedFilter }}
-                />
 
-                <TextOverlayLayer overlays={textOverlays} onChange={setTextOverlays} containerRef={previewContainerRef} />
+            {/* Video preview — fixed 9:16 box with object-cover, matching final
+    Community Creations playback exactly, so text overlay positions
+    line up with what will actually be shown after publishing. */}
+            <div className="flex-1 flex items-center justify-center bg-black overflow-hidden relative p-2">
+                <div ref={previewContainerRef} className="relative aspect-[9/16] max-h-full w-auto overflow-hidden rounded-lg">
+                    <video
+                        ref={videoRef}
+                        src={videoUrl}
+                        onLoadedMetadata={handleLoadedMetadata}
+                        controls
+                        className="w-full h-full object-cover"
+                        style={{ filter: selectedFilter === 'none' ? 'none' : selectedFilter }}
+                    />
+
+                    <TextOverlayLayer overlays={textOverlays} onChange={setTextOverlays} containerRef={previewContainerRef} />
+                </div>
             </div>
 
             {/* Step controls */}

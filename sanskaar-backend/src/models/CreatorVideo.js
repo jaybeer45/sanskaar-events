@@ -30,6 +30,9 @@ const creatorVideoSchema = new mongoose.Schema(
 
     status: { type: String, enum: ['draft', 'ready'], default: 'ready' },
     visibility: { type: String, enum: ['private', 'public'], default: 'private' },
+    likesCount: { type: Number, default: 0 },
+    commentsCount: { type: Number, default: 0 },
+    sharesCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

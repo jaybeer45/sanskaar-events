@@ -67,7 +67,7 @@ const getTonightEvents = asyncHandler(async (req, res) => {
 
 const createEvent = asyncHandler(async (req, res) => {
   // Admins can create events directly without an organizer profile.
-  if (req.user.role !== "admin") {
+  if (!user.roles.includes('admin')) {
     const organizer = await Organizer.findOne({ owner: req.user._id });
 
     if (!organizer) {

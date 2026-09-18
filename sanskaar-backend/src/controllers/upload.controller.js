@@ -33,7 +33,7 @@ const serveKycDocument = asyncHandler(async (req, res) => {
   const { userId, filename } = req.params;
 
   const isOwner = req.user._id.toString() === userId;
-  const isPrivileged = ["admin", "moderator"].includes(req.user.role);
+  const isPrivileged = req.user.roles.some((r) => ["admin", "moderator"].includes(r));
 
   if (!isOwner && !isPrivileged) {
     res.status(403);
@@ -42,7 +42,7 @@ const serveKycDocument = asyncHandler(async (req, res) => {
 
   // Lightweight audit trail — logs who accessed a sensitive KYC document and when
   console.log(
-    `[KYC ACCESS] user=${req.user._id} role=${req.user.role} viewed doc owner=${userId} file=${filename} at=${new Date().toISOString()}`,
+    `[KYC ACCESS] user=${req.user._id} roles=${req.user.roles.join(",")} viewed doc owner=${userId} file=${filename} at=${new Date().toISOString()}`,
   );
 
   const filePath = storage.resolveKycDocumentPath(userId, filename);

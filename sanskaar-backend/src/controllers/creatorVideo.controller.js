@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const CreatorVideo = require('../models/CreatorVideo');
 const Event = require('../models/Event');
+const VideoLike = require('../models/VideoLike');
+const Follow = require('../models/Follow');
 
 // @route POST /api/v1/creator-videos
 // @desc  Save a CreatorVideo record. The video file itself must already be
@@ -45,9 +47,49 @@ const getMyCreatorVideos = asyncHandler(async (req, res) => {
 // @route GET /api/v1/creator-videos/event/:eventId
 const getCreatorVideosByEvent = asyncHandler(async (req, res) => {
   const videos = await CreatorVideo.find({ event: req.params.eventId, visibility: 'public' })
-    .populate('creator', 'name')
+    .populate('creator', 'name followersCount')
     .sort({ createdAt: -1 });
-  res.status(200).json({ results: videos });
+
+  let likedSet = new Set();
+  let followingSet = new Set();
+  if (req.user) {
+    const likes = await VideoLike.find({
+      video: { $in: videos.map((v) => v._id) },
+      user: req.user._id,
+    }).select('video');
+    likedSet = new Set(likes.map((l) => l.video.toString()));
+
+    const creatorIds = [...new Set(videos.map((v) => v.creator?._id?.toString()).filter(Boolean))];
+    const follows = await Follow.find({
+      follower: req.user._id,
+      following: { $in: creatorIds },
+    }).select('following');
+    followingSet = new Set(follows.map((f) => f.following.toString()));
+  }
+
+  const results = videos.map((v) => ({
+    ...v.toObject(),
+    isLiked: likedSet.has(v._id.toString()),
+    isFollowingCreator: followingSet.has(v.creator?._id?.toString()),
+  }));
+
+  res.status(200).json({ results });
+});
+
+// @route POST /api/v1/creator-videos/:id/share
+// @desc  Public — bump the share counter. No auth needed, no "who shared"
+//        tracking, unlike likes/comments — this is a simple counter only.
+const incrementShare = asyncHandler(async (req, res) => {
+  const video = await CreatorVideo.findById(req.params.id);
+  if (!video) {
+    res.status(404);
+    throw new Error('Video not found.');
+  }
+ 
+  video.sharesCount += 1;
+  await video.save();
+ 
+  res.status(200).json({ sharesCount: video.sharesCount });
 });
 
 // @route DELETE /api/v1/creator-videos/:id
@@ -65,4 +107,6 @@ const deleteCreatorVideo = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true });
 });
 
-module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, deleteCreatorVideo };
+
+
+module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,  deleteCreatorVideo  };

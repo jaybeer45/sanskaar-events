@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapPin, Clock, Users, Share2, Heart, Calendar, ExternalLink, ChevronLeft } from 'lucide-react';
 import { useEventDetail } from '../../features/events/hooks/useEventDetail';
-import { toggleSaveEvent } from '../../features/auth/slices/authSlice';
+import { toggleSavedEvent } from '../../features/auth/slices/authSlice';
 import { formatPrice } from '../../utils/formatPrice';
 import { ROUTES, buildRoute } from '../../constants/routes';
 import Spinner from '../../components/ui/Spinner/Spinner';
@@ -58,7 +58,7 @@ const EventDetailPage = () => {
     });
   }, [event?.id]);
 
-  const handleSave = () => { dispatch(toggleSaveEvent(event.id)); toast.success(isSaved ? 'Removed from saved' : 'Event saved!'); };
+  const handleSave = () => { dispatch(toggleSavedEvent(event.id)); toast.success(isSaved ? 'Removed from saved' : 'Event saved!'); };
   const handleShare = () => { navigator.clipboard?.writeText(window.location.href); toast.success('Link copied!'); };
   const navigate = useNavigate();
 

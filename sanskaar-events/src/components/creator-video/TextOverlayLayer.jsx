@@ -28,8 +28,9 @@ const TextOverlayLayer = ({ overlays, onChange, containerRef }) => {
     const handlePointerUp = () => setDraggingId(null);
 
     return (
+        // outer wrapper: add pointer-events-none
         <div
-            className="absolute inset-0"
+            className="absolute inset-0 pointer-events-none"
             onMouseMove={handlePointerMove}
             onMouseUp={handlePointerUp}
             onMouseLeave={handlePointerUp}
@@ -41,7 +42,7 @@ const TextOverlayLayer = ({ overlays, onChange, containerRef }) => {
                     key={o.id}
                     onMouseDown={handlePointerDown(o.id)}
                     onTouchStart={handlePointerDown(o.id)}
-                    className="absolute cursor-move select-none font-black text-center px-2 whitespace-nowrap"
+                    className="absolute cursor-move select-none font-black text-center px-2 whitespace-nowrap pointer-events-auto"
                     style={{
                         left: `${o.x}%`,
                         top: `${o.y}%`,

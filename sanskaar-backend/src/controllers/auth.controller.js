@@ -1,189 +1,532 @@
+
+// src/controllers/auth.controller.js
+
 const asyncHandler = require('express-async-handler');
-const User = require('../models/User');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const User = require('../models/User');
 const Otp = require('../models/Otp');
 const generateToken = require('../utils/generateToken');
 const { sendOtpMessage } = require('../services/otpDelivery.service');
 
-// @route POST /api/v1/auth/register
 const register = asyncHandler(async (req, res) => {
-  const { name, email, phone, password, acceptedTerms, termsVersion, acceptedPrivacy, privacyVersion , referredBy } = req.body;
+  const {name, email, phone, password, acceptedTerms, termsVersion, acceptedPrivacy, privacyVersion, referredBy,
+  } = req.body;
 
+  // Required fields
   if (!name || !email || !phone || !password) {
     res.status(400);
-    throw new Error('Name, email, phone aur password sab required hain.');
+    throw new Error(
+      'Name, email, phone, and password are required.'
+    );
   }
 
+  // Terms & Privacy
   if (!acceptedTerms || !acceptedPrivacy) {
     res.status(400);
-    throw new Error('Terms aur Privacy Policy accept karna zaroori hai.');
+    throw new Error(
+      'You must accept the Terms and Privacy Policy.'
+    );
   }
 
-  const existing = await User.findOne({ $or: [{ email }, { phone }] });
+  // Check existing account
+  const existing = await User.findOne({
+    $or: [
+      { email },
+      { phone },
+    ],
+  });
+
   if (existing) {
     res.status(400);
-    throw new Error('Is email/phone se account pehle se maujood hai.');
+    throw new Error(
+      'An account with this email or phone already exists.'
+    );
   }
 
+  // Consent records
   const consents = [
-    { type: 'terms', version: termsVersion || 'v1', accepted: true, ip: req.ip },
-    { type: 'privacy', version: privacyVersion || 'v1', accepted: true, ip: req.ip },
+    {
+      type: 'terms',
+      version: termsVersion || 'v1',
+      accepted: true,
+      ip: req.ip,
+    },
+    {
+      type: 'privacy',
+      version: privacyVersion || 'v1',
+      accepted: true,
+      ip: req.ip,
+    },
   ];
 
+  // Referral validation
   let referrer = null;
-  if (referredBy && mongoose.Types.ObjectId.isValid(referredBy)) {
+
+  if (referredBy) {
+    if (!mongoose.Types.ObjectId.isValid(referredBy)) {
+      res.status(400);
+      throw new Error('Invalid referral code.');
+    }
+
     referrer = await User.findById(referredBy).select('_id');
+
+    if (!referrer) {
+      res.status(400);
+      throw new Error('Referral user not found.');
+    }
   }
 
-  const user = await User.create(
-    {
-      name, email, phone, password, consents,
-      referredBy: referrer ? referrer._id : null,
-    }
-  );
+  // Create user
+  const user = await User.create({
+    name,
+    email,
+    phone,
+    password,
+    consents,
+    referredBy: referrer ? referrer._id : null,
+  });
+
+  // Generate token
   const token = generateToken(user._id);
 
-  res.status(201).json({ user: user.toSafeObject(), token });
+  // Response
+  res.status(201).json({
+    user: user.toSafeObject(),
+    token,
+  });
 });
 
-// @route POST /api/v1/auth/login
+
+  //  POST /api/v1/auth/login
+
+
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
+  // Required fields
   if (!email || !password) {
     res.status(400);
-    throw new Error('Email/phone aur password dono required hain.');
+    throw new Error(
+      'Email/phone and password are required.'
+    );
   }
 
-  const user = await User.findOne({ $or: [{ email }, { phone: email }] }).select('+password');
-  if (!user || !(await user.comparePassword(password))) {
+  // Find user by email OR phone
+  const user = await User.findOne({
+    $or: [
+      { email },
+      { phone: email },
+    ],
+  }).select('+password');
+
+  // User not found
+  if (!user) {
     res.status(401);
-    throw new Error('Invalid credentials.');
+    throw new Error(
+      'Email or phone number is incorrect.'
+    );
   }
 
+  // Password verification
+  const isPasswordValid = await user.comparePassword(password);
+
+  if (!isPasswordValid) {
+    res.status(401);
+    throw new Error(
+      'Password is incorrect.'
+    );
+  }
+
+  // Account status
   if (!user.isActive) {
     res.status(403);
-    throw new Error('Account deactivated hai.');
+    throw new Error(
+      'Your account has been deactivated.'
+    );
   }
 
+  // Generate token
   const token = generateToken(user._id);
-  res.status(200).json({ user: user.toSafeObject(), token });
+
+  // Success response
+  res.status(200).json({
+    user: user.toSafeObject(),
+    token,
+  });
 });
 
-// @route POST /api/v1/auth/otp-login
-// A genuine passwordless login — the OTP itself is the credential, no fake
-// password string involved. Only works for accounts that already exist;
-// new-account creation still goes through the normal signup+OTP flow.
+
+/* =========================================================
+   OTP LOGIN
+   POST /api/v1/auth/otp-login
+========================================================= */
+
 const otpLogin = asyncHandler(async (req, res) => {
   const identifier = req.body.identifier?.trim();
   const code = req.body.code?.trim();
 
+  // Required fields
   if (!identifier || !code) {
     res.status(400);
-    throw new Error('Identifier aur code dono required hain.');
+    throw new Error(
+      'Email/phone and OTP code are required.'
+    );
   }
 
-  const entry = await Otp.findOne({ identifier, code }).sort({ createdAt: -1 });
+  // Find OTP
+  const entry = await Otp.findOne({
+    identifier,
+    code,
+  }).sort({
+    createdAt: -1,
+  });
+
+  // OTP not found
   if (!entry) {
     res.status(400);
-    throw new Error('Galat ya expired OTP.');
-  }
-  if (entry.expiresAt < new Date()) {
-    res.status(400);
-    throw new Error('OTP expire ho chuka hai.');
+    throw new Error(
+      'Invalid or expired OTP.'
+    );
   }
 
-  const user = await User.findOne({ $or: [{ email: identifier }, { phone: identifier }] });
+  // OTP expired
+  if (entry.expiresAt < new Date()) {
+    await Otp.deleteOne({
+      _id: entry._id,
+    });
+
+    res.status(400);
+    throw new Error(
+      'OTP has expired.'
+    );
+  }
+
+  // Find user
+  const user = await User.findOne({
+    $or: [
+      { email: identifier },
+      { phone: identifier },
+    ],
+  });
+
+  // User not found
   if (!user) {
     res.status(404);
-    throw new Error('No account found with this email/phone. Please sign up first.');
+    throw new Error(
+      'No account was found with this email or phone number. Please sign up first.'
+    );
   }
+
+  // Account inactive
   if (!user.isActive) {
     res.status(403);
-    throw new Error('Account deactivated hai.');
+    throw new Error(
+      'Your account has been deactivated.'
+    );
   }
 
-  await Otp.deleteOne({ _id: entry._id });
+  // OTP successfully used
+  await Otp.deleteOne({
+    _id: entry._id,
+  });
 
+  // Generate token
   const token = generateToken(user._id);
-  res.status(200).json({ user: user.toSafeObject(), token });
+
+  // Success response
+  res.status(200).json({
+    user: user.toSafeObject(),
+    token,
+  });
 });
 
-// @route GET /api/v1/auth/me
+
+/* =========================================================
+   GET CURRENT USER
+   GET /api/v1/auth/me
+========================================================= */
+
 const getMe = asyncHandler(async (req, res) => {
-  res.status(200).json(req.user.toSafeObject());
+  if (!req.user) {
+    res.status(401);
+    throw new Error(
+      'Authentication required.'
+    );
+  }
+
+  res.status(200).json(
+    req.user.toSafeObject()
+  );
 });
 
-// @route POST /api/v1/auth/send-otp
+
+/* =========================================================
+   SEND OTP
+   POST /api/v1/auth/send-otp
+========================================================= */
+
 const sendOtp = asyncHandler(async (req, res) => {
   const identifier = req.body.identifier?.trim();
   const { purpose } = req.body;
+
+  // Required identifier
   if (!identifier) {
     res.status(400);
-    throw new Error('Identifier (email/phone) required hai.');
+    throw new Error(
+      'Email or phone number is required.'
+    );
   }
 
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+  // Generate secure OTP
+  const code = crypto
+    .randomInt(100000, 1000000)
+    .toString();
 
-  await Otp.create({ identifier, code, purpose: purpose || 'signup', expiresAt });
+  // OTP expires in 5 minutes
+  const expiresAt = new Date(
+    Date.now() + 5 * 60 * 1000
+  );
 
-  const result = await sendOtpMessage(identifier, code);
+  // Remove previous OTPs for same identifier
+  await Otp.deleteMany({
+    identifier,
+  });
+
+  // Store OTP
+  await Otp.create({
+    identifier,
+    code,
+    purpose: purpose || 'signup',
+    expiresAt,
+  });
+
+  // Send OTP
+  const result = await sendOtpMessage(
+    identifier,
+    code
+  );
 
   res.status(200).json({
     success: true,
     message: result.delivered
       ? 'OTP sent successfully.'
-      : 'OTP generated but delivery is not fully configured yet — check server logs.',
+      : 'OTP generated, but delivery is not fully configured yet. Please check the server logs.',
   });
 });
 
-// @route POST /api/v1/auth/verify-otp
+
+/* =========================================================
+   VERIFY OTP
+   POST /api/v1/auth/verify-otp
+========================================================= */
+
 const verifyOtp = asyncHandler(async (req, res) => {
   const identifier = req.body.identifier?.trim();
   const code = req.body.code?.trim();
+
+  // Required fields
   if (!identifier || !code) {
     res.status(400);
-    throw new Error('Identifier aur code dono required hain.');
+    throw new Error(
+      'Email/phone and OTP code are required.'
+    );
   }
 
-  const entry = await Otp.findOne({ identifier, code }).sort({ createdAt: -1 });
+  // Find OTP
+  const entry = await Otp.findOne({
+    identifier,
+    code,
+  }).sort({
+    createdAt: -1,
+  });
+
+  // Invalid OTP
   if (!entry) {
     res.status(400);
-    throw new Error('Galat ya expired OTP.');
+    throw new Error(
+      'Invalid or expired OTP.'
+    );
   }
+
+  // Expired OTP
   if (entry.expiresAt < new Date()) {
+    await Otp.deleteOne({
+      _id: entry._id,
+    });
+
     res.status(400);
-    throw new Error('OTP expire ho chuka hai.');
+    throw new Error(
+      'OTP has expired.'
+    );
   }
 
-  await Otp.deleteOne({ _id: entry._id });
-  res.status(200).json({ success: true });
+  // OTP verified successfully
+  await Otp.deleteOne({
+    _id: entry._id,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: 'OTP verified successfully.',
+  });
 });
 
-// @route POST /api/v1/auth/logout
+
+/* =========================================================
+   LOGOUT
+   POST /api/v1/auth/logout
+========================================================= */
+
 const logout = asyncHandler(async (req, res) => {
-  res.status(200).json({ success: true });
+  res.status(200).json({
+    success: true,
+    message: 'Logged out successfully.',
+  });
 });
 
-// @route POST /api/v1/auth/reset-password
+/* =========================================================
+   GOOGLE LOGIN
+   POST /api/v1/auth/google
+========================================================= */
+
+const googleLogin = asyncHandler(async (req, res) => {
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    res.status(400);
+    throw new Error('Google ID token is required.');
+  }
+
+  let payload;
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    payload = ticket.getPayload();
+  } catch (err) {
+    res.status(401);
+    throw new Error('Invalid Google token.');
+  }
+
+  const { sub: googleId, email, name, picture, email_verified } = payload;
+
+  if (!email) {
+    res.status(400);
+    throw new Error('This Google account has no email associated with it.');
+  }
+
+  let user = await User.findOne({ $or: [{ googleId }, { email }] });
+
+  if (user) {
+    // Existing account (maybe originally signed up with email/password) — link Google to it
+    if (!user.googleId) {
+      user.googleId = googleId;
+      if (!user.avatar) user.avatar = picture || '';
+      if (email_verified) user.isEmailVerified = true;
+      await user.save();
+    }
+  } else {
+    user = await User.create({
+      name: name || 'Sanskaar User',
+      email,
+      googleId,
+      avatar: picture || '',
+      isEmailVerified: !!email_verified,
+      consents: [
+        { type: 'terms', version: 'v1', accepted: true, ip: req.ip },
+        { type: 'privacy', version: 'v1', accepted: true, ip: req.ip },
+      ],
+    });
+  }
+
+  if (!user.isActive) {
+    res.status(403);
+    throw new Error('Your account has been deactivated.');
+  }
+
+  const token = generateToken(user._id);
+
+  res.status(200).json({
+    user: user.toSafeObject(),
+    token,
+  });
+});
+
+
+/* =========================================================
+   RESET PASSWORD
+   POST /api/v1/auth/reset-password
+========================================================= */
+
 const resetPassword = asyncHandler(async (req, res) => {
-  const { identifier, newPassword } = req.body;
+  const {
+    identifier,
+    newPassword,
+  } = req.body;
+
+  // Required fields
   if (!identifier || !newPassword) {
     res.status(400);
-    throw new Error('Identifier aur newPassword dono required hain.');
+    throw new Error(
+      'Email/phone and new password are required.'
+    );
   }
 
-  const user = await User.findOne({ $or: [{ email: identifier }, { phone: identifier }] });
+  // Password length
+  if (newPassword.length < 8) {
+    res.status(400);
+    throw new Error(
+      'Password must be at least 8 characters long.'
+    );
+  }
+
+  // Find user
+  const user = await User.findOne({
+    $or: [
+      { email: identifier },
+      { phone: identifier },
+    ],
+  });
+
+  // User not found
   if (!user) {
     res.status(404);
-    throw new Error('Is email/phone se koi account nahi mila.');
+    throw new Error(
+      'No account was found with this email or phone number.'
+    );
   }
 
-  user.password = newPassword;   // User model ka pre('save') hook automatically hash kar dega
+  // Update password
+  user.password = newPassword;
+
+  // User model pre-save hook should hash password
   await user.save();
 
-  res.status(200).json({ success: true });
+  res.status(200).json({
+    success: true,
+    message: 'Password reset successfully.',
+  });
 });
 
-module.exports = { register, login, otpLogin, getMe, sendOtp, verifyOtp, logout, resetPassword };
+
+/* =========================================================
+   EXPORTS
+========================================================= */
+
+module.exports = {
+  register,
+  login,
+  otpLogin,
+  getMe,
+  sendOtp,
+  verifyOtp,
+  logout,
+  resetPassword,
+  googleLogin
+};
+

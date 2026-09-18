@@ -9,7 +9,7 @@ const getVendorAndCheckOwnership = async (vendorId, user) => {
     err.statusCode = 404;
     throw err;
   }
-  if (vendor.user.toString() !== user._id.toString() && user.role !== 'admin') {
+  if (vendor.user.toString() !== user._id.toString() && !user.roles.includes('admin') ) {
     const err = new Error('Only the vendor owner or an admin can manage services.');
     err.statusCode = 403;
     throw err;
@@ -26,7 +26,7 @@ const getServices = asyncHandler(async (req, res) => {
     throw new Error('Vendor not found.');
   }
 
-  const isOwnerOrAdmin = req.user && (vendor.user.toString() === req.user._id.toString() || req.user.role === 'admin');
+  const isOwnerOrAdmin = req.user && (vendor.user.toString() === req.user._id.toString() || req.user.roles.includes('admin'));
 
   const filter = { vendor: vendor._id };
   if (!isOwnerOrAdmin) filter.isActive = true;

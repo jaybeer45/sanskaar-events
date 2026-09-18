@@ -10,7 +10,7 @@ const getEventAndCheckOwnership = async (eventId, user) => {
     err.statusCode = 404;
     throw err;
   }
-  if (event.organizer.toString() !== user._id.toString() && user.role !== 'admin') {
+  if (event.organizer.toString() !== user._id.toString() && !user.roles.includes('admin')) {
     const err = new Error('Only the event organizer or an admin can manage variants.');
     err.statusCode = 403;
     throw err;
@@ -29,7 +29,7 @@ const getVariants = asyncHandler(async (req, res) => {
 
   // Owner/admin can see all variants (pending/inactive too);
   // everyone else only sees active + approved ones
-  const isOwnerOrAdmin = req.user && (event.organizer.toString() === req.user._id.toString() || req.user.role === 'admin');
+  const isOwnerOrAdmin = req.user && (event.organizer.toString() === req.user._id.toString() || req.user.roles.includes('admin'));
 
   const filter = { event: event._id };
   if (!isOwnerOrAdmin) {

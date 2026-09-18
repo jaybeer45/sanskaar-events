@@ -36,4 +36,22 @@ const authorize = (...allowedRoles) => (req, res, next) => {
   next();
 };
 
-module.exports = { protect, authorize };
+const attachUserIfPresent = asyncHandler(async (req, res, next) => {
+  let token;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  }
+  if (!token) return next();
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (user && user.isActive) req.user = user;
+  } catch (err) {
+    // invalid/expired token on a public route — just proceed as a guest
+  }
+  next();
+});
+
+module.exports = { protect, authorize, attachUserIfPresent };

@@ -31,11 +31,12 @@ const consentSchema = new mongoose.Schema(
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true, minlength: 2, maxlength: 50 },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    phone: { type: String, required: true, unique: true, trim: true },
-    password: { type: String, required: true, minlength: 8, select: false },
-    roles: {type: [String], enum: ['user', 'organizer', 'vendor', 'admin', 'moderator', 'event_team'], default: ['user']},
+   name: { type: String, required: true, trim: true, minlength: 2, maxlength: 50 },
+email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+phone: { type: String, unique: true, sparse: true, trim: true, required: function () { return !this.googleId; } },
+password: { type: String, minlength: 8, select: false, required: function () { return !this.googleId; } },
+googleId: { type: String, unique: true, sparse: true },
+roles: {type: [String], enum: ['user', 'organizer', 'vendor', 'admin', 'moderator', 'event_team'], default: ['user']},
     avatar: { type: String, default: '' },
     bio: { type: String, maxlength: 200, default: '' },
     city: { type: String, default: 'Bareilly' },
@@ -57,13 +58,14 @@ const userSchema = new mongoose.Schema(
     referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     referralRewardGiven: { type: Boolean, default: false }, // prevents double-crediting the referrer
     loyaltyCouponIssued: { type: Boolean, default: false },
+    followersCount: { type: Number, default: 0 },
+    followingCount: { type: Number, default: 0 },
   }, { timestamps: true }
 );
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return ;
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 10);
- 
 });
 
 userSchema.methods.comparePassword = async function (candidate) {

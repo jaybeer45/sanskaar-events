@@ -10,7 +10,7 @@ const getPackageAndCheckOwnership = async (vendorId, packageId, user) => {
     err.statusCode = 404;
     throw err;
   }
-  if (vendor.user.toString() !== user._id.toString() && user.role !== 'admin') {
+  if (vendor.user.toString() !== user._id.toString() && !user.roles.includes('admin')) {
     const err = new Error('Only the vendor owner or an admin can manage add-ons.');
     err.statusCode = 403;
     throw err;
@@ -36,7 +36,7 @@ const getAddons = asyncHandler(async (req, res) => {
   }
 
   const vendor = await Vendor.findById(req.params.vendorId);
-  const isOwnerOrAdmin = req.user && vendor && (vendor.user.toString() === req.user._id.toString() || req.user.role === 'admin');
+  const isOwnerOrAdmin = req.user && vendor && (vendor.user.toString() === req.user._id.toString() || req.user.roles.includes('admin'));
 
   const filter = { package: pkg._id };
   if (!isOwnerOrAdmin) filter.isActive = true;

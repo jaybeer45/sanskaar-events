@@ -10,7 +10,7 @@ const checkEventOwnership = async (eventId, user) => {
     err.statusCode = 404;
     throw err;
   }
-  if (event.organizer.toString() !== user._id.toString() && user.role !== 'admin') {
+  if (event.organizer.toString() !== user._id.toString() && !user.roles.includes('admin')){
     const err = new Error('Only the event organizer or an admin can manage staff.');
     err.statusCode = 403;
     throw err;

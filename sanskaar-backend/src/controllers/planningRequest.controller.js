@@ -65,7 +65,7 @@ const getRequestByReference = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Request not found.');
   }
-  if (request.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+  if (request.user.toString() !== req.user._id.toString() && !user.roles.includes('admin')) {
     res.status(403);
     throw new Error('You can only view your own requests.');
   }
@@ -79,7 +79,7 @@ const getMatches = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Request not found.');
   }
-  if (request.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+  if (request.user.toString() !== req.user._id.toString() && !user.roles.includes('admin')) {
     res.status(403);
     throw new Error('You can only view matches for your own requests.');
   }
