@@ -107,6 +107,25 @@ const deleteCreatorVideo = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true });
 });
 
+// @route POST /api/v1/creator-videos/:id/view
+// @desc Increment video view counter
+const incrementView = asyncHandler(async (req, res) => {
+  const video = await CreatorVideo.findByIdAndUpdate(
+    req.params.id,
+    { $inc: { viewsCount: 1 } },
+    { new: true }
+  );
+
+  if (!video) {
+    res.status(404);
+    throw new Error('Video not found.');
+  }
+
+  res.status(200).json({
+    viewsCount: video.viewsCount
+  });
+});
 
 
-module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,  deleteCreatorVideo  };
+
+module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,incrementView ,  deleteCreatorVideo  };

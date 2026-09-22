@@ -6,6 +6,7 @@ const {
   getCreatorVideosByEvent,
   deleteCreatorVideo,
   incrementShare,
+  incrementView
 } = require('../controllers/creatorVideo.controller');
 const { toggleLike } = require('../controllers/videoLike.controller');
 const { addComment, getComments, deleteComment } = require('../controllers/videoComment.controller');
@@ -19,6 +20,7 @@ router.get('/:id/comments', getComments);
 router.post('/:id/comments', protect, addComment);
 router.delete('/comments/:commentId', protect, deleteComment);
 router.post('/:id/share', incrementShare);
+router.post('/:id/view', incrementView);
 router.delete('/:id', protect, deleteCreatorVideo);
 
 module.exports = router;
