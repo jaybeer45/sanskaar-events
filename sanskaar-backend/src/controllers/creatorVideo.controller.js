@@ -45,10 +45,21 @@ const getMyCreatorVideos = asyncHandler(async (req, res) => {
 });
 
 // @route GET /api/v1/creator-videos/event/:eventId
+// @route GET /api/v1/creator-videos/event/:eventId?page=1&limit=10
 const getCreatorVideosByEvent = asyncHandler(async (req, res) => {
-  const videos = await CreatorVideo.find({ event: req.params.eventId, visibility: 'public' })
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit) || 10, 30); // 30 se zyada ek baar mein nahi denge
+  const skip = (page - 1) * limit;
+
+  const filter = { event: req.params.eventId, visibility: 'public' };
+
+  const totalCount = await CreatorVideo.countDocuments(filter);
+
+  const videos = await CreatorVideo.find(filter)
     .populate('creator', 'name followersCount')
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
   let likedSet = new Set();
   let followingSet = new Set();
@@ -73,7 +84,11 @@ const getCreatorVideosByEvent = asyncHandler(async (req, res) => {
     isFollowingCreator: followingSet.has(v.creator?._id?.toString()),
   }));
 
-  res.status(200).json({ results });
+  res.status(200).json({
+    results,
+    page,
+    hasMore: skip + videos.length < totalCount,
+  });
 });
 
 // @route POST /api/v1/creator-videos/:id/share
@@ -107,6 +122,75 @@ const deleteCreatorVideo = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true });
 });
 
+// @route GET /api/v1/creator-videos/leaderboard/:eventId
+// @desc  Public — top creators for this event, ranked by total views
+//        across all their public videos on it. Reward tier is derived
+//        from totalViews, not stored anywhere.
+const getCreatorLeaderboard = asyncHandler(async (req, res) => {
+  const mongoose = require('mongoose');
+  const eventId = new mongoose.Types.ObjectId(req.params.eventId);
+
+  const leaderboard = await CreatorVideo.aggregate([
+    { $match: { event: eventId, visibility: 'public' } },
+    {
+      $group: {
+        _id: '$creator',
+        totalViews: { $sum: '$viewsCount' },
+        totalLikes: { $sum: '$likesCount' },
+        videoCount: { $sum: 1 },
+      },
+    },
+    { $sort: { totalViews: -1 } },
+    { $limit: 10 },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'creator',
+      },
+    },
+    { $unwind: '$creator' },
+    {
+      $project: {
+        _id: 0,
+        creatorId: '$_id',
+        name: '$creator.name',
+        avatar: '$creator.avatar',
+        totalViews: 1,
+        totalLikes: 1,
+        videoCount: 1,
+      },
+    },
+  ]);
+
+  const withTier = leaderboard.map((c) => ({
+    ...c,
+    tier: c.totalViews >= 1000 ? 'Gold' : c.totalViews >= 500 ? 'Silver' : c.totalViews >= 100 ? 'Bronze' : null,
+  }));
+
+  res.status(200).json({ leaderboard: withTier });
+});
+
+// @route POST /api/v1/creator-videos/:id/view
+// @desc Increment video view counter
+const incrementView = asyncHandler(async (req, res) => {
+  const video = await CreatorVideo.findByIdAndUpdate(
+    req.params.id,
+    { $inc: { viewsCount: 1 } },
+    { new: true }
+  );
+
+  if (!video) {
+    res.status(404);
+    throw new Error('Video not found.');
+  }
+
+  res.status(200).json({
+    viewsCount: video.viewsCount
+  });
+});
 
 
-module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,  deleteCreatorVideo  };
+
+module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,incrementView ,getCreatorLeaderboard ,   deleteCreatorVideo  };

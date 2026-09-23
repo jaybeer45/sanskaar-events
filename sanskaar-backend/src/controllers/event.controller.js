@@ -67,7 +67,7 @@ const getTonightEvents = asyncHandler(async (req, res) => {
 
 const createEvent = asyncHandler(async (req, res) => {
   // Admins can create events directly without an organizer profile.
-  if (!user.roles.includes('admin')) {
+  if (!req.user.roles.includes('admin')) {
     const organizer = await Organizer.findOne({ owner: req.user._id });
 
     if (!organizer) {
@@ -188,6 +188,44 @@ const updateEventDates = asyncHandler(async (req, res) => {
   res.status(200).json(event);
 });
 
+// @route GET /api/v1/events/upcoming-nearby?eventId=<id>
+// @desc  Public — other published, future events whose organizer is in the
+//        same city as the given event's organizer. Used after a booking to
+//        show "you might also like" suggestions.
+const getUpcomingNearbyEvents = asyncHandler(async (req, res) => {
+  const { eventId } = req.query;
+  if (!eventId) {
+    res.status(400);
+    throw new Error('eventId is required.');
+  }
+
+  const currentEvent = await Event.findById(eventId);
+  if (!currentEvent) {
+    res.status(404);
+    throw new Error('Event not found.');
+  }
+
+  const organizerProfile = await Organizer.findOne({ owner: currentEvent.organizer });
+  if (!organizerProfile) {
+    return res.status(200).json({ results: [] }); // city ka pata nahi, khaali list de do
+  }
+
+  const sameCityOrganizers = await Organizer.find({ cityId: organizerProfile.cityId }).select('owner');
+  const ownerIds = sameCityOrganizers.map((o) => o.owner);
+
+  const events = await Event.find({
+    organizer: { $in: ownerIds },
+    _id: { $ne: currentEvent._id },
+    status: 'published',
+    date: { $gte: new Date() },
+  })
+    .sort({ date: 1 })
+    .limit(6)
+    .select('title images date time venue price category');
+
+  res.status(200).json({ results: events });
+});
+
 module.exports = {
   getEvents,
   getEventById,
@@ -197,4 +235,5 @@ module.exports = {
   deleteEvent,
   getMyEvents,
   updateEventDates,
+  getUpcomingNearbyEvents,
 };

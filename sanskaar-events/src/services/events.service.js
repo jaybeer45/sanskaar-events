@@ -65,6 +65,11 @@ export const eventsService = {
     return axiosInstance.post('/events', data);
   },
 
+  getUpcomingNearby: async (eventId) => {
+    const res = await axiosInstance.get('/events/upcoming-nearby', { params: { eventId } });
+    return { ...res, data: { ...res.data, results: normalizeList(res.data.results) } };
+},
+
   update: async (id, data) => {
     if (USE_MOCK) return { data: { id, ...data } };
     return axiosInstance.put(`/events/${id}`, data);

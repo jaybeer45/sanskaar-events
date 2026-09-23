@@ -148,7 +148,7 @@ const ConfirmBookingPage = () => {
         toast.success(`Booked! Ticket code: ${booking.ticketCode}`);
         navigate(buildRoute.eventDetail(event.id));
       } else {
-        navigate(buildRoute.payment(booking._id), { state: { booking } });
+        navigate(buildRoute.payment(booking._id), { state: { booking, eventId } });
       }
     } catch (err) {
       toast.error(err || 'Booking fail ho gayi, dobara try karo');
