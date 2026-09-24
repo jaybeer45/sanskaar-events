@@ -1,358 +1,217 @@
-// src/pages/Organizer/OrganizerPage.jsx
+// src/pages/Organizer/OrganizerKycPage.jsx
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { CircleCheck, Upload, Info, Lock, X, Loader2 } from 'lucide-react';
-import { submitEvent, resetSubmitStatus } from '../../features/events/slices/eventsSlice';
-import { fetchMyOrganizer } from '../../features/organizer/slices/organizerSlice';
-import { EVENT_CATEGORIES } from '../../constants/categories';
+import { CheckCircle2, Clock, Loader2, Upload } from 'lucide-react';
+import { fetchMyOrganizer, submitKyc, sendContactOtp, verifyContactOtp, resetKycStatus, } from '../../features/organizer/slices/organizerSlice';
+import { uploadService } from '../../services/upload.service';
 import { ROUTES } from '../../constants/routes';
 import Spinner from '../../components/ui/Spinner/Spinner';
-import { uploadService } from '../../services/upload.service';
-import { eventsService } from '../../services/events.service';
-import { venuesService } from '../../services/venues.service';
 
-const OrganizerPage = () => {
-  const dispatch = useDispatch();
-  const submitStatus = useSelector((s) => s.events.submitStatus);
-  const { user } = useSelector((s) => s.auth);
-  const { profile: organizerProfile, fetchStatus } = useSelector((s) => s.organizer);
+const NON_INDIVIDUAL_TYPES = ['proprietorship', 'partnership', 'pvt_ltd', 'llp', 'trust_ngo', 'government'];
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
-
-  const [selectedFiles, setSelectedFiles] = useState([]);
+// A small reusable file-upload button — uploads a KYC document and sets the
+// returned reference URL on the given react-hook-form field.
+const DocUploadField = ({ label, required, value, onUploaded }) => {
   const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState('');
-  const [ticketVariants, setTicketVariants] = useState([]);
-  const [savedVenues, setSavedVenues] = useState([]);
-  const [selectedVenueId, setSelectedVenueId] = useState('');
-  const [saveThisVenue, setSaveThisVenue] = useState(false);
-  const [eventDates, setEventDates] = useState([]);
-  const { eventId } = useParams();
-  const navigate = useNavigate();
-  const isEditMode = !!eventId;
+  const [error, setError] = useState('');
 
-  const [initialLoading, setInitialLoading] = useState(isEditMode);
-  const [existingImages, setExistingImages] = useState([]); // URLs already on the event
-  const [editSubmitStatus, setEditSubmitStatus] = useState('idle'); // separate from create's redux submitStatus
-
-  useEffect(() => {
-    if (!isEditMode) return;
-
-    eventsService.getById(eventId).then((res) => {
-      const event = res.data;
-
-      setValue('title', event.title);
-      setValue('category', event.category);
-      setValue('description', event.description);
-      setValue('date', new Date(event.date).toISOString().slice(0, 10));
-      setValue('time', event.time);
-      setValue('venueName', event.venue?.name || '');
-      setValue('venueAddress', event.venue?.address || '');
-      setValue('isFree', !!event.price?.free);
-      setValue('priceMin', event.price?.min ?? '');
-      setValue('priceMax', event.price?.max ?? '');
-      setValue('capacity', event.inventory?.total ?? '');
-      setValue('bookingUrl', event.bookingUrl || '');
-      setValue('organizerName', event.organizerName || '');
-      setValue('organizerPhone', event.organizerPhone || '');
-      setValue('organizerEmail', event.organizerEmail || '');
-
-      setEventDates(
-        (event.eventDates || []).map((d) => ({
-          date: new Date(d.date).toISOString().slice(0, 10),
-          label: d.label || '',
-          capacity: d.capacity || '',
-        }))
-      );
-
-      setExistingImages(event.images || []);
-      setInitialLoading(false);
-    }).catch(() => {
-      setUploadError('Failed to load event for editing.');
-      setInitialLoading(false);
-    });
-  }, [eventId]);
-
-  useEffect(() => {
-    venuesService.getMine().then((res) => setSavedVenues(res.data.results || []));
-  }, []);
-
-  const addVariantRow = () => {
-    setTicketVariants((prev) => [...prev, { name: '', price: '', capacity: '' }]);
-  };
-
-  const updateVariantRow = (index, field, value) => {
-    setTicketVariants((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
-  };
-
-  const removeVariantRow = (index) => {
-    setTicketVariants((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  useEffect(() => {
-    return () => dispatch(resetSubmitStatus());
-  }, []);
-
-  const handleVenueSelect = (venueId) => {
-    setSelectedVenueId(venueId);
-    const venue = savedVenues.find((v) => v._id === venueId);
-    if (venue) {
-      setValue('venueName', venue.name);
-      setValue('venueAddress', venue.address);
+  const handleChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setError('');
+    setUploading(true);
+    try {
+      const res = await uploadService.uploadKycDocument(file);
+      onUploaded(res.data.url);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Upload failed.');
     }
-  };
-
-  const addDateRow = () => {
-    setEventDates((prev) => [...prev, { date: '', label: '', capacity: '' }]);
-  };
-
-  const updateDateRow = (index, field, value) => {
-    setEventDates((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
-  };
-
-  const removeDateRow = (index) => {
-    setEventDates((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-
-    setUploadError('');
-
-    // Maximum 5 images total
-    const remainingSlots = 5 - selectedFiles.length;
-
-    if (remainingSlots <= 0) {
-      setUploadError('You can upload a maximum of 5 images.');
-      e.target.value = '';
-      return;
-    }
-
-    const selected = files.slice(0, remainingSlots);
-
-    // Check file size and type
-    const validFiles = [];
-
-    for (const file of selected) {
-      const allowedTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/webp'
-      ];
-
-      if (!allowedTypes.includes(file.type)) {
-        setUploadError(
-          `${file.name} is not a valid image. Only JPG, PNG and WebP are allowed.`
-        );
-        continue;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        setUploadError(
-          `${file.name} is larger than 5MB. Please select a smaller image.`
-        );
-        continue;
-      }
-
-      validFiles.push(file);
-    }
-
-    setSelectedFiles((prev) => [...prev, ...validFiles].slice(0, 5));
-
+    setUploading(false);
     e.target.value = '';
   };
 
-  const removeFile = (index) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-  };
+  return (
+    <div>
+      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+        {label} {required && '*'}
+      </label>
+      <label className="flex items-center gap-2 border border-dashed border-gray-300 px-3 py-2.5 text-sm cursor-pointer hover:border-brand-red transition-colors">
+        {uploading ? (
+          <Loader2 size={15} className="animate-spin text-gray-400" />
+        ) : value ? (
+          <CheckCircle2 size={15} className="text-green-600" />
+        ) : (
+          <Upload size={15} className="text-gray-400" />
+        )}
+        <span className={value ? 'text-green-700 font-semibold' : 'text-gray-500'}>
+          {value ? 'Uploaded — click to replace' : 'Click to upload (PDF/JPG/PNG, max 10MB)'}
+        </span>
+        <input
+          type="file"
+          accept="application/pdf,image/jpeg,image/png"
+          onChange={handleChange}
+          className="hidden"
+        />
+      </label>
+      {error && <p className="text-brand-red text-xs mt-1">{error}</p>}
+    </div>
+  );
+};
 
-  const onSubmit = async (data) => {
-    setUploadError('');
-    let images = [];
+// One contact field (phone or email) with its OTP-verification row.
+const ContactVerifyRow = ({ label, value, verified, otpSent, otpValue, onOtpChange, onSendOtp, onVerify, sending, verifying }) => (
+  <div className="flex items-center justify-between border border-gray-200 px-4 py-3">
+    <div>
+      <p className="text-xs font-bold uppercase tracking-wide text-gray-500">{label}</p>
+      <p className="text-sm font-semibold text-gray-800">{value}</p>
+    </div>
 
-    if (selectedFiles.length > 0) {
-      setUploading(true);
-
-      try {
-        const res = await uploadService.uploadEventImages(selectedFiles);
-        images = res.data.urls;
-      } catch (err) {
-        setUploadError(
-          err.response?.data?.message || 'Image upload failed.'
-        );
-        setUploading(false);
-        return;
-      }
-
-      setUploading(false);
-    }
-
-    // Transform the flat form fields into the nested shape the backend expects
-    const eventPayload = {
-      title: data.title,
-      category: data.category,
-      description: data.description,
-      date: data.date,
-      time: data.time,
-      eventDates: eventDates
-        .filter((d) => d.date) // date empty row skip
-        .map((d) => ({
-          date: d.date,
-          label: d.label || '',
-          capacity: Number(d.capacity) || 0,
-        })),
-      venue: {
-        name: data.venueName,
-        address: data.venueAddress,
-      },
-      price: {
-        free: !!data.isFree,
-        min: Number(data.priceMin) || 0,
-        max: Number(data.priceMax) || 0,
-      },
-      inventory: {
-        total: Number(data.capacity) || 0,
-        remaining: Number(data.capacity) || 0,
-      },
-      bookingUrl: data.bookingUrl || '',
-      organizerName: data.organizerName || '',
-      organizerPhone: data.organizerPhone || '',
-      organizerEmail: data.organizerEmail || '',
-      images: isEditMode ? [...existingImages, ...images] : images,
-    };
-
-    if (isEditMode) {
-      setEditSubmitStatus('loading');
-      try {
-        await eventsService.update(eventId, eventPayload);
-        setEditSubmitStatus('succeeded');
-      } catch (err) {
-        setEditSubmitStatus('failed');
-        setUploadError(err?.response?.data?.message || err?.message || 'Failed to update event.');
-      }
-      return;
-    }
-
-    try {
-      const createdEvent = await dispatch(submitEvent(eventPayload)).unwrap();
-
-      if (saveThisVenue && !selectedVenueId) {
-        venuesService.create({
-          name: data.venueName,
-          address: data.venueAddress,
-        }).then((res) => {
-          setSavedVenues((prev) => [...prev, res.data]);
-        }).catch((err) => console.error('Venue save failed:', err.response?.data || err.message));
-      }
-
-      // Ticket variants are optional — create them after the event exists.
-      // Empty rows (no name typed) are skipped rather than blocking submission.
-      const validVariants = ticketVariants.filter((v) => v.name && v.price && v.capacity);
-      if (validVariants.length > 0) {
-        await Promise.all(
-          validVariants.map((v) =>
-            eventsService.createVariant(createdEvent._id, {
-              name: v.name,
-              price: Number(v.price),
-              capacity: Number(v.capacity),
-            })
-          )
-        );
-      }
-    } catch (err) {
-      setUploadError(err?.response?.data?.message || err?.message || 'Failed to create event or ticket variants.');
-    }
-  };
-
-  const isAdmin = user?.roles?.includes('admin');
-  const isVerifiedOrganizer = organizerProfile?.kycStatus === 'verified';
-  const canSubmitEvents = isAdmin || isVerifiedOrganizer;
-
-  if (fetchStatus === 'loading' || initialLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" />
+    {verified ? (
+      <span className="flex items-center gap-1.5 text-green-600 text-xs font-bold">
+        <CheckCircle2 size={15} /> Verified
+      </span>
+    ) : otpSent ? (
+      <div className="flex items-center gap-2">
+        <input
+          value={otpValue}
+          onChange={(e) => onOtpChange(e.target.value)}
+          placeholder="6-digit OTP"
+          maxLength={6}
+          className="w-28 border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:border-brand-red"
+        />
+        <button
+          type="button"
+          onClick={onVerify}
+          disabled={verifying || otpValue.length !== 6}
+          className="text-xs font-bold bg-brand-red text-white px-3 py-2 disabled:opacity-60"
+        >
+          {verifying ? '...' : 'Verify'}
+        </button>
       </div>
-    );
+    ) : (
+      <button
+        type="button"
+        onClick={onSendOtp}
+        disabled={sending}
+        className="text-xs font-bold text-brand-red border border-brand-red px-3 py-2 disabled:opacity-60"
+      >
+        {sending ? 'Sending...' : 'Send OTP'}
+      </button>
+    )}
+  </div>
+);
+
+const OrganizerKycPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { profile, fetchStatus, kycStatus, error } = useSelector((s) => s.organizer);
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm();
+
+  // Two independent OTP flows — one for phone, one for email.
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [phoneOtp, setPhoneOtp] = useState('');
+  const [emailOtp, setEmailOtp] = useState('');
+  const [sendingOtp, setSendingOtp] = useState('');   // 'phone' | 'email' | ''
+  const [verifyingOtp, setVerifyingOtp] = useState(''); // 'phone' | 'email' | ''
+
+  const idDocUrl = watch('idDocUrl');
+  const businessDocUrl = watch('businessDocUrl');
+  const chequeUrl = watch('chequeUrl');
+  const bankAccountNumber = watch('bankAccountNumber');
+  const bankAccountNumberConfirm = watch('bankAccountNumberConfirm');
+
+  useEffect(() => { dispatch(fetchMyOrganizer()); }, [dispatch]);
+  useEffect(() => () => dispatch(resetKycStatus()), [dispatch]);
+
+  // Not registered yet — send them to register first.
+  useEffect(() => {
+    if (fetchStatus === 'succeeded' && !profile) navigate(ROUTES.ORGANIZER_REGISTER, { replace: true });
+  }, [fetchStatus, profile, navigate]);
+
+  const handleSendOtp = async (field) => {
+    setSendingOtp(field);
+    try {
+      await dispatch(sendContactOtp({ organizerId: profile._id, field })).unwrap();
+      if (field === 'phone') setPhoneOtpSent(true);
+      else setEmailOtpSent(true);
+    } catch (err) {
+      // error is already reflected in redux state via the rejected case
+    }
+    setSendingOtp('');
+  };
+
+  const handleVerifyOtp = async (field) => {
+    setVerifyingOtp(field);
+    try {
+      const code = field === 'phone' ? phoneOtp : emailOtp;
+      await dispatch(verifyContactOtp({ organizerId: profile._id, field, code })).unwrap();
+    } catch (err) {
+      // error is already reflected in redux state via the rejected case
+    }
+    setVerifyingOtp('');
+  };
+
+  const onSubmit = (data) => {
+    dispatch(submitKyc({
+      organizerId: profile._id,
+      data: {
+        legalName: data.legalName,
+        pan: data.pan?.toUpperCase(),
+        gstin: data.gstin ? data.gstin.toUpperCase() : undefined,
+        address: {
+          line1: data.line1,
+          line2: data.line2 || '',
+          city: data.city,
+          state: data.state,
+          pincode: data.pincode,
+        },
+        idDocUrl: data.idDocUrl,
+        businessDocUrl: data.businessDocUrl || undefined,
+        bankAccountName: data.bankAccountName,
+        bankAccountNumber: data.bankAccountNumber,
+        bankAccountNumberConfirm: data.bankAccountNumberConfirm,
+        ifsc: data.ifsc?.toUpperCase(),
+        accountType: data.accountType,
+        chequeUrl: data.chequeUrl || undefined,
+        payoutFrequency: data.payoutFrequency || 'per_event_t2',
+      },
+    }));
+  };
+
+  if (fetchStatus === 'loading' || !profile) {
+    return <div className="flex items-center justify-center min-h-screen"><Spinner size="lg" /></div>;
   }
 
-  if (!canSubmitEvents) {
+  const isNonIndividual = NON_INDIVIDUAL_TYPES.includes(profile.organizerType);
+  const bothContactsVerified = profile.contactPhoneVerified && profile.contactEmailVerified;
+
+  // KYC already verified — nothing left to do here.
+  if (profile.kycStatus === 'verified') {
     return (
       <div className="bg-[#f5f5f4] min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md px-6">
-          <Lock size={56} className="text-gray-300 mx-auto mb-4" />
-
-          <h2 className="font-black text-2xl text-gray-900 mb-2">
-            Organizer verification is required.
-          </h2>
-
-          <p className="text-gray-500 mb-6">
-            {!organizerProfile
-              ? 'You need to register as an organizer before submitting an event.'
-              : `Your KYC status is "${organizerProfile.kycStatus}". Your KYC must be verified before you can submit an event.`}
-          </p>
-
-          <Link
-            to={
-              !organizerProfile
-                ? ROUTES.ORGANIZER_REGISTER
-                : ROUTES.ORGANIZER_KYC
-            }
-            className="inline-block bg-brand-red hover:bg-brand-red-hover text-white font-bold px-6 py-3 text-sm transition-colors"
-          >
-            {!organizerProfile
-              ? 'Register as Organizer →'
-              : 'Check KYC Status →'}
+          <CheckCircle2 size={56} className="text-green-600 mx-auto mb-4" />
+          <h2 className="font-black text-2xl text-gray-900 mb-2">KYC Verified</h2>
+          <p className="text-gray-500 mb-6">Your KYC has been verified. You can now submit events.</p>
+          <Link to={ROUTES.ORGANIZER_SUBMIT} className="inline-block bg-brand-red hover:bg-brand-red-hover text-white font-bold px-6 py-3 text-sm transition-colors">
+            Submit an Event →
           </Link>
         </div>
       </div>
     );
   }
 
-  if (submitStatus === 'succeeded' || editSubmitStatus === 'succeeded') {
+  // KYC already submitted and pending review — don't show the form again.
+  if (profile.kycStatus === 'submitted' || kycStatus === 'succeeded') {
     return (
       <div className="bg-[#f5f5f4] min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md px-6">
-          <CircleCheck
-            size={64}
-            className="text-brand-red mx-auto mb-4"
-          />
-
-          <h2 className="font-black text-2xl text-gray-900 mb-2">
-            {isEditMode ? 'Event Resubmitted!' : 'Event Submitted!'}
-          </h2>
-
-          <p className="text-gray-500 mb-6">
-            {isEditMode
-              ? 'Your changes have been sent back for review. Our team will approve it within 24 hours.'
-              : "Your event is now in the review queue. Our team will approve it within 24 hours and it'll appear in the feed."}
-          </p>
-
-          <button
-            onClick={() => {
-              if (isEditMode) {
-                navigate(ROUTES.MY_EVENTS);
-              } else {
-                dispatch(resetSubmitStatus());
-                reset();
-                setSelectedFiles([]);
-                setUploadError('');
-              }
-            }}
-            className="bg-brand-red hover:bg-brand-red-hover text-white font-bold px-6 py-3 text-sm transition-colors"
-          >
-            {isEditMode ? 'Back to My Events' : 'Submit another event'}
-          </button>
+          <Clock size={56} className="text-amber-500 mx-auto mb-4" />
+          <h2 className="font-black text-2xl text-gray-900 mb-2">KYC Under Review</h2>
+          <p className="text-gray-500">Your KYC details have been submitted. Our team will review them within 24-48 hours.</p>
         </div>
       </div>
     );
@@ -360,616 +219,236 @@ const OrganizerPage = () => {
 
   return (
     <div className="bg-[#f5f5f4] min-h-screen">
-
-      {/* Page header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-5">
-          <h1 className="font-black text-2xl text-gray-900">
-            {isEditMode ? 'Edit Event' : 'List an Event'}
-          </h1>
-
-          <p className="text-sm text-gray-500 mt-0.5">
-            {isEditMode
-              ? 'Update and resubmit your event for review'
-              : "Submit your event for review — it'll go live within 24 hours"}
-          </p>
+        <div className="max-w-3xl mx-auto px-6 py-5">
+          <h1 className="font-black text-2xl text-gray-900">KYC & Bank Details</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Step 2 of 2 — you can submit events only after this is verified</p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Form */}
-          <div className="lg:col-span-2">
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-6"
-            >
-
-              {/* Basic info */}
-              <div className="bg-white border border-gray-200 p-6">
-                <h2 className="font-black text-base text-gray-900 mb-5"> Event Details </h2>
-
-                <div className="space-y-4">
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Event Title *
-                    </label>
-
-                    <input
-                      {...register('title', {
-                        required: 'Title is required'
-                      })}
-                      placeholder="e.g. Sufi Night at Rajmahal Rooftop"
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-
-                    {errors.title && (
-                      <p className="text-brand-red text-xs mt-1">
-                        {errors.title.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Category *
-                    </label>
-
-                    <select
-                      {...register('category', { required: true })}
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors bg-white"
-                    >
-                      <option value="">Select category</option>
-
-                      {EVENT_CATEGORIES
-                        .filter((c) => c.id !== 'all')
-                        .map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.label}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Description *
-                    </label>
-
-                    <textarea
-                      {...register('description', {
-                        required: 'Description is required',
-                        minLength: 50
-                      })}
-                      rows={4}
-                      placeholder="Describe your event — what, who, why it's special..."
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors resize-none"
-                    />
-
-                    {errors.description && (
-                      <p className="text-brand-red text-xs mt-1">
-                        Minimum 50 characters
-                      </p>
-                    )}
-                  </div>
-
-                </div>
-              </div>
-
-              {/* Date, time, venue */}
-              <div className="bg-white border border-gray-200 p-6">
-                <h2 className="font-black text-base text-gray-900 mb-5">
-                  When & Where
-                </h2>
-
-                <div className="space-y-4">
-
-                  <div className="grid grid-cols-2 gap-4">
-
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                        Date *
-                      </label>
-
-                      <input
-                        {...register('date', { required: true })}
-                        type="date"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                        Start time *
-                      </label>
-
-                      <input
-                        {...register('time', { required: true })}
-                        type="time"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-                    {/* Multiple dates (optional) — for multi-day/recurring events */}
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-bold uppercase tracking-wide text-gray-500">
-                          Additional dates (optional)
-                        </label>
-                        <button
-                          type="button"
-                          onClick={addDateRow}
-                          className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5"
-                        >
-                          + Add date
-                        </button>
-                      </div>
-                      <p className="text-xs text-gray-400 mb-4">
-                        Leave empty for a single-date event. Add rows if this event runs across multiple dates —
-                        attendees will be able to pick a date, and you'll be able to reschedule bookings between them.
-                      </p>
-
-                      {eventDates.map((d, i) => (
-                        <div key={i} className="grid grid-cols-[1.2fr_1fr_1fr_auto] gap-3 mb-3 items-end">
-                          <div>
-                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Date</label>
-                            <input
-                              type="date"
-                              value={d.date}
-                              onChange={(e) => updateDateRow(i, 'date', e.target.value)}
-                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Label</label>
-                            <input
-                              value={d.label}
-                              onChange={(e) => updateDateRow(i, 'label', e.target.value)}
-                              placeholder="e.g. Day 1"
-                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Capacity</label>
-                            <input
-                              type="number"
-                              value={d.capacity}
-                              onChange={(e) => updateDateRow(i, 'capacity', e.target.value)}
-                              placeholder="0 = no per-day cap"
-                              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeDateRow(i)}
-                            className="h-[42px] px-3 border border-gray-300 text-gray-500 hover:border-red-400 hover:text-red-500 transition-colors"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-
-                  </div>
-
-                  {savedVenues.length > 0 && (
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                        Use a saved venue
-                      </label>
-                      <select
-                        value={selectedVenueId}
-                        onChange={(e) => handleVenueSelect(e.target.value)}
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors bg-white"
-                      >
-                        <option value="">— Type a new venue below —</option>
-                        {savedVenues.map((v) => (
-                          <option key={v._id} value={v._id}>{v.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Venue name *
-                    </label>
-
-                    <input
-                      {...register('venueName', { required: true })}
-                      placeholder="e.g. Rajmahal Rooftop"
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Address *
-                    </label>
-
-                    <input
-                      {...register('venueAddress', { required: true })}
-                      placeholder="Full address, Bareilly"
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-                  </div>
-
-                  {!selectedVenueId && (
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        id="save-venue"
-                        checked={saveThisVenue}
-                        onChange={(e) => setSaveThisVenue(e.target.checked)}
-                        className="w-4 h-4 accent-brand-red"
-                      />
-                      <label htmlFor="save-venue" className="text-sm font-medium text-gray-700">
-                        Save this venue for future events
-                      </label>
-                    </div>
-                  )}
-
-                </div>
-              </div>
-
-              {/* Tickets & price */}
-              <div className="bg-white border border-gray-200 p-6">
-                <h2 className="font-black text-base text-gray-900 mb-5">
-                  Tickets & Price
-                </h2>
-
-                <div className="space-y-4">
-
-                  <div className="flex items-center gap-3">
-                    <input
-                      {...register('isFree')}
-                      type="checkbox"
-                      id="free-event"
-                      className="w-4 h-4 accent-brand-red"
-                    />
-
-                    <label
-                      htmlFor="free-event"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      This is a free event
-                    </label>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                        Price from (₹)
-                      </label>
-
-                      <input
-                        {...register('priceMin')}
-                        type="number"
-                        placeholder="0"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                        Price to (₹)
-                      </label>
-
-                      <input
-                        {...register('priceMax')}
-                        type="number"
-                        placeholder="999"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Capacity
-                    </label>
-
-                    <input
-                      {...register('capacity')}
-                      type="number"
-                      placeholder="200"
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Booking URL
-                    </label>
-
-                    <input
-                      {...register('bookingUrl')}
-                      placeholder="https://..."
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-                  </div>
-
-                </div>
-              </div>
-
-              {/* Ticket variants (optional) */}
-              <div className="bg-white border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="font-black text-base text-gray-900">Ticket Types (optional)</h2>
-                  <button
-                    type="button"
-                    onClick={addVariantRow}
-                    className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5"
-                  >
-                    + Add ticket type
-                  </button>
-                </div>
-                <p className="text-xs text-gray-400 mb-4">
-                  Leave empty to use the single price above. Add rows here for multiple ticket tiers (e.g. Silver, Gold, VIP).
-                </p>
-
-                {ticketVariants.map((v, i) => (
-                  <div key={i} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-3 mb-3 items-end">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Name</label>
-                      <input
-                        value={v.name}
-                        onChange={(e) => updateVariantRow(i, 'name', e.target.value)}
-                        placeholder="e.g. Silver"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Price (₹)</label>
-                      <input
-                        type="number"
-                        value={v.price}
-                        onChange={(e) => updateVariantRow(i, 'price', e.target.value)}
-                        placeholder="500"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Capacity</label>
-                      <input
-                        type="number"
-                        value={v.capacity}
-                        onChange={(e) => updateVariantRow(i, 'capacity', e.target.value)}
-                        placeholder="100"
-                        className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeVariantRow(i)}
-                      className="h-[42px] px-3 border border-gray-300 text-gray-500 hover:border-red-400 hover:text-red-500 transition-colors"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Organizer */}
-              <div className="bg-white border border-gray-200 p-6">
-                <h2 className="font-black text-base text-gray-900 mb-5">
-                  Organizer Info
-                </h2>
-
-                <div className="space-y-4">
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Organizer / Company name *
-                    </label>
-
-                    <input
-                      {...register('organizerName', { required: true })}
-                      placeholder="Your name or company"
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Contact phone *
-                    </label>
-
-                    <input
-                      {...register('organizerPhone', { required: true })}
-                      placeholder="+91 XXXXX XXXXX"
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
-                      Contact email
-                    </label>
-
-                    <input
-                      {...register('organizerEmail')}
-                      type="email"
-                      placeholder="you@example.com"
-                      className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors"
-                    />
-                  </div>
-
-                </div>
-              </div>
-
-              {existingImages.length > 0 && (
-                <div className="bg-white border border-gray-200 p-6">
-                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Current images</p>
-                  <div className="grid grid-cols-5 gap-2">
-                    {existingImages.map((url, i) => (
-                      <div key={url} className="relative aspect-square">
-                        <img src={url} alt="" className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => setExistingImages((prev) => prev.filter((u) => u !== url))}
-                          className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center"
-                        >
-                          <X size={11} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Photo upload */}
-              <div className="bg-white border border-gray-200 p-6">
-                <h2 className="font-black text-base text-gray-900 mb-5">
-                  Event Images
-                </h2>
-
-                {uploadError && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 mb-4">
-                    {uploadError}
-                  </div>
-                )}
-
-                <label
-                  htmlFor="event-image-input"
-                  className="border-2 border-dashed border-gray-300 flex flex-col items-center justify-center py-12 cursor-pointer hover:border-brand-red transition-colors"
-                  style={{
-                    backgroundImage:
-                      'repeating-linear-gradient(135deg, #f9fafb 0px, #f9fafb 2px, #f3f4f6 2px, #f3f4f6 12px)'
-                  }}
-                >
-                  <Upload size={28} className="text-gray-400 mb-2" />
-
-                  <p className="text-sm font-semibold text-gray-600">
-                    Click to upload images
-                  </p>
-
-                  <p className="text-xs text-gray-400 mt-1">
-                    JPG, PNG, WebP up to 5MB each · 5 images max
-                  </p>
-
-                  <input
-                    id="event-image-input"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    multiple
-                    onChange={handleFileSelect}
-                    disabled={selectedFiles.length >= 5}
-                    className="hidden"
-                  />
-                </label>
-
-                {selectedFiles.length > 0 && (
-                  <div className="grid grid-cols-5 gap-2 mt-4">
-
-                    {selectedFiles.map((file, i) => (
-                      <div
-                        key={i}
-                        className="relative aspect-square"
-                      >
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-
-                        <button
-                          type="button"
-                          onClick={() => removeFile(i)}
-                          className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center"
-                        >
-                          <X size={11} />
-                        </button>
-                      </div>
-                    ))}
-
-                  </div>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitStatus === 'loading' || editSubmitStatus === 'loading' || uploading}
-                className="w-full flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white font-black py-4 text-base transition-colors disabled:opacity-60"
-              >
-                {uploading ? (
-                  <>
-                    <Loader2 size={16} className="animate-spin" />
-                    Uploading images...
-                  </>
-                ) : (submitStatus === 'loading' || editSubmitStatus === 'loading') ? (
-                  <Spinner size="sm" />
-                ) : (
-                  isEditMode ? 'Resubmit for Review →' : 'Submit for Review →'
-                )}
-              </button>
-
-            </form>
+      <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
+
+        {profile.kycStatus === 'rejected' && (
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3">
+            <p className="font-bold">Your KYC was rejected:</p>
+            <p>{profile.kycRejectionReason || 'No reason was given.'}</p>
           </div>
+        )}
 
-          {/* Sidebar — guidelines */}
-          <div className="lg:col-span-1 space-y-4">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3">{error}</div>
+        )}
 
-            <div className="bg-white border border-gray-200 p-5 sticky top-20">
-
-              <div className="flex items-center gap-2 mb-4">
-                <Info size={15} className="text-brand-red" />
-
-                <h3 className="font-black text-sm text-gray-900">
-                  Submission Guidelines
-                </h3>
-              </div>
-
-              <ul className="space-y-3 text-xs text-gray-600">
-
-                {[
-                  'Events must be in or near Bareilly',
-                  'Approval takes 24-48 hours on weekdays',
-                  'Include a clear event image for better visibility',
-                  'Free events get 2× more clicks',
-                  'Add a working booking URL for paid events',
-                  'Events with complete info are prioritised',
-                ].map((tip, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2"
-                  >
-                    <span className="w-4 h-4 shrink-0 bg-brand-red text-white text-[9px] font-bold flex items-center justify-center mt-0.5">
-                      {i + 1}
-                    </span>
-
-                    {tip}
-                  </li>
-                ))}
-
-              </ul>
-
-              <div className="mt-5 pt-5 border-t border-gray-100">
-
-                <p className="text-xs font-bold text-gray-900 mb-1">
-                  Need help?
-                </p>
-
-                <p className="text-xs text-gray-500">
-                  WhatsApp us at{' '}
-                  <span className="font-semibold text-brand-red">
-                    +91 98765 43210
-                  </span>
-                </p>
-
-              </div>
-
-            </div>
-
+        {/* Step A — contact verification. Both must be verified before KYC can be submitted. */}
+        <div className="bg-white border border-gray-200 p-6">
+          <h2 className="font-black text-base text-gray-900 mb-4">Contact Verification</h2>
+          <div className="space-y-3">
+            <ContactVerifyRow
+              label="Phone"
+              value={profile.contactPhone}
+              verified={profile.contactPhoneVerified}
+              otpSent={phoneOtpSent}
+              otpValue={phoneOtp}
+              onOtpChange={setPhoneOtp}
+              onSendOtp={() => handleSendOtp('phone')}
+              onVerify={() => handleVerifyOtp('phone')}
+              sending={sendingOtp === 'phone'}
+              verifying={verifyingOtp === 'phone'}
+            />
+            <ContactVerifyRow
+              label="Email"
+              value={profile.contactEmail}
+              verified={profile.contactEmailVerified}
+              otpSent={emailOtpSent}
+              otpValue={emailOtp}
+              onOtpChange={setEmailOtp}
+              onSendOtp={() => handleSendOtp('email')}
+              onVerify={() => handleVerifyOtp('email')}
+              sending={sendingOtp === 'email'}
+              verifying={verifyingOtp === 'email'}
+            />
           </div>
-
         </div>
+
+        {/* Step B — the KYC form. Locked/disabled until both contacts are verified. */}
+        <form onSubmit={handleSubmit(onSubmit)} className={`bg-white border border-gray-200 p-6 space-y-5 ${!bothContactsVerified ? 'opacity-50 pointer-events-none select-none' : ''}`}>
+          <h2 className="font-black text-base text-gray-900">Legal & Bank Details</h2>
+          {!bothContactsVerified && (
+            <p className="text-xs text-amber-600 font-semibold -mt-3">Verify both phone and email above first.</p>
+          )}
+
+          <div>
+            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Legal entity name *</label>
+            <input
+              {...register('legalName', { required: true, minLength: 2, maxLength: 120 })}
+              placeholder="Must match your PAN record exactly"
+              className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
+            />
+            {errors.legalName && <p className="text-brand-red text-xs mt-1">Legal name is required</p>}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">PAN *</label>
+              <input
+                {...register('pan', { required: true, pattern: /^[A-Za-z]{5}[0-9]{4}[A-Za-z]$/ })}
+                placeholder="ABCDE1234F"
+                maxLength={10}
+                className="w-full border border-gray-300 px-3 py-2.5 text-sm uppercase focus:outline-none focus:border-brand-red"
+              />
+              {errors.pan && <p className="text-brand-red text-xs mt-1">Invalid PAN format</p>}
+            </div>
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">
+                GSTIN {isNonIndividual && '*'}
+              </label>
+              <input
+                {...register('gstin', { required: isNonIndividual })}
+                placeholder="22AAAAA0000A1Z5"
+                maxLength={15}
+                className="w-full border border-gray-300 px-3 py-2.5 text-sm uppercase focus:outline-none focus:border-brand-red"
+              />
+              {errors.gstin && <p className="text-brand-red text-xs mt-1">GSTIN is required for this organizer type</p>}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Address line 1 *</label>
+            <input {...register('line1', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
+          </div>
+          <div>
+            <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Address line 2</label>
+            <input {...register('line2')} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">City *</label>
+              <input {...register('city', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
+            </div>
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">State *</label>
+              <input {...register('state', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
+            </div>
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Pincode *</label>
+              <input
+                {...register('pincode', { required: true, pattern: /^[1-9][0-9]{5}$/ })}
+                maxLength={6}
+                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
+              />
+              {errors.pincode && <p className="text-brand-red text-xs mt-1">Invalid pincode</p>}
+            </div>
+          </div>
+
+          <DocUploadField
+            label="Identity document (Aadhaar / Passport / Voter ID / Licence)"
+            required
+            value={idDocUrl}
+            onUploaded={(url) => setValue('idDocUrl', url, { shouldValidate: true })}
+          />
+          <input type="hidden" {...register('idDocUrl', { required: true })} />
+          {errors.idDocUrl && <p className="text-brand-red text-xs -mt-3">Identity document upload is required</p>}
+
+          {isNonIndividual && (
+            <>
+              <DocUploadField
+                label="Business proof (incorporation certificate / GST certificate / shop licence)"
+                required
+                value={businessDocUrl}
+                onUploaded={(url) => setValue('businessDocUrl', url, { shouldValidate: true })}
+              />
+              <input type="hidden" {...register('businessDocUrl', { required: isNonIndividual })} />
+              {errors.businessDocUrl && <p className="text-brand-red text-xs -mt-3">Business proof is required for this organizer type</p>}
+            </>
+          )}
+
+          <div className="border-t border-gray-100 pt-5">
+            <h3 className="font-black text-sm text-gray-900 mb-4">Bank Account</h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Account holder name *</label>
+                <input {...register('bankAccountName', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Account number *</label>
+                  <input
+                    {...register('bankAccountNumber', { required: true, pattern: /^[0-9]{9,18}$/ })}
+                    className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
+                  />
+                  {errors.bankAccountNumber && <p className="text-brand-red text-xs mt-1">Must be 9-18 digits</p>}
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Confirm account number *</label>
+                  <input
+                    {...register('bankAccountNumberConfirm', {
+                      required: true,
+                      validate: (v) => v === bankAccountNumber || 'Account numbers do not match',
+                    })}
+                    className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
+                  />
+                  {errors.bankAccountNumberConfirm && <p className="text-brand-red text-xs mt-1">{errors.bankAccountNumberConfirm.message || 'Required'}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">IFSC *</label>
+                <input
+                  {...register('ifsc', { required: true, pattern: /^[A-Za-z]{4}0[A-Za-z0-9]{6}$/ })}
+                  maxLength={11}
+                  className="w-full border border-gray-300 px-3 py-2.5 text-sm uppercase focus:outline-none focus:border-brand-red"
+                />
+                {errors.ifsc && <p className="text-brand-red text-xs mt-1">Invalid IFSC format</p>}
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Account type *</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-1.5 text-sm">
+                    <input type="radio" value="savings" {...register('accountType', { required: true })} className="accent-brand-red" /> Savings
+                  </label>
+                  <label className="flex items-center gap-1.5 text-sm">
+                    <input type="radio" value="current" {...register('accountType', { required: true })} className="accent-brand-red" /> Current
+                  </label>
+                </div>
+                {errors.accountType && <p className="text-brand-red text-xs mt-1">Select an account type</p>}
+              </div>
+
+              <DocUploadField
+                label="Cancelled cheque (optional — speeds up verification)"
+                value={chequeUrl}
+                onUploaded={(url) => setValue('chequeUrl', url)}
+              />
+              <input type="hidden" {...register('chequeUrl')} />
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Payout frequency *</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-1.5 text-sm">
+                    <input type="radio" value="per_event_t2" defaultChecked {...register('payoutFrequency')} className="accent-brand-red" /> Per event (T+2)
+                  </label>
+                  <label className="flex items-center gap-1.5 text-sm">
+                    <input type="radio" value="weekly" {...register('payoutFrequency')} className="accent-brand-red" /> Weekly consolidated
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={!bothContactsVerified || kycStatus === 'loading'}
+            className="w-full flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white font-black py-3.5 text-sm transition-colors disabled:opacity-60"
+          >
+            {kycStatus === 'loading' ? <Spinner size="sm" /> : 'Submit KYC for Review →'}
+          </button>
+        </form>
       </div>
     </div>
   );
 };
 
-export default OrganizerPage;
+export default OrganizerKycPage;
