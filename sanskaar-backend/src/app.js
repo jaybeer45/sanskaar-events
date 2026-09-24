@@ -29,6 +29,10 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));                 
 }
 
+app.get('/' , (req , res) => {
+  res.status(200).json({success:true , message:'sanskaar api is running'});
+});
+
 // ── Health check ────────────────────────────────────
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Sanskaar API is running' });

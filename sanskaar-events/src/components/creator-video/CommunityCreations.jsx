@@ -83,8 +83,6 @@ const CommunityCreations = ({ eventId }) => {
         );
     };
 
-
-
     // Loading skeleton — shown only on the very first load
     if (loading) {
         return (

@@ -33,6 +33,7 @@ const creatorVideoSchema = new mongoose.Schema(
     likesCount: { type: Number, default: 0 },
     commentsCount: { type: Number, default: 0 },
     sharesCount: { type: Number, default: 0 },
+    viewsCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -7,7 +7,8 @@ const {
   getCreatorVideosByEvent,
   deleteCreatorVideo,
   incrementShare,
-  incrementView 
+  incrementView
+
 } = require('../controllers/creatorVideo.controller');
 const { toggleLike } = require('../controllers/videoLike.controller');
 const { addComment,getReplies ,  getComments, deleteComment } = require('../controllers/videoComment.controller');

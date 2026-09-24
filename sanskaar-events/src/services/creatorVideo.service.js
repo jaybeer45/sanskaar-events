@@ -11,6 +11,7 @@ export const creatorVideoService = {
   getLeaderboard: (eventId) => axiosInstance.get(`/creator-videos/leaderboard/${eventId}`),
   getReplies: (commentId) => axiosInstance.get(`/creator-videos/comments/${commentId}/replies`),
   incrementShare: (videoId) => axiosInstance.post(`/creator-videos/${videoId}/share`),
+  incrementView: (videoId) => axiosInstance.post(`/creator-videos/${videoId}/view`),
   deleteComment: (commentId) => axiosInstance.delete(`/creator-videos/comments/${commentId}`),
   delete: (id) => axiosInstance.delete(`/creator-videos/${id}`),
 };

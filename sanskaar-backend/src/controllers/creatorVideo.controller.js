@@ -122,6 +122,7 @@ const deleteCreatorVideo = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true });
 });
 
+
 // @route GET /api/v1/creator-videos/leaderboard/:eventId
 // @desc  Public — top creators for this event, ranked by total views
 //        across all their public videos on it. Reward tier is derived
@@ -172,6 +173,7 @@ const getCreatorLeaderboard = asyncHandler(async (req, res) => {
   res.status(200).json({ leaderboard: withTier });
 });
 
+
 // @route POST /api/v1/creator-videos/:id/view
 // @desc Increment video view counter
 const incrementView = asyncHandler(async (req, res) => {
@@ -193,4 +195,7 @@ const incrementView = asyncHandler(async (req, res) => {
 
 
 
+
+
 module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,incrementView ,getCreatorLeaderboard ,   deleteCreatorVideo  };
+
