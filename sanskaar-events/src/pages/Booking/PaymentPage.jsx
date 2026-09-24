@@ -1,12 +1,14 @@
 // src/pages/Booking/PaymentPage.jsx
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChevronLeft, CircleCheck, ShieldCheck } from 'lucide-react';
 import { createRazorpayOrder, verifyRazorpayPayment } from '../../features/bookings/slices/bookingsSlice';
 import { ROUTES } from '../../constants/routes';
 import toast from 'react-hot-toast';
+import { eventsService } from '../../services/events.service';
+import EventCard from '../../pages/Home/components/EventCard'
 
 // Loads the Razorpay checkout script once and caches the promise so
 // repeated clicks on "Pay" don't re-inject the <script> tag.
@@ -40,6 +42,8 @@ const PaymentPage = () => {
 
   const [paid, setPaid] = useState(false);
   const [isOpeningCheckout, setIsOpeningCheckout] = useState(false);
+  const [nearbyEvents, setNearbyEvents] = useState([]);
+  const eventIdForSuggestions = location.state?.eventId;
 
   // Booking navigate se state mein nahi aayi (e.g. page refresh) — bina
   // context ke payment nahi dikha sakte, wapas events pe bhej do.
@@ -47,6 +51,15 @@ const PaymentPage = () => {
     navigate(ROUTES.HOME);
     return null;
   }
+
+  // Payment successful hone ke baad hi fetch karo — pehle nahi
+  useEffect(() => {
+    if (!paid || !eventIdForSuggestions) return;
+    eventsService
+      .getUpcomingNearby(eventIdForSuggestions)
+      .then((res) => setNearbyEvents(res.data.results || []))
+      .catch(() => { });
+  }, [paid, eventIdForSuggestions]);
 
   const handlePay = useCallback(async () => {
     setIsOpeningCheckout(true);
@@ -126,6 +139,16 @@ const PaymentPage = () => {
           >
             View my bookings
           </Link>
+          {nearbyEvents.length > 0 && (
+            <div className="mt-10 text-left">
+              <h3 className="font-black text-sm text-gray-900 mb-3">Upcoming events near you</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {nearbyEvents.map((ev) => (
+                  <EventCard key={ev.id} event={ev} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

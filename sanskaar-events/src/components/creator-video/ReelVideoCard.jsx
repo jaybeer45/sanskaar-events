@@ -12,29 +12,77 @@ const ReelVideoCard = ({
     video,
     eventId,
     isActive,
+    isNearActive,
+    isMuted,
+    onToggleMute,
     onToggleLike,
     onOpenComments,
     onSharesCountChange,
     onFollowChange,
 }) => {
     const videoRef = useRef(null);
-    const [isMuted, setIsMuted] = useState(true); // start muted — browsers block unmuted autoplay
     const [showHeart, setShowHeart] = useState(false);
     const lastTapRef = useRef(0);
     const viewCountedRef = useRef(false);
+    const [showShareMenu, setShowShareMenu] = useState(false);
+    const shareUrl = `${window.location.origin}/events/${eventId}`;
+
+    const trackShare = async () => {
+        try {
+            const res = await creatorVideoService.incrementShare(video._id);
+            onSharesCountChange?.(res.data.sharesCount);
+        } catch (err) {
+
+        }
+    };
+
+    const handleShareClick = async () => {
+
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'Check out this video!', url: shareUrl });
+                trackShare();
+            } catch (err) {
+                if (err.name !== 'AbortError') toast.error('Could not share this video.');
+            }
+            return;
+        }
+        // Desktop — native share nahi hota, apna chhota menu dikhao
+        setShowShareMenu((s) => !s);
+    };
+
+    const handleWhatsAppShare = () => {
+        window.open(`https://wa.me/?text=${encodeURIComponent('Check out this video! ' + shareUrl)}`, '_blank');
+        trackShare();
+        setShowShareMenu(false);
+    };
+
+    const handleCopyLink = async () => {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Link copied!');
+        trackShare();
+        setShowShareMenu(false);
+    };
 
     // Play/pause based on whether this card is the active one in the feed
     useEffect(() => {
         const v = videoRef.current;
-        if (!v) return;
+        if (!v || !isNearActive) return;   // ← guard add hua
+        v.muted = isMuted;
         if (isActive) {
             v.currentTime = video.trimStart;
-            v.play().catch(() => { }); // ignore autoplay-block errors
+            v.play().catch(() => { });
         } else {
             v.pause();
-            viewCountedRef.current = false; // reset so scrolling back counts again
+            viewCountedRef.current = false;
         }
-    }, [isActive]);
+    }, [isActive, isMuted, isNearActive]);
+
+    useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.muted = isMuted;
+        }
+    }, [isMuted]);
 
     const handleTimeUpdate = (e) => {
         const v = e.target;
@@ -58,21 +106,7 @@ const ReelVideoCard = ({
         lastTapRef.current = now;
     };
 
-    const handleShare = async () => {
-        const shareUrl = `${window.location.origin}/events/${eventId}`;
-        try {
-            if (navigator.share) {
-                await navigator.share({ title: 'Check out this video!', url: shareUrl });
-            } else {
-                await navigator.clipboard.writeText(shareUrl);
-                toast.success('Link copied!');
-            }
-            const res = await creatorVideoService.incrementShare(video._id);
-            onSharesCountChange?.(res.data.sharesCount);
-        } catch (err) {
-            if (err.name !== 'AbortError') toast.error('Could not share this video.');
-        }
-    };
+
 
     const handleToggleFollow = async () => {
         if (!video.creator?._id) return;
@@ -88,7 +122,7 @@ const ReelVideoCard = ({
         <div className="relative w-full h-full snap-start flex-shrink-0 bg-black">
             <video
                 ref={videoRef}
-                src={video.videoUrl}
+                src={isNearActive ? video.videoUrl : undefined}
                 muted={isMuted}
                 loop={false}
                 playsInline
@@ -109,7 +143,7 @@ const ReelVideoCard = ({
             {/* mute/unmute button */}
             <button
                 type="button"
-                onClick={() => setIsMuted((m) => !m)}
+                onClick={onToggleMute}   // ← pehle "setIsMuted((m) => !m)" tha
                 className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center"
             >
                 {isMuted ? <VolumeX size={16} className="text-white" /> : <Volume2 size={16} className="text-white" />}
@@ -166,12 +200,29 @@ const ReelVideoCard = ({
                     <span className="text-[11px] font-bold text-white drop-shadow-md">{video.commentsCount || 0}</span>
                 </button>
 
-                <button type="button" onClick={handleShare} className="flex flex-col items-center gap-1.5">
-                    <span className="w-12 h-12 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-md border border-white/20">
-                        <Share2 size={20} className="text-white" />
-                    </span>
-                    <span className="text-[11px] font-bold text-white drop-shadow-md">{video.sharesCount || 0}</span>
-                </button>
+                <div className="relative">
+                    <button type="button" onClick={handleShareClick} className="flex flex-col items-center gap-1.5">
+                        <span className="w-12 h-12 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-md border border-white/20">
+                            <Share2 size={20} className="text-white" />
+                        </span>
+                        <span className="text-[11px] font-bold text-white drop-shadow-md">{video.sharesCount || 0}</span>
+                    </button>
+
+                    {showShareMenu && (
+                        <div className="absolute right-14 bottom-0 bg-white rounded-xl shadow-lg overflow-hidden w-40 z-10">
+                            <button
+                                type="button"
+                                onClick={handleWhatsAppShare}
+                                className="w-full text-left px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50 border-b border-gray-100"
+                            >
+                                Share on WhatsApp
+                            </button>
+                            <button type="button" onClick={handleCopyLink} className="w-full text-left px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50">
+                                Copy Link
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* view count, bottom-left, small */}
