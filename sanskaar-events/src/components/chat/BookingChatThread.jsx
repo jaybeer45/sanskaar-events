@@ -6,7 +6,7 @@ import Spinner from '../ui/Spinner/Spinner';
 
 // Self-contained: only fetches once the panel is opened, and polls every 5s
 // while open so both sides see new messages without a manual refresh. No
-// websockets in this codebase yet, so polling is the simple, honest choice —
+// websockets for bookings yet, so polling is the simple, honest choice:
 // swap the interval for a socket subscription later if it's ever needed.
 const POLL_MS = 5000;
 
@@ -29,9 +29,9 @@ const BookingChatThread = ({ bookingId }) => {
         setYourRole(res.data.yourRole);
       })
       .catch(() => {
-        // Silent on background polls — don't spam a toast every 5s if the
-        // network hiccups. The first load failing is still worth telling
-        // the user about, since the whole panel is otherwise blank.
+        // Silent on background polls so a network hiccup doesn't toast every 5s.
+        // A failed first load is still worth telling the user about, since the
+        // whole panel would otherwise be blank.
         if (isFirstLoad) toast.error('Failed to load messages.');
       })
       .finally(() => { if (isFirstLoad) setLoading(false); });
@@ -66,40 +66,51 @@ const BookingChatThread = ({ bookingId }) => {
   if (!open) {
     return (
       <button
+        type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-xs font-bold text-gray-600 border border-gray-300 px-3 py-1.5 hover:border-gray-400"
+        className="inline-flex h-10 items-center gap-1.5 rounded-pill border border-night/30 px-4 text-sm font-semibold text-night transition-colors hover:bg-night/5"
       >
-        <MessageCircle size={14} /> Message
+        <MessageCircle size={15} /> Message
       </button>
     );
   }
 
   return (
-    <div className="border-t border-gray-100 pt-3 mt-3">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-bold text-gray-500 uppercase">Messages</p>
-        <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-700">
+    <div className="border-t border-mist pt-3">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="font-heading text-sm font-bold text-night">Messages</p>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Close messages"
+          className="-mr-2 flex h-9 w-9 items-center justify-center rounded-full text-night/50 transition-colors hover:bg-night/5 hover:text-night"
+        >
           <X size={16} />
         </button>
       </div>
 
-      <div className="bg-[#f9f9f8] border border-gray-200 h-56 overflow-y-auto p-3 space-y-2">
+      <div
+        role="log"
+        aria-live="polite"
+        className="h-64 space-y-2 overflow-y-auto rounded-2xl border border-mist bg-moonlight p-3"
+      >
         {loading ? (
-          <div className="flex justify-center items-center h-full"><Spinner size="sm" /></div>
+          <div className="flex h-full items-center justify-center"><Spinner size="sm" /></div>
         ) : messages.length === 0 ? (
-          <p className="text-xs text-gray-400 text-center mt-4">No messages yet. Say hello 👋</p>
+            <p className="mt-4 text-center text-sm text-ink/60">No messages yet. Say hello.</p>
         ) : (
           messages.map((m) => {
             const isMine = m.senderRole === yourRole;
             return (
               <div key={m._id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-[75%] px-3 py-1.5 text-sm ${
-                    isMine ? 'bg-brand-red text-white' : 'bg-white border border-gray-200 text-gray-800'
+                  className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm ${isMine
+                      ? 'rounded-br-md bg-night text-white'
+                      : 'rounded-bl-md border border-mist bg-white text-ink'
                   }`}
                 >
-                  <p>{m.text}</p>
-                  <p className={`text-[10px] mt-0.5 ${isMine ? 'text-white/70' : 'text-gray-400'}`}>
+                  <p className="break-words">{m.text}</p>
+                  <p className={`mt-0.5 text-[11px] ${isMine ? 'text-white/60' : 'text-ink/50'}`}>
                     {new Date(m.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -110,17 +121,19 @@ const BookingChatThread = ({ bookingId }) => {
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSend} className="flex gap-2 mt-2">
+      <form onSubmit={handleSend} className="mt-2 flex gap-2">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-1 border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-brand-red"
+          aria-label="Type a message"
+          placeholder="Type a message"
+          className="h-11 flex-1 rounded-pill border border-transparent bg-moonlight px-4 text-sm text-ink transition-colors focus:border-night focus:bg-white focus:outline-none"
         />
         <button
           type="submit"
+          aria-label="Send message"
           disabled={sending || !text.trim()}
-          className="bg-brand-red text-white px-3 py-2 disabled:opacity-50"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-red text-white transition-colors hover:bg-brand-red-hover disabled:opacity-50"
         >
           <Send size={16} />
         </button>

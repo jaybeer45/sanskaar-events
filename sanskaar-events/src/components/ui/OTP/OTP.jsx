@@ -13,7 +13,7 @@ const OTP = ({ value = '', onChange, error, disabled }) => {
   };
 
   const handleChange = (index, rawValue) => {
-    const digit = rawValue.replace(/[^0-9]/g, '').slice(-1); // sirf last digit rakho
+    const digit = rawValue.replace(/[^0-9]/g, '').slice(-1); // keep only the last digit typed
     const newDigits = [...digits];
     newDigits[index] = digit;
     updateValue(newDigits);
@@ -46,6 +46,8 @@ const OTP = ({ value = '', onChange, error, disabled }) => {
             ref={(el) => (inputsRef.current[index] = el)}
             type="text"
             inputMode="numeric"
+            autoComplete={index === 0 ? 'one-time-code' : 'off'}
+            aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
             maxLength={1}
             value={digit}
             disabled={disabled}
@@ -53,15 +55,15 @@ const OTP = ({ value = '', onChange, error, disabled }) => {
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
             className={`
-              h-12 w-11 rounded-lg border text-center text-lg font-semibold
-              bg-gray-100 focus:bg-white
+              h-12 min-w-0 flex-1 max-w-[3.25rem] rounded-xl border text-center text-lg font-semibold text-ink
+              bg-moonlight focus:bg-white
               transition-colors duration-150
               focus:outline-none focus:ring-2
               disabled:cursor-not-allowed disabled:opacity-60
               ${
                 error
                   ? 'border-red-400 focus:ring-red-200'
-                  : 'border-gray-200 focus:ring-red-100 focus:border-brand-red'
+              : 'border-mist focus:ring-night/20 focus:border-night'
               }
             `}
           />

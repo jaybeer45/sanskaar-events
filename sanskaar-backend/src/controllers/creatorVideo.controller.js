@@ -41,7 +41,18 @@ const getMyCreatorVideos = asyncHandler(async (req, res) => {
   const videos = await CreatorVideo.find({ creator: req.user._id })
     .populate('event', 'title')
     .sort({ createdAt: -1 });
-  res.status(200).json({ results: videos });
+
+  const likes = await VideoLike.find({
+    video: { $in: videos.map((v) => v._id) },
+    user: req.user._id,
+  }).select('video');
+  const likedSet = new Set(likes.map((l) => l.video.toString()));
+
+  const results = videos.map((v) => ({
+    ...v.toObject(),
+    isLiked: likedSet.has(v._id.toString()),
+  }));
+  res.status(200).json({ results });
 });
 
 // @route GET /api/v1/creator-videos/event/:eventId
@@ -193,9 +204,36 @@ const incrementView = asyncHandler(async (req, res) => {
   });
 });
 
+// @route GET /api/v1/creator-videos/user/:userId  (public videos only)
+const getCreatorVideosByUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const videos = await CreatorVideo.find({ creator: userId, visibility: 'public' })
+    .populate('creator', 'name followersCount')
+    .populate('event', 'title')
+    .sort({ createdAt: -1 });
+
+  let likedSet = new Set();
+  let isFollowing = false;
+  if (req.user) {
+    const likes = await VideoLike.find({
+      video: { $in: videos.map((v) => v._id) },
+      user: req.user._id,
+    }).select('video');
+    likedSet = new Set(likes.map((l) => l.video.toString()));
+    isFollowing = !!(await Follow.exists({ follower: req.user._id, following: userId }));
+  }
+
+  const results = videos.map((v) => ({
+    ...v.toObject(),
+    isLiked: likedSet.has(v._id.toString()),
+    isFollowingCreator: isFollowing,
+  }));
+  res.status(200).json({ results, isFollowing });
+});
 
 
 
 
-module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,incrementView ,getCreatorLeaderboard ,   deleteCreatorVideo  };
+
+module.exports = { createCreatorVideo, getMyCreatorVideos, getCreatorVideosByEvent, incrementShare ,incrementView ,getCreatorLeaderboard ,   deleteCreatorVideo , getCreatorVideosByUser  };
 

@@ -131,6 +131,21 @@ otpLogin: async (identifier, code) => {
   return axiosInstance.post(`/users/${creatorId}/follow`);
  },
 
+ getUserById: async (userId) => {
+    if (USE_MOCK) return { data: { name: 'Demo User', followersCount: 0, followingCount: 0 } };
+    return axiosInstance.get(`/users/${userId}`);
+},
+
+ getFollowers: async (userId) => {
+    if (USE_MOCK) return { data: { results: [] } };
+    return axiosInstance.get(`/users/${userId}/followers`);
+},
+
+getFollowing: async (userId) => {
+    if (USE_MOCK) return { data: { results: [] } };
+    return axiosInstance.get(`/users/${userId}/following`);
+},
+
   updateProfile: async (userId, data) => {
     if (USE_MOCK) {
       const user = [...MOCK_USERS, ...REGISTERED_USERS].find((u) => u.id === userId);

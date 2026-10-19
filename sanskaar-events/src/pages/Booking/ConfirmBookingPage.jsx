@@ -5,11 +5,12 @@ import { Minus, Plus, ChevronLeft } from 'lucide-react';
 import { useEventDetail } from '../../features/events/hooks/useEventDetail';
 import { createBooking, resetBookingStatus } from '../../features/bookings/slices/bookingsSlice';
 import { formatPrice } from '../../utils/formatPrice';
+import { getEventDateParts, formatEventTime } from '../../utils/eventDate';
 import { ROUTES, buildRoute } from '../../constants/routes';
 import Input from '../../components/ui/Input/Input';
 import Spinner from '../../components/ui/Spinner/Spinner';
 import toast from 'react-hot-toast';
-import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { eventsService } from '../../services/events.service';
 import { rewardsService } from '../../services/rewards.service';
 
@@ -45,7 +46,7 @@ const ConfirmBookingPage = () => {
     });
   }, [variantId, eventId]);
 
-  // Pre-fill from profile — PRD spec: "Pre-filled from profile · required"
+  // Pre-fill from the profile
   useEffect(() => {
     if (user) {
       setFullName(user.name || '');
@@ -59,8 +60,13 @@ const ConfirmBookingPage = () => {
   }, [dispatch]);
 
   if (!user) {
-    navigate(ROUTES.LOGIN, { state: { from: { pathname: buildRoute.confirmBooking(eventId) } } });
-    return null;
+    return (
+      <Navigate
+        to={ROUTES.LOGIN}
+        replace
+        state={{ from: { pathname: buildRoute.confirmBooking(eventId) } }}
+      />
+    );
   }
 
   if (eventStatus === 'loading' || !event) {
@@ -78,6 +84,16 @@ const ConfirmBookingPage = () => {
   const gst = Math.round(amount * 0.18);
   const discountRupees = appliedCoupon ? appliedCoupon.valuePaise / 100 : 0;
   const total = Math.max(0, amount + gst - discountRupees);
+
+  // For multi-date events show the date the user picked, not the first one
+  const chosenDate = event.eventDates?.find((d) => d._id === eventDateId)?.date || event.date;
+  const dateParts = getEventDateParts(chosenDate);
+  const dateLabel = [
+    dateParts && `${dateParts.weekday}, ${dateParts.day} ${dateParts.month}`,
+    formatEventTime(event.time),
+  ]
+    .filter(Boolean)
+    .join(' at ');
 
   const handleQuantityChange = (delta) => {
     const next = Math.max(1, Math.min(maxQty, quantity + delta));
@@ -99,7 +115,7 @@ const ConfirmBookingPage = () => {
       toast.success('Coupon applied!');
     } catch (err) {
       setAppliedCoupon(null);
-      setCouponError(err.response?.data?.message || 'Invalid ya expired coupon code.');
+      setCouponError(err.response?.data?.message || 'This coupon code is invalid or has expired.');
     } finally {
       setCheckingCoupon(false);
     }
@@ -116,15 +132,15 @@ const ConfirmBookingPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!fullName || !phone || !email) {
-      toast.error('complete contact details ');
+      toast.error('Please complete your contact details.');
       return;
     }
     if (quantity > remaining) {
-      toast.error('seat not avalible ');
+      toast.error('Not enough seats available.');
       return;
     }
     if (event.eventDates?.length > 0 && !eventDateId) {
-      toast.error('please select a date ');
+      toast.error('Please select a date.');
       return;
     }
 
@@ -148,75 +164,81 @@ const ConfirmBookingPage = () => {
         toast.success(`Booked! Ticket code: ${booking.ticketCode}`);
         navigate(buildRoute.eventDetail(event.id));
       } else {
-        navigate(buildRoute.payment(booking._id), { state: { booking, eventId } });
+        navigate(buildRoute.payment(booking._id), {
+          state: { booking, eventId, eventTitle: event.title },
+        });
       }
     } catch (err) {
-      toast.error(err || 'Booking fail ho gayi, dobara try karo');
+      toast.error(typeof err === 'string' ? err : err?.message || 'Booking failed. Please try again.');
     }
   };
 
   return (
-    <div className="bg-[#f5f5f4] min-h-screen">
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-6 py-3">
+    <div className="bg-surface min-h-screen">
+      <div className="bg-white border-b border-mist">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3">
           <Link
             to={buildRoute.eventDetail(event.id)}
-            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            className="inline-flex items-center gap-1 text-sm text-ink/60 hover:text-night transition-colors"
           >
-            <ChevronLeft size={15} /> Back to event
+            <ChevronLeft size={16} /> Back to event
           </Link>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        <h1 className="font-black text-2xl md:text-3xl text-gray-900 mb-1">Confirm your booking</h1>
-        <p className="text-sm text-gray-500 mb-8">{event.title}</p>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <h1 className="font-heading font-extrabold text-3xl text-night">Confirm your booking</h1>
+        <p className="text-ink/60 mt-1 mb-8">{event.title}</p>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left — form */}
+          {/* Left: form */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Contact details */}
-            <div className="bg-white border border-gray-200 p-6">
-              <h2 className="font-black text-base text-gray-900 mb-4">Contact details</h2>
+            <section className="card p-6">
+              <h2 className="font-heading font-bold text-lg text-night mb-4">Contact details</h2>
               <div className="space-y-4">
                 <Input label="Full name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input label="Phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
                   <Input label="Email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
-                <p className="text-xs text-gray-400">Ticket isi email pe deliver hoga.</p>
+                <p className="text-sm text-ink/60">Your ticket will be emailed to this address.</p>
               </div>
-            </div>
+            </section>
 
-            {/* Quantity + attendees */}
-            <div className="bg-white border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-black text-base text-gray-900">Tickets</h2>
+            <section className="card p-6">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-heading font-bold text-lg text-night">Tickets</h2>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
+                    aria-label="Decrease tickets"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1}
-                    className="w-9 h-9 border border-gray-300 flex items-center justify-center hover:border-brand-red disabled:opacity-40 transition-colors"
+                    className="w-11 h-11 rounded-full border border-mist flex items-center justify-center hover:border-night disabled:opacity-40 disabled:hover:border-mist transition-colors"
                   >
-                    <Minus size={14} />
+                    <Minus size={16} />
                   </button>
-                  <span className="font-bold text-lg w-6 text-center">{quantity}</span>
+                  <span aria-live="polite" className="font-heading font-bold text-xl w-8 text-center text-night">
+                    {quantity}
+                  </span>
                   <button
                     type="button"
+                    aria-label="Increase tickets"
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= maxQty}
-                    className="w-9 h-9 border border-gray-300 flex items-center justify-center hover:border-brand-red disabled:opacity-40 transition-colors"
+                    className="w-11 h-11 rounded-full border border-mist flex items-center justify-center hover:border-night disabled:opacity-40 disabled:hover:border-mist transition-colors"
                   >
-                    <Plus size={14} />
+                    <Plus size={16} />
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-gray-400 mb-4">{remaining} seats remaining · max {maxQty} per order</p>
+              <p className="text-sm text-ink/60">
+                {remaining} seats left, up to {maxQty} per order.
+              </p>
 
               {quantity > 1 && (
-                <div className="space-y-3 pt-2 border-t border-gray-100">
-                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mt-3">Attendee names</p>
+                <div className="space-y-3 mt-5 pt-5 border-t border-mist">
+                  <p className="text-sm font-semibold text-ink">Attendee names</p>
                   {attendeeNames.map((name, i) => (
                     <Input
                       key={i}
@@ -228,15 +250,15 @@ const ConfirmBookingPage = () => {
                   ))}
                 </div>
               )}
-            </div>
+            </section>
 
-            {/* Promo code */}
             {!isFree && (
-              <div className="bg-white border border-gray-200 p-6">
-                <h2 className="font-black text-base text-gray-900 mb-4">Promo code</h2>
+              <section className="card p-6">
+                <h2 className="font-heading font-bold text-lg text-night mb-4">Promo code</h2>
                 <div className="flex gap-2 items-start">
                   <div className="flex-1">
                     <Input
+                      aria-label="Promo code"
                       placeholder="Have a code? Enter it here"
                       value={promoCode}
                       onChange={(e) => {
@@ -250,67 +272,87 @@ const ConfirmBookingPage = () => {
                     type="button"
                     onClick={handleApplyCoupon}
                     disabled={!promoCode.trim() || checkingCoupon || !!appliedCoupon}
-                    className="h-[42px] px-4 border border-gray-300 text-sm font-bold text-gray-700 hover:border-brand-red disabled:opacity-50 shrink-0"
+                    className="btn-outline h-12 !py-0 text-sm shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-ink"
                   >
-                    {checkingCoupon ? '...' : appliedCoupon ? 'Applied' : 'Apply'}
+                    {checkingCoupon ? 'Checking' : appliedCoupon ? 'Applied' : 'Apply'}
                   </button>
                 </div>
-                {couponError && <p className="text-xs text-red-500 mt-1.5">{couponError}</p>}
+                {couponError && <p className="text-sm text-red-600 mt-2">{couponError}</p>}
                 {appliedCoupon && (
-                  <p className="text-xs text-green-600 mt-1.5">
-                    ✓ Coupon applied — ₹{(appliedCoupon.valuePaise / 100).toLocaleString('en-IN')} off
+                  <p className="text-sm text-green-700 mt-2">
+                    Coupon applied, ₹{(appliedCoupon.valuePaise / 100).toLocaleString('en-IN')} off.
                   </p>
                 )}
-              </div>
+              </section>
             )}
           </div>
 
-          {/* Right — order summary */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-20 bg-white border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="font-black text-base text-gray-900 mb-4">Order summary</h2>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between text-gray-600">
-                    <span>{isFree ? 'Price' : `${selectedVariant ? selectedVariant.name : formatPrice(event.price)} × ${quantity}`}</span>
-                    <span>{isFree ? 'Free' : `₹${amount.toLocaleString('en-IN')}`}</span>
-                  </div>
-                  {!isFree && (
-                    <div className="flex justify-between text-gray-600">
-                      <span>GST (18%)</span>
-                      <span>₹{gst.toLocaleString('en-IN')}</span>
-                    </div>
-                  )}
-                </div>
+          {/* Right: order summary as a ticket */}
+          <aside className="lg:col-span-1">
+            <div className="ticket sticky top-24">
+              <div className="surface-night bg-night text-white p-6">
+                <p className="text-sm text-white/60">Your event</p>
+                <h2 className="mt-1 font-heading font-bold text-xl leading-snug">{event.title}</h2>
+                {dateLabel && <p className="mt-2 text-sm text-white/70">{dateLabel}</p>}
               </div>
-              {appliedCoupon && (
-                <div className="px-6 pb-2 flex justify-between text-sm text-green-600">
-                  <span>Coupon discount</span>
-                  <span>− ₹{(appliedCoupon.valuePaise / 100).toLocaleString('en-IN')}</span>
+
+              <div className="ticket-perf" />
+
+              <div className="p-6 space-y-2 text-sm">
+                <div className="flex justify-between gap-4 text-ink/80">
+                  <span>
+                    {isFree
+                      ? 'Price'
+                      : `${selectedVariant ? selectedVariant.name : formatPrice(event.price)} × ${quantity}`}
+                  </span>
+                  <span>{isFree ? 'Free' : `₹${amount.toLocaleString('en-IN')}`}</span>
                 </div>
-              )}
-              <div className="p-6 border-b border-gray-200 flex justify-between items-baseline">
-                <span className="font-bold text-gray-900">Total</span>
-                <span className="font-black text-2xl text-gray-900">
+                {!isFree && (
+                  <div className="flex justify-between text-ink/80">
+                    <span>GST (18%)</span>
+                    <span>₹{gst.toLocaleString('en-IN')}</span>
+                  </div>
+                )}
+                {appliedCoupon && (
+                  <div className="flex justify-between text-green-700">
+                    <span>Coupon discount</span>
+                    <span>− ₹{(appliedCoupon.valuePaise / 100).toLocaleString('en-IN')}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="px-6 py-5 border-t border-mist flex justify-between items-baseline">
+                <span className="font-semibold text-night">Total</span>
+                <span className="font-heading font-extrabold text-3xl text-night">
                   {isFree ? 'Free' : `₹${total.toLocaleString('en-IN')}`}
                 </span>
               </div>
-              <div className="p-6">
+
+              <div className="px-6 pb-6">
                 {bookingError && (
-                  <p className="text-sm text-red-600 mb-3">
-                    {typeof bookingError === 'string' ? bookingError : bookingError?.message || 'Kuch galat ho gaya, dobara try karo'}
+                  <p role="alert" className="text-sm text-red-600 mb-3">
+                    {typeof bookingError === 'string'
+                      ? bookingError
+                      : bookingError?.message || 'Something went wrong. Please try again.'}
                   </p>
                 )}
                 <button
                   type="submit"
                   disabled={bookingStatus === 'loading'}
-                  className="w-full bg-brand-red hover:bg-brand-red-hover text-white font-bold py-3.5 text-sm transition-colors disabled:opacity-60"
+                  className="btn-brand w-full py-3.5 text-base disabled:opacity-60"
                 >
-                  {bookingStatus === 'loading' ? 'Please wait...' : isFree ? 'Confirm booking' : 'Continue to payment'}
+                  {bookingStatus === 'loading'
+                    ? 'Please wait...'
+                    : isFree
+                      ? 'Confirm booking'
+                      : 'Continue to payment'}
                 </button>
+                {!isFree && (
+                  <p className="mt-3 text-center text-xs text-ink/50">You pay securely on the next step.</p>
+                )}
               </div>
             </div>
-          </div>
+          </aside>
         </form>
       </div>
     </div>

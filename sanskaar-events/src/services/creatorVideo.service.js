@@ -6,6 +6,7 @@ export const creatorVideoService = {
   getMine: () => axiosInstance.get('/creator-videos/mine'),
  getByEvent: (eventId, page = 1, limit = 10) => axiosInstance.get(`/creator-videos/event/${eventId}`, { params: { page, limit } }),
   toggleLike: (videoId) => axiosInstance.post(`/creator-videos/${videoId}/like`),
+  getByUser: (userId) => axiosInstance.get(`/creator-videos/user/${userId}`),
   getComments: (videoId) => axiosInstance.get(`/creator-videos/${videoId}/comments`),
   addComment: (videoId, text, parentCommentId = null) => axiosInstance.post(`/creator-videos/${videoId}/comments`, { text, parentCommentId }),
   getLeaderboard: (eventId) => axiosInstance.get(`/creator-videos/leaderboard/${eventId}`),

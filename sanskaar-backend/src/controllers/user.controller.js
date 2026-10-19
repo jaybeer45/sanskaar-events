@@ -110,4 +110,14 @@ const getConsents = asyncHandler(async (req, res) => {
   res.status(200).json({ consents: user.consents });
 });
 
-module.exports = { updateProfile, saveEvent, unsaveEvent, recordConsent, getConsents };
+// @route GET /api/v1/users/:id
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select('name avatar followersCount followingCount');
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found.');
+  }
+  res.status(200).json(user);
+});
+
+module.exports = { updateProfile, saveEvent, unsaveEvent, recordConsent, getConsents , getUserById };

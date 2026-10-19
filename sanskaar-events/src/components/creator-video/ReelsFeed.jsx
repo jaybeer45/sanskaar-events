@@ -56,9 +56,11 @@ const ReelsFeed = ({
             <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-4 left-4 z-10 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center"
+                aria-label="Close"
+                style={{ top: 'max(1rem, env(safe-area-inset-top))' }}
+                className="absolute left-4 z-10 w-11 h-11 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center"
             >
-                <X size={18} className="text-white" />
+                <X size={20} className="text-white" />
             </button>
 
             <div

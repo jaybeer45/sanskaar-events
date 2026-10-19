@@ -4,19 +4,30 @@ import { Ticket, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { adminService } from '../../services/admin.service';
 import Spinner from '../ui/Spinner/Spinner';
+import Input from '../ui/Input/Input';
+import { Select } from '../ui/Input/Fields';
+import StatusBadge from '../ui/StatusBadge/StatusBadge';
+
+const EMPTY_FORM = {
+    code: '',
+    valueRupees: '',
+    maxUses: '',
+    expiresAt: '',
+    targetType: 'public', // 'public' | 'role' | 'email'
+    targetRole: 'user',
+    userEmail: '',
+};
+
+const TARGET_OPTIONS = [
+    { key: 'public', label: 'Everyone' },
+    { key: 'role', label: 'By role' },
+    { key: 'email', label: 'Specific email' },
+];
 
 const CouponManager = () => {
     const [coupons, setCoupons] = useState([]);
     const [couponsLoading, setCouponsLoading] = useState(true);
-    const [couponForm, setCouponForm] = useState({
-        code: '',
-        valueRupees: '',
-        maxUses: '',
-        expiresAt: '',
-        targetType: 'public', // 'public' | 'role' | 'email'
-        targetRole: 'user',
-        userEmail: '',
-    });
+    const [couponForm, setCouponForm] = useState(EMPTY_FORM);
     const [creatingCoupon, setCreatingCoupon] = useState(false);
 
     const loadCoupons = () => {
@@ -28,12 +39,15 @@ const CouponManager = () => {
         loadCoupons();
     }, []);
 
+    const update = (field, transform = (v) => v) => (e) =>
+        setCouponForm((f) => ({ ...f, [field]: transform(e.target.value) }));
+
     const handleCreateCoupon = async (e) => {
         e.preventDefault();
         const { code, valueRupees, maxUses, expiresAt, targetType, targetRole, userEmail } = couponForm;
 
         if (!code.trim() || !valueRupees || Number(valueRupees) <= 0) {
-            toast.error('Code aur valid value zaroori hai');
+            toast.error('Enter a code and a valid value.');
             return;
         }
 
@@ -50,10 +64,10 @@ const CouponManager = () => {
         try {
             await adminService.createManualCoupon(payload);
             toast.success('Coupon created!');
-            setCouponForm({ code: '', valueRupees: '', maxUses: '', expiresAt: '', targetType: 'public', targetRole: 'user', userEmail: '' });
+            setCouponForm(EMPTY_FORM);
             loadCoupons();
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Coupon create nahi ho paya');
+            toast.error(err.response?.data?.message || 'Could not create the coupon.');
         } finally {
             setCreatingCoupon(false);
         }
@@ -61,151 +75,136 @@ const CouponManager = () => {
 
     return (
         <section>
-            <h2 className="font-black text-lg text-gray-900 mb-4 flex items-center gap-2">
-                <Ticket size={18} className="text-brand-red" /> Coupon Management
+            <h2 className="mb-3 flex items-center gap-2 font-heading text-xl font-bold text-night">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-marigold-soft text-night">
+                    <Ticket size={16} />
+                </span>
+                Coupon management
             </h2>
 
             {/* Create form */}
-            <form onSubmit={handleCreateCoupon} className="bg-white border border-gray-200 p-5 mb-5">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                    <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Code</label>
-                        <input
-                            value={couponForm.code}
-                            onChange={(e) => setCouponForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))}
-                            placeholder="DIWALI50"
-                            className="w-full border border-gray-300 px-3 py-2.5 text-sm font-mono focus:outline-none focus:border-brand-red"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Value (₹)</label>
-                        <input
-                            type="number"
-                            min="1"
-                            value={couponForm.valueRupees}
-                            onChange={(e) => setCouponForm((f) => ({ ...f, valueRupees: e.target.value }))}
-                            placeholder="50"
-                            className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Expiry (optional)</label>
-                        <input
-                            type="date"
-                            value={couponForm.expiresAt}
-                            onChange={(e) => setCouponForm((f) => ({ ...f, expiresAt: e.target.value }))}
-                            className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-                        />
-                    </div>
+            <form onSubmit={handleCreateCoupon} className="card mb-6 space-y-5 p-5 sm:p-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <Input
+                        label="Code"
+                        placeholder="DIWALI50"
+                        className="font-mono"
+                        value={couponForm.code}
+                        onChange={update('code', (v) => v.toUpperCase())}
+                    />
+                    <Input
+                        label="Value (₹)"
+                        type="number"
+                        min="1"
+                        placeholder="50"
+                        value={couponForm.valueRupees}
+                        onChange={update('valueRupees')}
+                    />
+                    <Input
+                        label="Expiry (optional)"
+                        type="date"
+                        value={couponForm.expiresAt}
+                        onChange={update('expiresAt')}
+                    />
                 </div>
 
-                <div className="mb-4">
-                    <label className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Who can use this?</label>
-                    <div className="flex gap-2">
-                        {[
-                            { key: 'public', label: 'Everyone' },
-                            { key: 'role', label: 'By Role' },
-                            { key: 'email', label: 'Specific Email' },
-                        ].map((opt) => (
-                            <button
-                                key={opt.key}
-                                type="button"
-                                onClick={() => setCouponForm((f) => ({ ...f, targetType: opt.key }))}
-                                className={`px-4 py-2 text-xs font-bold border transition-colors ${couponForm.targetType === opt.key
-                                    ? 'bg-black text-white border-black'
-                                    : 'border-gray-300 text-gray-600 hover:border-gray-500'
+                <div>
+                    <p className="mb-1.5 text-sm font-medium text-ink">Who can use this?</p>
+                    <div role="group" aria-label="Who can use this coupon" className="flex flex-wrap gap-2">
+                        {TARGET_OPTIONS.map((opt) => {
+                            const active = couponForm.targetType === opt.key;
+                            return (
+                                <button
+                                    key={opt.key}
+                                    type="button"
+                                    aria-pressed={active}
+                                    onClick={() => setCouponForm((f) => ({ ...f, targetType: opt.key }))}
+                                    className={`h-10 rounded-pill px-4 text-sm font-medium transition-colors ${active ? 'bg-night text-white' : 'border border-mist bg-white text-ink/80 hover:border-night/40'
                                     }`}
-                            >
-                                {opt.label}
-                            </button>
-                        ))}
+                                >
+                                    {opt.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    {couponForm.targetType === 'role' && (
-                        <div>
-                            <label className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Role</label>
-                            <select
-                                value={couponForm.targetRole}
-                                onChange={(e) => setCouponForm((f) => ({ ...f, targetRole: e.target.value }))}
-                                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-                            >
-                                <option value="user">User</option>
-                                <option value="organizer">Organizer</option>
-                                <option value="vendor">Vendor</option>
-                            </select>
-                        </div>
-                    )}
-                    {couponForm.targetType === 'email' && (
-                        <div>
-                            <label className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">User Email</label>
-                            <input
-                                type="email"
-                                value={couponForm.userEmail}
-                                onChange={(e) => setCouponForm((f) => ({ ...f, userEmail: e.target.value }))}
-                                placeholder="user@example.com"
-                                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-                            />
-                        </div>
-                    )}
-                    {couponForm.targetType === 'public' && (
-                        <div>
-                            <label className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Max Uses (optional)</label>
-                            <input
-                                type="number"
-                                min="1"
-                                value={couponForm.maxUses}
-                                onChange={(e) => setCouponForm((f) => ({ ...f, maxUses: e.target.value }))}
-                                placeholder="100"
-                                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red"
-                            />
-                        </div>
-                    )}
-                </div>
+                {couponForm.targetType === 'role' && (
+                    <Select label="Role" value={couponForm.targetRole} onChange={update('targetRole')}>
+                        <option value="user">User</option>
+                        <option value="organizer">Organizer</option>
+                        <option value="vendor">Vendor</option>
+                    </Select>
+                )}
+                {couponForm.targetType === 'email' && (
+                    <Input
+                        label="User email"
+                        type="email"
+                        placeholder="user@example.com"
+                        value={couponForm.userEmail}
+                        onChange={update('userEmail')}
+                    />
+                )}
+                {couponForm.targetType === 'public' && (
+                    <Input
+                        label="Max uses (optional)"
+                        type="number"
+                        min="1"
+                        placeholder="100"
+                        value={couponForm.maxUses}
+                        onChange={update('maxUses')}
+                    />
+                )}
 
                 <button
                     type="submit"
                     disabled={creatingCoupon}
-                    className="inline-flex items-center gap-1.5 bg-brand-red hover:bg-brand-red-hover text-white font-bold text-sm px-5 py-2.5 disabled:opacity-60 transition-colors"
+                    className="btn-brand inline-flex items-center gap-1.5 text-sm disabled:opacity-60"
                 >
-                    <Plus size={14} /> {creatingCoupon ? 'Creating...' : 'Create Coupon'}
+                    <Plus size={15} /> {creatingCoupon ? 'Creating...' : 'Create coupon'}
                 </button>
             </form>
-
 
             {/* List */}
             {couponsLoading ? (
                 <div className="flex justify-center py-10"><Spinner size="lg" /></div>
             ) : coupons.length === 0 ? (
-                <p className="text-sm text-gray-500 bg-white border border-gray-200 p-5">No manual coupons yet.</p>
+                    <div className="card px-5 py-10 text-center text-sm text-ink/60">No manual coupons yet.</div>
             ) : (
-                <div className="max-h-[420px] overflow-y-auto pr-1">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {coupons.map((c) => {
-                            const isExpired = c.expiresAt && new Date(c.expiresAt) < new Date();
-                            const isExhausted = c.usedCount >= c.maxUses;
-                            return (
-                                <div key={c.id} className="bg-white border border-gray-200 p-3.5">
-                                    <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                                        <span className="font-mono font-bold text-sm text-gray-900">{c.code}</span>
-                                        <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-gray-100 text-gray-600">
-                                            ₹{(c.valuePaise / 100).toLocaleString('en-IN')}
-                                        </span>
-                                        {isExpired && <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-red-100 text-red-600">Expired</span>}
-                                        {!isExpired && isExhausted && <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-gray-200 text-gray-500">Exhausted</span>}
-                                        {!isExpired && !isExhausted && <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-green-100 text-green-700">Active</span>}
-                                    </div>
-                                    <p className="text-xs text-gray-500 leading-snug">
-                                        {c.owner ? 'Specific user' : c.targetRole ? `Only ${c.targetRole}` : 'Public'}
-                                        {' · '}{c.usedCount}/{c.maxUses} used
-                                        {c.expiresAt && <><br />expires {new Date(c.expiresAt).toLocaleDateString('en-IN')}</>}
-                                    </p>
+                        <ul className="grid max-h-[460px] grid-cols-1 gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
+                            {coupons.map((c) => {
+                                const isExpired = c.expiresAt && new Date(c.expiresAt) < new Date();
+                        const isExhausted = c.maxUses && c.usedCount >= c.maxUses;
+                        const status = isExpired
+                            ? { label: 'Expired', tone: 'danger' }
+                            : isExhausted
+                                ? { label: 'Exhausted', tone: 'neutral' }
+                                : { label: 'Active', tone: 'success' };
+
+                        return (
+                            <li key={c.id} className="rounded-2xl border-2 border-dashed border-night/25 bg-white p-4">
+                                <div className="flex items-start justify-between gap-2">
+                                    <span className="font-mono text-base font-bold text-night">{c.code}</span>
+                                    <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
                                 </div>
-                            );
-                        })}
-                    </div>
-                </div>
+                                <p className="mt-1 font-heading text-2xl font-extrabold text-night">
+                                    ₹{(c.valuePaise / 100).toLocaleString('en-IN')}
+                                </p>
+                                <p className="mt-2 text-sm leading-snug text-ink/60">
+                                    {c.owner ? 'Specific user' : c.targetRole ? `Only ${c.targetRole}` : 'Public'}
+                                    {', '}
+                                    {c.maxUses ? `${c.usedCount}/${c.maxUses} used` : `${c.usedCount || 0} used`}
+                                    {c.expiresAt && (
+                                        <>
+                                            <br />
+                                            Expires {new Date(c.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                        </>
+                                    )}
+                                </p>
+                            </li>
+                        );
+                    })}
+                        </ul>
             )}
         </section>
     );

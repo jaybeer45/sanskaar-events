@@ -1,5 +1,5 @@
 // src/components/ui/Input/Input.jsx
-import { forwardRef, useState } from 'react';
+import { forwardRef, useId, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Input = forwardRef(
@@ -11,10 +11,14 @@ const Input = forwardRef(
       type = 'text',
       required,
       className = '',
-      ...rest // sab baaki props (onChange, placeholder, value, etc.) yaha aayenge
+      id,
+      ...rest // everything else (onChange, placeholder, value, ...) goes straight to the input
     },
     ref
   ) => {
+    const autoId = useId();
+    const inputId = id || autoId;
+    const messageId = `${inputId}-message`;
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
     const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
@@ -22,7 +26,7 @@ const Input = forwardRef(
     return (
       <div className="w-full">
         {label && (
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-ink">
             {label}
             {required && <span className="text-brand-red"> *</span>}
           </label>
@@ -31,11 +35,13 @@ const Input = forwardRef(
         <div className="relative">
           <input
             ref={ref}
+            id={inputId}
             type={inputType}
             aria-invalid={error ? 'true' : 'false'}
+            aria-describedby={error || helperText ? messageId : undefined}
             className={`
-              h-12 w-full rounded-lg border px-4 text-[15px]
-              bg-gray-100 focus:bg-white
+              h-12 w-full rounded-xl border px-4 text-[15px] text-ink placeholder-gray-400
+              bg-moonlight focus:bg-white
               transition-colors duration-150
               focus:outline-none focus:ring-2
               disabled:cursor-not-allowed disabled:opacity-60
@@ -43,7 +49,7 @@ const Input = forwardRef(
               ${
                 error
                   ? 'border-red-400 focus:ring-red-200'
-                  : 'border-gray-200 focus:ring-red-100 focus:border-brand-red'
+              : 'border-mist focus:ring-night/20 focus:border-night'
               }
               ${className}
             `}
@@ -55,7 +61,7 @@ const Input = forwardRef(
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-night"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -63,11 +69,11 @@ const Input = forwardRef(
         </div>
 
         {error ? (
-          <p role="alert" className="mt-1.5 text-sm text-red-600">
+          <p id={messageId} role="alert" className="mt-1.5 text-sm text-red-600">
             {error}
           </p>
         ) : helperText ? (
-          <p className="mt-1.5 text-sm text-gray-500">{helperText}</p>
+            <p id={messageId} className="mt-1.5 text-sm text-ink/60">{helperText}</p>
         ) : null}
       </div>
     );

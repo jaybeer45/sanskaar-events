@@ -1,16 +1,72 @@
 // src/constants/categories.js
 export const EVENT_CATEGORIES = [
-  { id: 'all',            label: 'All',            emoji: '✨', color: 'bg-gray-100 text-gray-700' },
-  { id: 'live-music',     label: 'Live Music',     emoji: '🎵', color: 'bg-purple-100 text-purple-700' },
-  { id: 'restaurant',     label: 'Restaurant',     emoji: '🍽️', color: 'bg-orange-100 text-orange-700' },
-  { id: 'festivals',      label: 'Festivals',      emoji: '🎉', color: 'bg-pink-100 text-pink-700' },
-  { id: 'workshops',      label: 'Workshops',      emoji: '🛠️', color: 'bg-blue-100 text-blue-700' },
-  { id: 'art-culture',    label: 'Art & Culture',  emoji: '🎨', color: 'bg-teal-100 text-teal-700' },
-  { id: 'meetups',        label: 'Meetups',        emoji: '🤝', color: 'bg-green-100 text-green-700' },
-  { id: 'comedy',         label: 'Comedy',         emoji: '😂', color: 'bg-yellow-100 text-yellow-700' },
-  { id: 'spiritual',      label: 'Spiritual',      emoji: '🕉️', color: 'bg-indigo-100 text-indigo-700' },
-  { id: 'sports',         label: 'Sports',         emoji: '⚽', color: 'bg-lime-100 text-lime-700' },
-  { id: 'kids',           label: 'Kids Activities',emoji: '🧸', color: 'bg-rose-100 text-rose-700' },
+  { id: "all", label: "All", emoji: "✨", color: "bg-gray-100 text-gray-700" },
+  {
+    id: "live-music",
+    label: "Live Music",
+    emoji: "🎵",
+    color: "bg-purple-100 text-purple-700",
+  },
+  {
+    id: "restaurant-events",
+    label: "Restaurant",
+    emoji: "🍽️",
+    color: "bg-orange-100 text-orange-700",
+  },
+  {
+    id: "festivals",
+    label: "Festivals",
+    emoji: "🎉",
+    color: "bg-pink-100 text-pink-700",
+  },
+  {
+    id: "workshops",
+    label: "Workshops",
+    emoji: "🛠️",
+    color: "bg-blue-100 text-blue-700",
+  },
+  {
+    id: "art-culture",
+    label: "Art & Culture",
+    emoji: "🎨",
+    color: "bg-teal-100 text-teal-700",
+  },
+  {
+    id: "meetups",
+    label: "Meetups",
+    emoji: "🤝",
+    color: "bg-green-100 text-green-700",
+  },
+  {
+    id: "comedy",
+    label: "Comedy",
+    emoji: "😂",
+    color: "bg-yellow-100 text-yellow-700",
+  },
+  {
+    id: "spiritual",
+    label: "Spiritual",
+    emoji: "🕉️",
+    color: "bg-indigo-100 text-indigo-700",
+  },
+  {
+    id: "sports",
+    label: "Sports",
+    emoji: "⚽",
+    color: "bg-lime-100 text-lime-700",
+  },
+  {
+    id: "kids",
+    label: "Kids Activities",
+    emoji: "🧸",
+    color: "bg-rose-100 text-rose-700",
+  },
+  {
+    id: "kids-activities",
+    label: "Kids Activities",
+    emoji: "🧸",
+    color: "bg-rose-100 text-rose-700",
+  },
 ];
 
 export const VENDOR_CATEGORIES = [

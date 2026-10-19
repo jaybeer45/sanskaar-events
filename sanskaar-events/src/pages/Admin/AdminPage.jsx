@@ -1,20 +1,60 @@
 // src/pages/Admin/AdminPage.jsx
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CheckCircle, XCircle, Clock, Eye } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Eye, CalendarDays, UserCheck, Store, Wallet, Ticket } from 'lucide-react';
 import { fetchPendingEvents, approveEvent, rejectEvent } from '../../features/events/slices/eventsSlice';
 import { selectPending, selectPendingStatus } from '../../features/events/selectors/eventsSelectors';
-import { Link } from 'react-router-dom';
 import { buildRoute } from '../../constants/routes';
 import { adminService } from '../../services/admin.service';
 import Spinner from '../../components/ui/Spinner/Spinner';
+import Input from '../../components/ui/Input/Input';
+import { Textarea } from '../../components/ui/Input/Fields';
+import StatusBadge from '../../components/ui/StatusBadge/StatusBadge';
 import toast from 'react-hot-toast';
 import { formatPaise } from '../../utils/formatPrice';
 import CouponManager from '../../components/admin/CouponManager';
 import VendorBookingsOverview from '../../components/admin/VendorBookingsOverview';
 
+const TABS = [
+  { key: 'events', label: 'Events', icon: CalendarDays },
+  { key: 'organizers', label: 'Organizers', icon: UserCheck },
+  { key: 'vendors', label: 'Vendors', icon: Store },
+  { key: 'payouts', label: 'Payouts', icon: Wallet },
+  { key: 'coupons', label: 'Coupons', icon: Ticket },
+];
+
+const approveBtn =
+  'h-10 rounded-pill bg-green-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60';
+const rejectBtn =
+  'h-10 rounded-pill px-4 text-sm font-semibold text-brand-red transition-colors hover:bg-red-50 disabled:opacity-60';
+
+const formatDate = (d) =>
+  new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const Panel = ({ title, count, children }) => (
+  <section>
+    <h2 className="mb-3 flex items-center gap-2 font-heading text-xl font-bold text-night">
+      {title}
+      {count !== undefined && (
+        <span className="rounded-pill bg-night/5 px-2.5 py-0.5 text-sm font-semibold text-night/70">{count}</span>
+      )}
+    </h2>
+    {children}
+  </section>
+);
+
+const Loading = () => (
+  <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+);
+
+const Empty = ({ children }) => (
+  <div className="card px-5 py-10 text-center text-sm text-ink/60">{children}</div>
+);
+
 const AdminPage = () => {
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
   const events = useSelector(selectPending);
   const eventsStatus = useSelector(selectPendingStatus);
 
@@ -35,6 +75,18 @@ const AdminPage = () => {
   const [rejectingEventId, setRejectingEventId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
 
+  // The open tab lives in the URL (?tab=payouts), so a refresh keeps it
+  const requestedTab = searchParams.get('tab');
+  const tab = TABS.some((t) => t.key === requestedTab) ? requestedTab : 'events';
+  const setTab = (key) => setSearchParams({ tab: key }, { replace: true });
+
+  const counts = {
+    events: events.length,
+    organizers: organizers.length,
+    vendors: vendors.length,
+    payouts: payouts.length,
+  };
+
   const loadOrganizers = () => {
     setOrganizersLoading(true);
     adminService.getPendingOrganizers().then(setOrganizers).finally(() => setOrganizersLoading(false));
@@ -43,12 +95,10 @@ const AdminPage = () => {
     setVendorsLoading(true);
     adminService.getPendingVendors().then(setVendors).finally(() => setVendorsLoading(false));
   };
-
   const loadPayouts = () => {
     setPayoutsLoading(true);
     adminService.getVendorPayouts('pending').then(setPayouts).finally(() => setPayoutsLoading(false));
   };
-
   const loadEventsHistory = () => {
     setEventsHistoryLoading(true);
     adminService.getEventsHistory().then(setEventsHistory).finally(() => setEventsHistoryLoading(false));
@@ -72,11 +122,26 @@ const AdminPage = () => {
     loadVendorsHistory();
   }, [dispatch]);
 
+  // Escape closes the reject dialog
+  useEffect(() => {
+    if (!rejectingEventId) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setRejectingEventId(null);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [rejectingEventId]);
+
   const handleApproveEvent = (id) => {
-    dispatch(approveEvent(id));
-    toast.success('Event approved');
-    setTimeout(loadEventsHistory, 500);
+    dispatch(approveEvent(id))
+      .unwrap()
+      .then(() => {
+        toast.success('Event approved');
+        loadEventsHistory();
+      })
+      .catch((err) => toast.error(typeof err === 'string' ? err : 'Could not approve the event.'));
   };
+
   const handleOpenRejectEvent = (id) => {
     setRejectingEventId(id);
     setRejectReason('');
@@ -84,17 +149,17 @@ const AdminPage = () => {
 
   const handleConfirmRejectEvent = () => {
     if (rejectReason.trim().length < 5) {
-      toast.error('Reason atleast should be 5 words');
+      toast.error('Please give a reason of at least 5 characters.');
       return;
     }
     dispatch(rejectEvent({ id: rejectingEventId, reason: rejectReason.trim() }))
       .unwrap()
       .then(() => {
-        toast.error('Event rejected');
+        toast.success('Event rejected');
         setRejectingEventId(null);
         loadEventsHistory();
       })
-      .catch((err) => toast.error(typeof err === 'string' ? err : 'Reject faild '));
+      .catch((err) => toast.error(typeof err === 'string' ? err : 'Could not reject the event.'));
   };
 
   const handleVerifyOrganizer = async (id) => {
@@ -107,12 +172,14 @@ const AdminPage = () => {
       toast.error(err.response?.data?.message || 'Failed to verify organizer');
     }
   };
+
   const handleRejectOrganizer = async (id) => {
+    if (!window.confirm('Reject this organizer?')) return;
     try {
       await adminService.rejectOrganizer(id);
-      toast.error('Organizer rejected');
+      toast.success('Organizer rejected');
       loadOrganizers();
-      loadOrganizersHistory()
+      loadOrganizersHistory();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to reject organizer');
     }
@@ -147,274 +214,320 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="bg-[#f5f5f4] min-h-screen">
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-5">
-          <h1 className="font-black text-2xl text-gray-900">Admin Panel</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Review and approve pending items</p>
+    <div>
+      {/* Header with tabs */}
+      <div className="border-b border-mist bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="py-5">
+            <h1 className="font-heading text-3xl font-extrabold text-night">Admin panel</h1>
+            <p className="mt-1 text-ink/60">Review and approve pending items.</p>
+          </div>
+
+          <div role="tablist" aria-label="Admin sections" className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-4 sm:mx-0 sm:px-0">
+            {TABS.map(({ key, label, icon: Icon }) => {
+              const active = tab === key;
+              const count = counts[key];
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  id={`tab-${key}`}
+                  aria-selected={active}
+                  aria-controls="admin-panel"
+                  onClick={() => setTab(key)}
+                  className={`inline-flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-pill px-4 text-sm font-medium transition-colors ${active ? 'bg-night text-white' : 'border border-mist bg-white text-ink/80 hover:border-night/40'
+                    }`}
+                >
+                  <Icon size={16} />
+                  {label}
+                  {count > 0 && (
+                    <span className="rounded-pill bg-marigold px-2 py-0.5 text-xs font-bold text-night">{count}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+      <div id="admin-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
 
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-px bg-gray-200">
-          {[
-            { label: 'Pending events', count: events.length, color: 'text-amber-600' },
-            { label: 'Pending organizers', count: organizers.length, color: 'text-blue-600' },
-            { label: 'Pending vendors', count: vendors.length, color: 'text-purple-600' },
-            { label: 'Pending payouts', count: payouts.length, color: 'text-red-600' },
-          ].map(({ label, count, color }) => (
-            <div key={label} className="bg-white px-6 py-5">
-              <p className={`font-black text-3xl ${color}`}>{count}</p>
-              <p className="text-xs text-gray-500 mt-1">{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* ── Events ── */}
-        <section>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Pending */}
-            <div>
-              <h2 className="font-black text-lg text-gray-900 mb-4">Pending Events</h2>
+        {/* Events */}
+        {tab === 'events' && (
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <Panel title="Pending events" count={events.length}>
               {eventsStatus === 'loading' ? (
-                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+                <Loading />
+              ) : events.length === 0 ? (
+                <Empty>No events in the queue.</Empty>
               ) : (
-                <div className="bg-white border border-gray-200 divide-y divide-gray-100">
-                  {events.length === 0 && (
-                    <div className="text-center py-16 text-gray-400">
-                      <Clock size={32} className="mx-auto mb-2 text-gray-300" />No events in queue
-                    </div>
-                  )}
+                    <ul className="card divide-y divide-mist/70">
                   {events.map((event) => (
-                    <div key={event.id} className="p-4 flex items-center justify-between gap-3">
+                    <li key={event.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                       <div className="min-w-0">
-                        <p className="font-bold text-gray-900 truncate">{event.title}</p>
-                        <p className="text-xs text-gray-500">{event.organizer?.name} · {new Date(event.date).toLocaleDateString('en-IN')}</p>
+                        <p className="truncate font-semibold text-night">{event.title}</p>
+                        <p className="text-sm text-ink/60">
+                          {event.organizer?.name}
+                          {event.date ? `, ${formatDate(event.date)}` : ''}
+                        </p>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Link to={buildRoute.eventDetail(event.id)} className="w-7 h-7 flex items-center justify-center border border-gray-300 hover:border-gray-500" title="Preview">
-                          <Eye size={13} className="text-gray-500" />
+                      <div className="flex shrink-0 items-center gap-2">
+                        <Link
+                          to={buildRoute.eventDetail(event.id)}
+                          aria-label={`Preview ${event.title}`}
+                          className="flex h-10 w-10 items-center justify-center rounded-full border border-mist transition-colors hover:border-night"
+                        >
+                          <Eye size={16} className="text-night/60" />
                         </Link>
-                        <button onClick={() => handleApproveEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-green-500 hover:bg-green-600" title="Approve">
-                          <CheckCircle size={13} className="text-white" />
+                        <button type="button" onClick={() => handleApproveEvent(event.id)} className={approveBtn}>
+                          Approve
                         </button>
-                        <button onClick={() => handleOpenRejectEvent(event.id)} className="w-7 h-7 flex items-center justify-center bg-brand-red hover:bg-brand-red-hover" title="Reject">
-                          <XCircle size={13} className="text-white" />
+                        <button type="button" onClick={() => handleOpenRejectEvent(event.id)} className={rejectBtn}>
+                          Reject
                         </button>
                       </div>
-                    </div>
+                    </li>
                   ))}
-                </div>
+                    </ul>
               )}
-            </div>
+            </Panel>
 
-            {/* History */}
-            <div>
-              <h2 className="font-black text-lg text-gray-900 mb-4">Event History</h2>
+            <Panel title="Event history">
               {eventsHistoryLoading ? (
-                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+                <Loading />
+              ) : eventsHistory.length === 0 ? (
+                <Empty>No decided events yet.</Empty>
               ) : (
-                <div className="bg-white border border-gray-200 divide-y divide-gray-100 max-h-[500px] overflow-y-auto">
-                  {eventsHistory.length === 0 && <p className="text-sm text-gray-500 p-5">No decided events yet.</p>}
+                    <ul className="card max-h-[480px] divide-y divide-mist/70 overflow-y-auto">
                   {eventsHistory.map((event) => (
-                    <div key={event.id} className="p-4 flex items-center justify-between gap-3">
+                    <li key={event.id} className="flex items-center justify-between gap-3 p-4">
                       <div className="min-w-0">
-                        <p className="font-bold text-gray-900 truncate">{event.title}</p>
-                        <p className="text-xs text-gray-500">{event.organizer?.name}</p>
+                        <p className="truncate font-semibold text-night">{event.title}</p>
+                        <p className="text-sm text-ink/60">{event.organizer?.name}</p>
                       </div>
-                      <span
-                        className={`text-[10px] font-bold uppercase px-2 py-1 shrink-0 ${event.status === 'published' ? 'bg-green-100 text-green-700' :
-                          event.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                            'bg-gray-200 text-gray-500'
-                          }`}
+                      <StatusBadge
+                        tone={event.status === 'published' ? 'success' : event.status === 'rejected' ? 'danger' : 'neutral'}
                       >
                         {event.status}
-                      </span>
-                    </div>
+                      </StatusBadge>
+                    </li>
                   ))}
-                </div>
+                    </ul>
               )}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Organizers ── */}
-        <section>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h2 className="font-black text-lg text-gray-900 mb-4">Pending Organizer KYC</h2>
-              {organizersLoading ? (
-                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-              ) : (
-                <div className="space-y-2">
-                  {organizers.length === 0 && <p className="text-sm text-gray-500">No pending organizers.</p>}
-                  {organizers.map((org) => (
-                    <div key={org.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">{org.displayName}</p>
-                        <p className="text-xs text-gray-500">{org.organizerType} · {org.cityId} · KYC: {org.kycStatus}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => handleVerifyOrganizer(org.id)} className="text-xs font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-2">Verify</button>
-                        <button onClick={() => handleRejectOrganizer(org.id)} className="text-xs font-bold bg-brand-red hover:bg-brand-red-hover text-white px-3 py-2">Reject</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <h2 className="font-black text-lg text-gray-900 mb-4">Organizer History</h2>
-              {organizersHistoryLoading ? (
-                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-              ) : (
-                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-                  {organizersHistory.length === 0 && <p className="text-sm text-gray-500">No decided organizers yet.</p>}
-                  {organizersHistory.map((org) => (
-                    <div key={org.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">{org.displayName}</p>
-                        <p className="text-xs text-gray-500">{org.organizerType} · {org.cityId}</p>
-                      </div>
-                      <span
-                        className={`text-[10px] font-bold uppercase px-2 py-1 ${org.kycStatus === 'verified' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                          }`}
-                      >
-                        {org.kycStatus}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Vendors ── */}
-        <section>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h2 className="font-black text-lg text-gray-900 mb-4">Pending Vendor Verification</h2>
-              {vendorsLoading ? (
-                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-              ) : (
-                <div className="space-y-2">
-                  {vendors.length === 0 && <p className="text-sm text-gray-500">No pending vendors.</p>}
-                  {vendors.map((v) => (
-                    <div key={v.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">{v.businessName}</p>
-                        <p className="text-xs text-gray-500">{v.categories?.join(', ')} · {v.cityId}</p>
-                      </div>
-                      <button onClick={() => handleVerifyVendor(v.id)} className="text-xs font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-2">Verify</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <h2 className="font-black text-lg text-gray-900 mb-4">Vendor History</h2>
-              {vendorsHistoryLoading ? (
-                <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-              ) : (
-                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-                  {vendorsHistory.length === 0 && <p className="text-sm text-gray-500">No approved vendors yet.</p>}
-                  {vendorsHistory.map((v) => (
-                    <div key={v.id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">{v.businessName}</p>
-                        <p className="text-xs text-gray-500">{v.categories?.join(', ')} · {v.cityId}</p>
-                      </div>
-                      <span className="text-[10px] font-bold uppercase px-2 py-1 bg-green-100 text-green-700">approved</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Vendor Payouts ── */}
-        <section>
-          <h2 className="font-black text-lg text-gray-900 mb-4">Pending Vendor Payouts</h2>
-          {payoutsLoading ? (
-            <div className="flex justify-center py-10"><Spinner size="lg" /></div>
-          ) : (
-            <div className="space-y-2">
-              {payouts.length === 0 && <p className="text-sm text-gray-500">No pending payouts.</p>}
-              {payouts.map((p) => (
-                <div key={p.id} className="bg-white border border-gray-200 p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-bold text-gray-900 text-sm">{p.vendor?.businessName}</p>
-                    <p className="font-black text-gray-900">{formatPaise(p.netPayoutPaise)}</p>
-                  </div>
-                  <p className="text-xs text-gray-500 mb-3">
-                    Gross {formatPaise(p.grossAmountPaise)} · Commission {p.commissionPercent}% · Booking {p.booking?._id?.slice(-6)}
-                  </p>
-                  {p.vendor?.bankAccountNumber ? (
-                    <p className="text-xs text-gray-400 mb-3">
-                      {p.vendor.bankAccountName} · {p.vendor.bankAccountNumber} · {p.vendor.ifsc}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-amber-600 mb-3">Vendor has not added bank details yet.</p>
-                  )}
-                  <div className="flex gap-2">
-                    <input
-                      value={bankRefInput[p.id] || ''}
-                      onChange={(e) => setBankRefInput((prev) => ({ ...prev, [p.id]: e.target.value }))}
-                      placeholder="UTR / bank reference"
-                      className="flex-1 border border-gray-300 px-3 py-2 text-xs"
-                    />
-                    <button
-                      disabled={markingId === p.id}
-                      onClick={() => handleMarkPaid(p.id)}
-                      className="text-xs font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-2 disabled:opacity-60 whitespace-nowrap"
-                    >
-                      {markingId === p.id ? 'Marking...' : 'Mark Paid'}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-        <VendorBookingsOverview />
-
-        <CouponManager />
-        {rejectingEventId && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-            <div className="bg-white w-full max-w-sm p-6 border border-gray-200">
-              <h3 className="font-black text-base text-gray-900 mb-1">Reject event</h3>
-              <p className="text-xs text-gray-500 mb-4">Organizer ko yeh reason dikhega — clear likhna.</p>
-              <textarea
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="e.g. Venue address incomplete, please add full address"
-                rows={4}
-                className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red mb-4"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setRejectingEventId(null)}
-                  className="flex-1 border border-gray-300 text-gray-600 font-bold py-2.5 text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmRejectEvent}
-                  className="flex-1 bg-brand-red hover:bg-brand-red-hover text-white font-bold py-2.5 text-sm"
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
+            </Panel>
           </div>
         )}
+
+        {/* Organizers */}
+        {tab === 'organizers' && (
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <Panel title="Pending organizer KYC" count={organizers.length}>
+              {organizersLoading ? (
+                <Loading />
+              ) : organizers.length === 0 ? (
+                <Empty>No pending organizers.</Empty>
+              ) : (
+                    <ul className="card divide-y divide-mist/70">
+                  {organizers.map((org) => (
+                    <li key={org.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-night">{org.displayName}</p>
+                        <p className="text-sm text-ink/60">
+                          {org.organizerType}, {org.cityId}, KYC {org.kycStatus}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <button type="button" onClick={() => handleVerifyOrganizer(org.id)} className={approveBtn}>
+                          Verify
+                        </button>
+                        <button type="button" onClick={() => handleRejectOrganizer(org.id)} className={rejectBtn}>
+                          Reject
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                    </ul>
+              )}
+            </Panel>
+
+            <Panel title="Organizer history">
+              {organizersHistoryLoading ? (
+                <Loading />
+              ) : organizersHistory.length === 0 ? (
+                <Empty>No decided organizers yet.</Empty>
+              ) : (
+                    <ul className="card max-h-[480px] divide-y divide-mist/70 overflow-y-auto">
+                  {organizersHistory.map((org) => (
+                    <li key={org.id} className="flex items-center justify-between gap-3 p-4">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-night">{org.displayName}</p>
+                        <p className="text-sm text-ink/60">
+                          {org.organizerType}, {org.cityId}
+                        </p>
+                      </div>
+                      <StatusBadge tone={org.kycStatus === 'verified' ? 'success' : 'danger'}>{org.kycStatus}</StatusBadge>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          </div>
+        )}
+
+        {/* Vendors */}
+        {tab === 'vendors' && (
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <Panel title="Pending vendor verification" count={vendors.length}>
+              {vendorsLoading ? (
+                <Loading />
+              ) : vendors.length === 0 ? (
+                <Empty>No pending vendors.</Empty>
+              ) : (
+                    <ul className="card divide-y divide-mist/70">
+                  {vendors.map((v) => (
+                    <li key={v.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-night">{v.businessName}</p>
+                        <p className="text-sm text-ink/60">
+                          {v.categories?.join(', ')}, {v.cityId}
+                        </p>
+                      </div>
+                      <button type="button" onClick={() => handleVerifyVendor(v.id)} className={approveBtn}>
+                        Verify
+                      </button>
+                    </li>
+                  ))}
+                    </ul>
+              )}
+            </Panel>
+
+            <Panel title="Vendor history">
+              {vendorsHistoryLoading ? (
+                <Loading />
+              ) : vendorsHistory.length === 0 ? (
+                <Empty>No approved vendors yet.</Empty>
+              ) : (
+                    <ul className="card max-h-[480px] divide-y divide-mist/70 overflow-y-auto">
+                  {vendorsHistory.map((v) => (
+                    <li key={v.id} className="flex items-center justify-between gap-3 p-4">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-night">{v.businessName}</p>
+                        <p className="text-sm text-ink/60">
+                          {v.categories?.join(', ')}, {v.cityId}
+                        </p>
+                      </div>
+                      <StatusBadge tone="success">approved</StatusBadge>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          </div>
+        )}
+
+        {/* Payouts */}
+        {tab === 'payouts' && (
+          <div className="space-y-10">
+            <Panel title="Pending vendor payouts" count={payouts.length}>
+              {payoutsLoading ? (
+                <Loading />
+              ) : payouts.length === 0 ? (
+                <Empty>No pending payouts.</Empty>
+              ) : (
+                    <ul className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      {payouts.map((p) => (
+                    <li key={p.id} className="card p-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate font-heading text-lg font-bold text-night">{p.vendor?.businessName}</p>
+                          <p className="text-sm text-ink/60">
+                            Booking #{p.booking?._id?.slice(-6)}, gross {formatPaise(p.grossAmountPaise)}, commission{' '}
+                            {p.commissionPercent}%
+                          </p>
+                        </div>
+                        <p className="shrink-0 font-heading text-2xl font-extrabold text-night">
+                          {formatPaise(p.netPayoutPaise)}
+                        </p>
+                      </div>
+
+                      <div className="mt-3 rounded-xl bg-moonlight p-3 text-sm">
+                        {p.vendor?.bankAccountNumber ? (
+                          <p className="text-ink/80">
+                            {p.vendor.bankAccountName}, <span className="font-mono">{p.vendor.bankAccountNumber}</span>,{' '}
+                            {p.vendor.ifsc}
+                          </p>
+                        ) : (
+                          <p className="font-medium text-amber-800">This vendor has not added bank details yet.</p>
+                        )}
+                      </div>
+
+                      <div className="mt-4 flex items-start gap-2">
+                        <div className="min-w-0 flex-1">
+                          <Input
+                            aria-label="UTR or bank reference"
+                            placeholder="UTR / bank reference"
+                            value={bankRefInput[p.id] || ''}
+                            onChange={(e) => setBankRefInput((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          disabled={markingId === p.id}
+                          onClick={() => handleMarkPaid(p.id)}
+                          className="h-12 shrink-0 whitespace-nowrap rounded-pill bg-green-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60"
+                        >
+                          {markingId === p.id ? 'Marking...' : 'Mark paid'}
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+
+            <VendorBookingsOverview />
+          </div>
+        )}
+
+        {/* Coupons */}
+        {tab === 'coupons' && <CouponManager />}
       </div>
+
+      {/* Reject event dialog */}
+      {rejectingEventId && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-night-deep/70 px-4"
+          onClick={() => setRejectingEventId(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reject-title"
+            className="w-full max-w-sm rounded-2xl bg-white p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 id="reject-title" className="font-heading text-xl font-bold text-night">Reject event</h3>
+            <p className="mb-4 mt-1 text-sm text-ink/60">The organizer will see this reason, so keep it clear.</p>
+            <Textarea
+              aria-label="Reason for rejection"
+              autoFocus
+              rows={4}
+              placeholder="e.g. Venue address is incomplete, please add the full address"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            />
+            <div className="mt-4 flex gap-2">
+              <button type="button" onClick={() => setRejectingEventId(null)} className="btn-outline flex-1 !py-2.5 text-sm">
+                Cancel
+              </button>
+              <button type="button" onClick={handleConfirmRejectEvent} className="btn-brand flex-1 !py-2.5 text-sm">
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

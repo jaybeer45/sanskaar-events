@@ -18,6 +18,10 @@ export const ROUTES = {
   ADMIN: "/admin",
   PROFILE: "/profile",
   PROFILE_EDIT: "/profile/edit",
+  CREATOR_PROFILE: "/creator/:userId",
+  MY_CREATOR_VIDEOS: "/profile/my-videos",
+  GO_LIVE: "/events/:eventId/go-live",
+LIVE_VIEWER: "/live/:streamId/watch",
   LOGIN: "/login",
   SIGNUP: "/signup",
   MAP: "/map",
@@ -32,6 +36,7 @@ export const ROUTES = {
   VENDOR_ADDONS: "/vendor/:vendorId/packages/:packageId/addons",
   REQUEST_MATCHES: "/requests/:reference/matches",
   MY_REQUESTS: "/requests",
+  
   NOT_FOUND: "*",
 };
 
@@ -48,6 +53,9 @@ export const buildRoute = {
     `/vendor/${vendorId}/services/${serviceId}/packages`,
   vendorAddons: (vendorId, packageId) =>
     `/vendor/${vendorId}/packages/${packageId}/addons`,
+  creatorProfile: (userId) => `/creator/${userId}`,
+  goLive: (eventId) => `/events/${eventId}/go-live`,
+liveViewer: (streamId) => `/live/${streamId}/watch`,
 
   requestMatches: (reference) => `/requests/${reference}/matches`,
 };

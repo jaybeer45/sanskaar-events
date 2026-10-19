@@ -1,42 +1,53 @@
 // src/pages/Marketplace/MarketplacePage.jsx
-// Matches reference: split layout — black "Plan Your Event" left panel + form right panel
-// Service grid selector → lead form → success with matched vendors
+// Pick a vendor type, fill in the requirements, then see matched vendors.
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { CircleCheck, ArrowRight } from 'lucide-react';
+import { Check, ChevronLeft } from 'lucide-react';
 import { submitLeadRequest, setSelectedService, resetLeadResult, approveVendor } from '../../features/marketplace/slices/marketplaceSlice';
-import { MARKETPLACE_SERVICES } from '../../constants/categories';
-import { buildRoute } from '../../constants/routes';
-import Spinner from '../../components/ui/Spinner/Spinner';
+import { ROUTES } from '../../constants/routes';
+import Input from '../../components/ui/Input/Input';
 
 const VENDOR_TYPES = [
   { id: 'photographer', label: 'Photographer', icon: '📷' },
-  { id: 'dj',           label: 'DJ / Music',   icon: '🎧' },
-  { id: 'decorator',    label: 'Decorator',     icon: '🎀' },
-  { id: 'caterer',      label: 'Caterer',       icon: '🍽️' },
-  { id: 'anchor',       label: 'Anchor / MC',   icon: '🎤' },
-  { id: 'planner',      label: 'Event Planner', icon: '📋' },
-  { id: 'makeup',       label: 'Makeup Artist', icon: '💄' },
-  { id: 'venue',        label: 'Venue',         icon: '🏛️' },
+  { id: 'dj', label: 'DJ / Music', icon: '🎧' },
+  { id: 'decorator', label: 'Decorator', icon: '🎀' },
+  { id: 'caterer', label: 'Caterer', icon: '🍽️' },
+  { id: 'anchor', label: 'Anchor / MC', icon: '🎤' },
+  { id: 'planner', label: 'Event planner', icon: '📋' },
+  { id: 'makeup', label: 'Makeup artist', icon: '💄' },
+  { id: 'venue', label: 'Venue', icon: '🏛️' },
 ];
 
-const MarketplacePage = () => {
-  const dispatch        = useDispatch();
-  const navigate        = useNavigate();
-  const selectedService = useSelector((s) => s.marketplace.selectedService);
-  const leadResult      = useSelector((s) => s.marketplace.leadResult);
-  const status          = useSelector((s) => s.marketplace.status);
-  const { register, handleSubmit } = useForm();
+const STEPS = [
+  { title: 'Tell us what you need', text: 'Pick a vendor type, your date and your budget.' },
+  { title: 'Get matched', text: 'We match you with vendors that fit and let you approve the ones you like.' },
+  { title: 'Compare quotes', text: 'Approved vendors send quotes. Accept one to confirm your booking.' },
+];
 
-  // Guests can fill in the form freely, but submitting requires an account —
-  // same "browse freely, gate at the action" pattern as event booking.
+const fieldClass =
+  'w-full rounded-xl border border-mist bg-moonlight px-4 text-[15px] text-ink placeholder-gray-400 transition-colors focus:bg-white focus:border-night focus:outline-none focus:ring-2 focus:ring-night/20';
+
+const MarketplacePage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const selectedService = useSelector((s) => s.marketplace.selectedService);
+  const leadResult = useSelector((s) => s.marketplace.leadResult);
+  const status = useSelector((s) => s.marketplace.status);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  // Guests can fill in the form freely, but submitting requires an account:
+  // the same "browse freely, gate at the action" pattern as event booking.
   const isLoggedIn = useSelector((s) => Boolean(s.auth.token && s.auth.user));
 
   useEffect(() => {
     // If we got bounced to login mid-submission, the filled form data is
-    // waiting in sessionStorage — resume automatically instead of making
+    // waiting in sessionStorage. Resume automatically instead of making
     // the person type everything again.
     const pending = sessionStorage.getItem('pendingMarketplaceRequest');
     if (pending && isLoggedIn) {
@@ -59,155 +70,214 @@ const MarketplacePage = () => {
     dispatch(submitLeadRequest(payload));
   };
 
-  // Success state
+  const handlePlanAnother = () => {
+    dispatch(resetLeadResult());
+    dispatch(setSelectedService(null));
+  };
+
+  const selectedType = VENDOR_TYPES.find((v) => v.id === selectedService);
+  const todayInput = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+
+  // Success: the request reference as a ticket, then the matched vendors
   if (leadResult) {
     return (
-      <div className="bg-[#f5f5f4] min-h-screen flex items-center justify-center py-16">
-        <div className="max-w-lg mx-auto text-center px-6">
-          <CircleCheck size={64} className="text-brand-red mx-auto mb-4" />
-          <h2 className="font-black text-3xl text-gray-900 mb-2">Request Sent!</h2>
-          <p className="text-gray-500 mb-8">{leadResult.message || 'Vendors have received your request and will reach out soon.'}</p>
-          {leadResult.matchedVendors?.length > 0 && (
-            <div className="text-left space-y-3">
-              <h3 className="font-black text-lg text-gray-900 mb-3">Matched vendors</h3>
-                           {leadResult.matchedVendors.map((v) => (
-                <div key={v._id} className="bg-white border border-gray-200 p-4 flex items-center gap-4">
-                  <div className="w-12 h-12 shrink-0" style={{ backgroundImage: 'repeating-linear-gradient(135deg, #d1d5db 0, #d1d5db 1px, #e5e7eb 1px, #e5e7eb 8px)', backgroundColor: '#e5e7eb' }}>
-                    {v.logo && <img src={v.logo} alt={v.name} className="w-full h-full object-cover" />}
+      <div className="mx-auto max-w-xl px-4 py-12 sm:px-6">
+        <div className="text-center">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-marigold">
+            <Check size={28} className="text-night" />
+          </span>
+          <h1 className="mt-4 font-heading text-3xl font-extrabold text-night">Request sent</h1>
+          <p className="mt-1 text-ink/60">
+            {leadResult.message || 'Vendors have received your request and will reach out soon.'}
+          </p>
+        </div>
+
+        {leadResult.reference && (
+          <div className="ticket mt-8">
+            <div className="p-5 text-center">
+              <p className="text-sm text-ink/60">Request reference</p>
+              <p className="mt-1 break-all font-heading text-2xl font-extrabold tracking-[0.08em] text-night">
+                {leadResult.reference}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {leadResult.matchedVendors?.length > 0 && (
+          <section className="mt-8">
+            <h2 className="mb-3 font-heading text-xl font-bold text-night">Matched vendors</h2>
+            <ul className="space-y-3">
+              {leadResult.matchedVendors.map((v) => (
+                <li key={v._id} className="card flex items-center gap-4 p-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-night font-heading font-bold text-marigold">
+                    {v.logo ? <img src={v.logo} alt={v.name} className="h-full w-full object-cover" /> : v.name?.[0]?.toUpperCase()}
                   </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-gray-900 text-sm">{v.name}</p>
-                    <p className="text-xs text-gray-400">{v.tagline}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-night">{v.name}</p>
+                    {v.tagline && <p className="truncate text-sm text-ink/60">{v.tagline}</p>}
                   </div>
                   {v.approved ? (
-                    <span className="text-xs font-bold text-green-600">✓ Approved</span>
+                    <span className="shrink-0 text-sm font-semibold text-green-700">Approved</span>
                   ) : (
                     <button
+                        type="button"
                       onClick={() => dispatch(approveVendor({ reference: leadResult.reference, matchId: v.matchId }))}
-                      className="text-xs font-bold text-brand-red border border-brand-red px-3 py-1.5 hover:bg-brand-red hover:text-white transition-colors"
+                        className="h-10 shrink-0 rounded-pill border border-night/30 px-4 text-sm font-semibold text-night transition-colors hover:bg-night/5"
                     >
                       Approve
                     </button>
                   )}
-                </div>
+                </li>
               ))}
-            </div>
-          )}
+            </ul>
+          </section>
+        )}
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link to={ROUTES.MY_REQUESTS} className="btn-brand">View my requests</Link>
+          <button type="button" onClick={handlePlanAnother} className="btn-outline">Plan another</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#f5f5f4] min-h-screen">
-      {/* Top black / white split hero — matches reference marketplace panel */}
-      <div className="grid grid-cols-1 md:grid-cols-2 min-h-[320px]">
-        {/* Black left */}
-        <div className="bg-[#201e1d] text-white px-10 py-12 flex flex-col justify-center">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-brand-red mb-3">Vendor Marketplace</p>
-          <h1 className="font-black text-4xl md:text-5xl leading-tight mb-4">
-            Plan Your<br />
-            <span className="text-white">Event,</span><br />
-            <span className="text-brand-red">Your Budget.</span>
-          </h1>
-          <p className="text-gray-400 text-sm leading-relaxed mb-6">
-            Tell us what you need and we'll instantly match you with verified vendors in Bareilly — photographers, DJs, anchors, decorators, caterers and more.
-          </p>
-          <div className="flex gap-4 text-xs text-gray-500">
-            <span className="flex items-center gap-1.5"><span className="w-4 h-px bg-brand-red inline-block" />Free matching</span>
-            <span className="flex items-center gap-1.5"><span className="w-4 h-px bg-brand-red inline-block" />No middleman</span>
-            <span className="flex items-center gap-1.5"><span className="w-4 h-px bg-brand-red inline-block" />Verified vendors</span>
+    <div>
+      {/* Hero */}
+      <section className="surface-night bg-night text-white">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 md:py-16">
+          <div>
+            <h1 className="font-heading text-4xl font-extrabold leading-[1.05] sm:text-5xl">
+              Plan your event, within your budget.
+            </h1>
+            <p className="mt-4 max-w-md text-white/70 md:text-lg">
+              Tell us what you need and we'll match you with vendors in your city: photographers, DJs, anchors, decorators, caterers and more.
+            </p>
           </div>
-        </div>
 
-        {/* Gray right — stats */}
-        <div className="bg-[#2f2d2c] text-white px-10 py-12 flex flex-col justify-center">
-          <div className="grid grid-cols-2 gap-6">
-            {[
-              { num: '200+', label: 'Verified vendors' },
-              { num: '2,400+', label: 'Events serviced' },
-              { num: '₹0', label: 'Platform fee' },
-              { num: '24h', label: 'Response time' },
-            ].map(({ num, label }) => (
-              <div key={label}>
-                <p className="font-black text-3xl text-white">{num}</p>
-                <p className="text-xs text-gray-400 mt-1">{label}</p>
-              </div>
+          <ol className="space-y-3">
+            {STEPS.map((step, i) => (
+              <li key={step.title} className="flex gap-4 rounded-ticket bg-white/10 p-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-marigold font-heading font-extrabold text-night">
+                  {i + 1}
+                </span>
+                <div>
+                  <p className="font-heading font-bold">{step.title}</p>
+                  <p className="mt-0.5 text-sm text-white/70">{step.text}</p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
-      </div>
+      </section>
 
-      {/* Form section */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         {!selectedService ? (
           <div>
-            <div className="text-center mb-10">
-              <h2 className="font-black text-2xl text-gray-900 mb-2">What do you need?</h2>
-              <p className="text-gray-500 text-sm">Select a vendor type to get started</p>
+            <div className="mb-8 text-center">
+              <h2 className="font-heading text-3xl font-extrabold text-night">What do you need?</h2>
+              <p className="mt-1 text-ink/60">Select a vendor type to get started.</p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-gray-200">
+            <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
               {VENDOR_TYPES.map((vt) => (
                 <button
                   key={vt.id}
+                  type="button"
                   onClick={() => dispatch(setSelectedService(vt.id))}
-                  className="bg-white hover:bg-[#f5f5f4] text-center py-8 px-4 transition-colors group"
+                  className="card flex flex-col items-center px-4 py-7 text-center transition-colors hover:border-night"
                 >
-                  <div className="text-4xl mb-3">{vt.icon}</div>
-                  <p className="font-bold text-gray-900 text-sm group-hover:text-brand-red transition-colors">{vt.label}</p>
+                  <span aria-hidden="true" className="mb-3 text-4xl">{vt.icon}</span>
+                  <span className="font-heading font-bold text-night">{vt.label}</span>
                 </button>
               ))}
             </div>
           </div>
         ) : (
-          <div className="max-w-xl mx-auto">
-            <button onClick={() => dispatch(setSelectedService(null))} className="text-sm text-gray-500 hover:text-brand-red mb-6 flex items-center gap-1 transition-colors">
-              ← Change type
+            <div className="mx-auto max-w-xl">
+              <button
+                type="button"
+                onClick={() => dispatch(setSelectedService(null))}
+                className="mb-5 inline-flex items-center gap-1 text-sm text-ink/60 transition-colors hover:text-night"
+              >
+                <ChevronLeft size={16} /> Change type
             </button>
-            <div className="bg-white border border-gray-200 p-8">
-              <h2 className="font-black text-xl text-gray-900 mb-1">
-                {VENDOR_TYPES.find(v => v.id === selectedService)?.icon}{' '}
-                {VENDOR_TYPES.find(v => v.id === selectedService)?.label}
+
+              <div className="card p-6 sm:p-8">
+                <h2 className="font-heading text-2xl font-extrabold text-night">
+                  <span aria-hidden="true">{selectedType?.icon}</span> {selectedType?.label}
               </h2>
-              <p className="text-sm text-gray-500 mb-6">Fill in your requirements and we'll match you instantly</p>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Your name *</label>
-                    <input {...register('name', { required: true })} placeholder="Full name" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors" />
+                <p className="mb-6 mt-1 text-ink/60">Fill in your requirements and we'll match you right away.</p>
+
+                <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-4">
+                    <Input
+                      label="Your name"
+                      required
+                      placeholder="Full name"
+                      error={errors.name && 'Please enter your name'}
+                      {...register('name', { required: true })}
+                    />
+                    <Input
+                      label="Phone or WhatsApp"
+                      type="tel"
+                      required
+                      placeholder="98765xxxxx"
+                      error={errors.phone && 'Please enter your phone number'}
+                      {...register('phone', { required: true })}
+                    />
                   </div>
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Phone / WhatsApp *</label>
-                    <input {...register('phone', { required: true })} placeholder="+91 XXXXX XXXXX" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors" />
-                  </div>
+
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-4">
+                    <Input
+                      label="Event date"
+                      type="date"
+                      required
+                      min={todayInput}
+                      error={errors.eventDate && 'Please pick your event date'}
+                      {...register('eventDate', { required: true })}
+                    />
+                    <Input label="Number of guests" type="number" min="1" placeholder="50" {...register('guests')} />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Event date *</label>
-                    <input {...register('eventDate', { required: true })} type="date" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">No. of guests</label>
-                    <input {...register('guests')} type="number" placeholder="50" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors" />
-                  </div>
-                </div>
+
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Budget range (₹) *</label>
-                  <select {...register('budget', { required: true })} className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors bg-white">
+                    <label htmlFor="mp-budget" className="mb-1.5 block text-sm font-medium text-ink">
+                      Budget range <span className="text-brand-red">*</span>
+                    </label>
+                    <select
+                      id="mp-budget"
+                      aria-invalid={errors.budget ? 'true' : 'false'}
+                      className={`${fieldClass} h-12 ${errors.budget ? 'border-red-400' : ''}`}
+                      {...register('budget', { required: true })}
+                    >
                     <option value="">Select budget</option>
-                    <option value="5000-20000">₹5,000 – ₹20,000</option>
-                    <option value="20000-50000">₹20,000 – ₹50,000</option>
-                    <option value="50000-150000">₹50,000 – ₹1,50,000</option>
-                    <option value="150000-500000">₹1,50,000 – ₹5,00,000</option>
-                    <option value="500000+">₹5,00,000+</option>
+                      <option value="5000-20000">₹5,000 to ₹20,000</option>
+                      <option value="20000-50000">₹20,000 to ₹50,000</option>
+                      <option value="50000-150000">₹50,000 to ₹1,50,000</option>
+                      <option value="150000-500000">₹1,50,000 to ₹5,00,000</option>
+                      <option value="500000+">₹5,00,000 and above</option>
                   </select>
+                    {errors.budget && <p role="alert" className="mt-1.5 text-sm text-red-600">Please select a budget</p>}
                 </div>
+
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5 block">Special requirements</label>
-                  <textarea {...register('requirements')} rows={3} placeholder="Theme, special requests, dietary needs..." className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red transition-colors resize-none" />
+                    <label htmlFor="mp-requirements" className="mb-1.5 block text-sm font-medium text-ink">
+                      Special requirements
+                    </label>
+                    <textarea
+                      id="mp-requirements"
+                      rows={3}
+                      placeholder="Theme, special requests, dietary needs"
+                      className={`${fieldClass} resize-none py-3`}
+                      {...register('requirements')}
+                    />
                 </div>
-                <button type="submit" disabled={status === 'loading'} className="w-full flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white font-bold py-3.5 text-sm transition-colors disabled:opacity-60">
-                  {status === 'loading' ? <Spinner size="sm" /> : <><ArrowRight size={16} /> Find Matching Vendors</>}
+
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="btn-brand w-full py-3.5 text-base disabled:opacity-60"
+                  >
+                    {status === 'loading' ? 'Finding vendors...' : 'Find matching vendors'}
                 </button>
               </form>
             </div>
