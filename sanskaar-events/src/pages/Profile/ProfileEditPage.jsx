@@ -3,11 +3,15 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { updateProfile } from '../../features/auth/slices/authSlice';
 import { CITIES, setCity } from '../../features/location/locationSlice';
 import { ROUTES } from '../../constants/routes';
 import Input from '../../components/ui/Input/Input';
+
+const fieldClass = (hasError) =>
+  `w-full rounded-xl border px-4 text-[15px] text-ink placeholder-gray-400 bg-moonlight focus:bg-white transition-colors focus:outline-none focus:ring-2 ${hasError ? 'border-red-400 focus:ring-red-200' : 'border-mist focus:ring-night/20 focus:border-night'
+  }`;
 
 const ProfileEditPage = () => {
   const user = useSelector((s) => s.auth.user);
@@ -45,7 +49,7 @@ const ProfileEditPage = () => {
         })
       ).unwrap();
 
-      // locationSlice ko bhi sync karo taaki Navbar/Profile sab jagah city match kare
+      // Keep the location slice in sync so the navbar and profile show the same city
       const matchedCity = CITIES.find((c) => c.name === data.city);
       if (matchedCity) dispatch(setCity(matchedCity));
 
@@ -56,33 +60,36 @@ const ProfileEditPage = () => {
   };
 
   return (
-    <div className="bg-[#f5f5f4] min-h-screen">
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-6 py-5">
-          <Link to={ROUTES.PROFILE} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-2">
-            <ArrowLeft size={14} /> Back to profile
+    <div>
+      <div className="border-b border-mist bg-white">
+        <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6">
+          <Link
+            to={ROUTES.PROFILE}
+            className="mb-2 inline-flex items-center gap-1 text-sm text-ink/60 transition-colors hover:text-night"
+          >
+            <ChevronLeft size={16} /> Back to profile
           </Link>
-          <h1 className="font-black text-2xl text-gray-900">Edit Profile</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Update your personal information</p>
+          <h1 className="font-heading text-3xl font-extrabold text-night">Edit profile</h1>
+          <p className="mt-1 text-ink/60">Update your personal information.</p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-8">
-        <div className="bg-white border border-gray-200 p-6 sm:p-8">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        <div className="card p-6 sm:p-8">
           {saveError && (
-            <div role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600">
+            <div role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {saveError}
             </div>
           )}
           {saved && (
-            <div role="status" className="mb-5 rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 text-sm text-green-600">
-              Profile updated successfully.
+            <div role="status" className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+              Profile updated.
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
             <Input
-              label="Full Name"
+              label="Full name"
               type="text"
               required
               error={errors.fullName?.message}
@@ -97,7 +104,7 @@ const ProfileEditPage = () => {
               label="Email"
               type="email"
               required
-              helperText="Changing your email will require re-verification"
+              helperText="Changing your email will require re-verification."
               error={errors.email?.message}
               {...register('email', {
                 required: 'Email is required',
@@ -109,7 +116,7 @@ const ProfileEditPage = () => {
               label="Phone"
               type="tel"
               required
-              helperText="Changing your phone number will require OTP re-verification"
+              helperText="Changing your phone number will require OTP re-verification."
               error={errors.phone?.message}
               {...register('phone', {
                 required: 'Phone number is required',
@@ -118,11 +125,8 @@ const ProfileEditPage = () => {
             />
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">City</label>
-              <select
-                className="h-12 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 text-[15px] focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-brand-red transition-colors"
-                {...register('city')}
-              >
+              <label htmlFor="edit-city" className="mb-1.5 block text-sm font-medium text-ink">City</label>
+              <select id="edit-city" className={`${fieldClass(false)} h-12`} {...register('city')}>
                 {CITIES.map((city) => (
                   <option key={city.name} value={city.name}>{city.name}</option>
                 ))}
@@ -130,28 +134,25 @@ const ProfileEditPage = () => {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">Bio (optional)</label>
+              <label htmlFor="edit-bio" className="mb-1.5 block text-sm font-medium text-ink">Bio (optional)</label>
               <textarea
+                id="edit-bio"
                 rows={3}
                 placeholder="Tell us a little about yourself"
-                className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-3 text-[15px] focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-brand-red transition-colors resize-none"
+                className={`${fieldClass(!!errors.bio)} resize-none py-3`}
                 {...register('bio', { maxLength: { value: 200, message: 'Max 200 characters' } })}
               />
               {errors.bio && <p role="alert" className="mt-1.5 text-sm text-red-600">{errors.bio.message}</p>}
             </div>
 
             <div className="flex items-center gap-3 pt-2">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="rounded-lg bg-brand-red hover:bg-brand-red-hover text-white font-bold text-sm px-6 py-2.5 transition-colors disabled:opacity-70"
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              <button type="submit" disabled={isSubmitting} className="btn-brand disabled:opacity-70">
+                {isSubmitting ? 'Saving...' : 'Save changes'}
               </button>
               <button
                 type="button"
                 onClick={() => navigate(ROUTES.PROFILE)}
-                className="text-sm font-semibold text-gray-500 hover:text-gray-700"
+                className="px-3 py-2 text-sm font-semibold text-ink/60 transition-colors hover:text-night"
               >
                 Cancel
               </button>

@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Plus, X } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { vendorCatalogService } from '../../services/vendorCatalog.service';
 import { ROUTES } from '../../constants/routes';
 import { formatPaise, rupeesToPaise } from '../../utils/formatPrice';
+import Input from '../../components/ui/Input/Input';
+import DashboardShell from '../../components/dashboard/DashboardShell';
+
+const EMPTY_FORM = { name: '', price: '', maxQuantity: 1, description: '' };
 
 const VendorAddonsPage = () => {
   const { vendorId, packageId } = useParams();
   const [addons, setAddons] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', price: '', maxQuantity: 1, description: '' });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
   const load = () => {
@@ -18,6 +22,8 @@ const VendorAddonsPage = () => {
   };
 
   useEffect(() => { load(); }, [vendorId, packageId]);
+
+  const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -30,7 +36,7 @@ const VendorAddonsPage = () => {
         description: form.description,
       });
       toast.success('Add-on added!');
-      setForm({ name: '', price: '', maxQuantity: 1, description: '' });
+      setForm(EMPTY_FORM);
       setShowForm(false);
       load();
     } catch (err) {
@@ -39,9 +45,10 @@ const VendorAddonsPage = () => {
     setSaving(false);
   };
 
-  const handleDelete = async (addonId) => {
+  const handleDelete = async (addon) => {
+    if (!window.confirm(`Remove the add-on "${addon.name}"?`)) return;
     try {
-      await vendorCatalogService.deleteAddon(vendorId, packageId, addonId);
+      await vendorCatalogService.deleteAddon(vendorId, packageId, addon._id);
       toast.success('Add-on removed.');
       load();
     } catch (err) {
@@ -50,51 +57,65 @@ const VendorAddonsPage = () => {
   };
 
   return (
-    <div className="bg-[#f5f5f4] min-h-screen">
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-6 py-3">
-          <Link to={ROUTES.VENDOR_DASHBOARD} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900">
-            <ChevronLeft size={15} /> Back to services
-          </Link>
-        </div>
-      </div>
-
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="font-black text-xl text-gray-900">Add-ons</h1>
-          <button onClick={() => setShowForm((s) => !s)} className="flex items-center gap-1.5 text-xs font-bold text-brand-red border border-brand-red px-3 py-2">
-            <Plus size={14} /> Add Add-on
+    <DashboardShell
+      backTo={ROUTES.VENDOR_DASHBOARD}
+      backLabel="Back to services"
+      title="Add-ons"
+      subtitle="Extras customers can add to this package."
+      action={
+        <button
+          type="button"
+          onClick={() => setShowForm((s) => !s)}
+          aria-expanded={showForm}
+          className="btn-outline inline-flex shrink-0 items-center gap-1.5 !py-2 text-sm"
+        >
+          <Plus size={15} /> Add add-on
+        </button>
+      }
+    >
+      {showForm && (
+        <form onSubmit={handleAdd} className="card mb-6 space-y-4 p-5">
+          <Input label="Add-on name" required placeholder="e.g. Drone coverage" value={form.name} onChange={update('name')} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input label="Price (₹)" type="number" min="0" required value={form.price} onChange={update('price')} />
+            <Input label="Max quantity" type="number" min="1" value={form.maxQuantity} onChange={update('maxQuantity')} />
+          </div>
+          <Input label="Short description" value={form.description} onChange={update('description')} />
+          <button type="submit" disabled={saving} className="btn-brand text-sm disabled:opacity-60">
+            {saving ? 'Saving...' : 'Save add-on'}
           </button>
+        </form>
+      )}
+
+      {addons.length === 0 ? (
+        <div className="card px-6 py-10 text-center">
+          <p className="font-heading text-lg font-semibold text-night">No add-ons yet</p>
+          <p className="mt-1 text-sm text-ink/60">Add-ons are optional. Add one if customers often ask for extras.</p>
         </div>
-
-        {showForm && (
-          <form onSubmit={handleAdd} className="bg-white border border-gray-200 p-5 space-y-3">
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Add-on name e.g. Drone Coverage" required className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <input value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} type="number" placeholder="Price (₹)" required className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <input value={form.maxQuantity} onChange={(e) => setForm({ ...form, maxQuantity: e.target.value })} type="number" placeholder="Max quantity" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Short description" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <button type="submit" disabled={saving} className="bg-brand-red hover:bg-brand-red-hover text-white font-bold px-4 py-2 text-sm disabled:opacity-60">
-              {saving ? 'Saving...' : 'Save Add-on'}
-            </button>
-          </form>
-        )}
-
-        <div className="space-y-2">
-          {addons.length === 0 && <p className="text-sm text-gray-500">No add-ons yet.</p>}
+      ) : (
+        <ul className="space-y-3">
           {addons.map((a) => (
-            <div key={a._id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-              <div>
-                <p className="font-bold text-gray-900 text-sm">{a.name}</p>
-                <p className="text-xs text-gray-500">{formatPaise(a.pricePaise)} · max {a.maxQuantity} · {a.description}</p>
+            <li key={a._id} className="card flex items-center justify-between gap-3 p-4">
+              <div className="min-w-0">
+                <p className="font-heading font-bold text-night">{a.name}</p>
+                <p className="text-sm text-ink/60">
+                  {formatPaise(a.pricePaise)}, up to {a.maxQuantity}
+                  {a.description ? `, ${a.description}` : ''}
+                </p>
               </div>
-              <button onClick={() => handleDelete(a._id)} className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:border-red-400 hover:text-red-500">
-                <X size={13} />
+              <button
+                type="button"
+                onClick={() => handleDelete(a)}
+                aria-label={`Remove ${a.name}`}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-mist text-ink/60 transition-colors hover:border-red-400 hover:text-red-600"
+              >
+                <Trash2 size={15} />
               </button>
-            </div>
+            </li>
           ))}
-        </div>
-      </div>
-    </div>
+        </ul>
+      )}
+    </DashboardShell>
   );
 };
 

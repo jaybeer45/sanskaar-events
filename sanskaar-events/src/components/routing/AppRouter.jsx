@@ -22,6 +22,7 @@ const MarketplacePage = lazy(() => import('../../pages/Marketplace/MarketplacePa
 const OrganizerPage = lazy(() => import('../../pages/Organizer/OrganizerPage'));
 const AdminPage = lazy(() => import('../../pages/Admin/AdminPage'));
 const ProfilePage = lazy(() => import('../../pages/Profile/ProfilePage'));
+const CreatorProfilePage = lazy(() => import('../../pages/Profile/CreatorProfilePage'));
 const NotFoundPage = lazy(() => import('../../pages/NotFound/NotFoundPage'));
 const LoginPage = lazy(() => import('../../pages/Login/LoginPage'));
 const SignupPage = lazy(() => import('../../pages/Login/SignUpPage'));
@@ -43,6 +44,9 @@ const RequestMatchesPage = lazy(() => import('../../pages/Marketplace/RequestMat
 const MyRequestsPage = lazy(() => import('../../pages/Marketplace/MyRequestsPage'));
 const VendorBookingsPage = lazy(() => import('../../pages/Vendors/VendorBookingsPage'))
 const VendorPayoutsPage = lazy(() => import('../../pages/Vendors/VendorPayoutsPage'))
+const MyCreatorVideosPage = lazy(() => import('../../pages/Profile/MyCreatorVideosPage'));
+const GoLivePage = lazy(() => import('../../pages/Live/GoLivePage'));
+const LiveViewerPage = lazy(() => import('../../pages/Live/LiveViewerPage'));
 
 
 
@@ -93,6 +97,8 @@ const AppRouter = () => (
             <Route path={ROUTES.MY_REQUESTS} element={<MyRequestsPage />} />
             <Route path={ROUTES.VENDOR_BOOKINGS} element={<VendorBookingsPage />} />
             <Route path={ROUTES.VENDOR_PAYOUTS} element={<VendorPayoutsPage />} />
+            <Route path={ROUTES.MY_CREATOR_VIDEOS} element={<MyCreatorVideosPage />} />
+            <Route path={ROUTES.CREATOR_PROFILE} element={<CreatorProfilePage />} />
 
 
           </Route>
@@ -103,6 +109,12 @@ const AppRouter = () => (
           <Route element={<MainLayout />}>
             <Route path={ROUTES.ADMIN} element={<AdminPage />} />
           </Route>
+        </Route>
+
+        {/* Full-screen routes — no header/navbar, but still login-required */}
+        <Route element={<ProtectedRoute roles={['user', 'organizer', 'vendor', 'admin', 'moderator', 'event_team']} />}>
+          <Route path={ROUTES.GO_LIVE} element={<GoLivePage />} />
+          <Route path={ROUTES.LIVE_VIEWER} element={<LiveViewerPage />} />
         </Route>
 
         <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />

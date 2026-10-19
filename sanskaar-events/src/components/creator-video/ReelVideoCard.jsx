@@ -25,7 +25,7 @@ const ReelVideoCard = ({
     const lastTapRef = useRef(0);
     const viewCountedRef = useRef(false);
     const [showShareMenu, setShowShareMenu] = useState(false);
-    const shareUrl = `${window.location.origin}/events/${eventId}`;
+    const shareUrl = `${window.location.origin}/events/${video.event?._id || eventId}`;
 
     const trackShare = async () => {
         try {

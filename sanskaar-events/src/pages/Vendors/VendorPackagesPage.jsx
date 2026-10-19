@@ -1,18 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Plus, X } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { vendorCatalogService } from '../../services/vendorCatalog.service';
 import { ROUTES, buildRoute } from '../../constants/routes';
 import { formatPaise, rupeesToPaise } from '../../utils/formatPrice';
+import Input from '../../components/ui/Input/Input';
+import { Select } from '../../components/ui/Input/Fields';
+import DashboardShell from '../../components/dashboard/DashboardShell';
 
-const PRICING_MODELS = ['FIXED', 'PER_PERSON', 'PER_HOUR', 'PER_DAY', 'PER_UNIT', 'STARTING_FROM', 'CUSTOM_QUOTE'];
+const PRICING_MODELS = {
+  FIXED: 'Fixed price',
+  PER_PERSON: 'Per person',
+  PER_HOUR: 'Per hour',
+  PER_DAY: 'Per day',
+  PER_UNIT: 'Per unit',
+  STARTING_FROM: 'Starting from',
+  CUSTOM_QUOTE: 'Custom quote',
+};
+
+const EMPTY_FORM = { name: '', pricingModel: 'FIXED', price: '', inclusions: '', advancePercent: 50 };
 
 const VendorPackagesPage = () => {
   const { vendorId, serviceId } = useParams();
   const [packages, setPackages] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', pricingModel: 'FIXED', price: '', inclusions: '', advancePercent: 50 });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
   const load = () => {
@@ -20,6 +33,8 @@ const VendorPackagesPage = () => {
   };
 
   useEffect(() => { load(); }, [vendorId, serviceId]);
+
+  const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -34,7 +49,7 @@ const VendorPackagesPage = () => {
         advancePercent: Number(form.advancePercent) || 50,
       });
       toast.success('Package added!');
-      setForm({ name: '', pricingModel: 'FIXED', price: '', inclusions: '', advancePercent: 50 });
+      setForm(EMPTY_FORM);
       setShowForm(false);
       load();
     } catch (err) {
@@ -43,9 +58,10 @@ const VendorPackagesPage = () => {
     setSaving(false);
   };
 
-  const handleDelete = async (packageId) => {
+  const handleDelete = async (pkg) => {
+    if (!window.confirm(`Remove the package "${pkg.name}"?`)) return;
     try {
-      await vendorCatalogService.deletePackage(vendorId, serviceId, packageId);
+      await vendorCatalogService.deletePackage(vendorId, serviceId, pkg._id);
       toast.success('Package removed.');
       load();
     } catch (err) {
@@ -54,63 +70,88 @@ const VendorPackagesPage = () => {
   };
 
   return (
-    <div className="bg-[#f5f5f4] min-h-screen">
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-6 py-3">
-          <Link to={ROUTES.VENDOR_DASHBOARD} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900">
-            <ChevronLeft size={15} /> Back to services
-          </Link>
-        </div>
-      </div>
-
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="font-black text-xl text-gray-900">Packages</h1>
-          <button onClick={() => setShowForm((s) => !s)} className="flex items-center gap-1.5 text-xs font-bold text-brand-red border border-brand-red px-3 py-2">
-            <Plus size={14} /> Add Package
+    <DashboardShell
+      backTo={ROUTES.VENDOR_DASHBOARD}
+      backLabel="Back to services"
+      title="Packages"
+      subtitle="What customers can book under this service."
+      action={
+        <button
+          type="button"
+          onClick={() => setShowForm((s) => !s)}
+          aria-expanded={showForm}
+          className="btn-outline inline-flex shrink-0 items-center gap-1.5 !py-2 text-sm"
+        >
+          <Plus size={15} /> Add package
+        </button>
+      }
+    >
+      {showForm && (
+        <form onSubmit={handleAdd} className="card mb-6 space-y-4 p-5">
+          <Input label="Package name" required placeholder="e.g. Haldi half-day" value={form.name} onChange={update('name')} />
+          <Select label="Pricing model" value={form.pricingModel} onChange={update('pricingModel')}>
+            {Object.entries(PRICING_MODELS).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </Select>
+          {form.pricingModel !== 'CUSTOM_QUOTE' && (
+            <Input label="Price (₹)" type="number" min="0" required value={form.price} onChange={update('price')} />
+          )}
+          <Input
+            label="Inclusions"
+            required
+            placeholder="4 hours coverage, 200 photos"
+            helperText="Separate with commas. At least 2."
+            value={form.inclusions}
+            onChange={update('inclusions')}
+          />
+          <Input label="Advance (%)" type="number" min="0" max="100" value={form.advancePercent} onChange={update('advancePercent')} />
+          <button type="submit" disabled={saving} className="btn-brand text-sm disabled:opacity-60">
+            {saving ? 'Saving...' : 'Save package'}
           </button>
+        </form>
+      )}
+
+      {packages.length === 0 ? (
+        <div className="card px-6 py-10 text-center">
+          <p className="font-heading text-lg font-semibold text-night">No packages yet</p>
+          <p className="mt-1 text-sm text-ink/60">Add a package so customers know what you offer and what it costs.</p>
         </div>
-
-        {showForm && (
-          <form onSubmit={handleAdd} className="bg-white border border-gray-200 p-5 space-y-3">
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Package name e.g. Haldi Half-Day" required className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <select value={form.pricingModel} onChange={(e) => setForm({ ...form, pricingModel: e.target.value })} className="w-full border border-gray-300 px-3 py-2.5 text-sm bg-white">
-              {PRICING_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
-            {form.pricingModel !== 'CUSTOM_QUOTE' && (
-              <input value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} type="number" placeholder="Price (₹)" required className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            )}
-            <input value={form.inclusions} onChange={(e) => setForm({ ...form, inclusions: e.target.value })} placeholder="Inclusions, comma separated (min 2) e.g. 4 hours coverage, 200 photos" required className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <input value={form.advancePercent} onChange={(e) => setForm({ ...form, advancePercent: e.target.value })} type="number" placeholder="Advance %" className="w-full border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-red" />
-            <button type="submit" disabled={saving} className="bg-brand-red hover:bg-brand-red-hover text-white font-bold px-4 py-2 text-sm disabled:opacity-60">
-              {saving ? 'Saving...' : 'Save Package'}
-            </button>
-          </form>
-        )}
-
-        <div className="space-y-2">
-          {packages.length === 0 && <p className="text-sm text-gray-500">No packages added yet.</p>}
+      ) : (
+        <ul className="space-y-3">
           {packages.map((p) => (
-            <div key={p._id} className="bg-white border border-gray-200 p-4 flex items-center justify-between">
-              <div>
-                <p className="font-bold text-gray-900 text-sm">{p.name}</p>
-                <p className="text-xs text-gray-500">
-                  {p.pricingModel === 'CUSTOM_QUOTE' ? 'Custom quote' : formatPaise(p.pricePaise)} · {p.inclusions?.length} inclusions
+            <li key={p._id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
+              <div className="min-w-0">
+                <p className="font-heading font-bold text-night">{p.name}</p>
+                <p className="text-sm text-ink/60">
+                  {p.pricingModel === 'CUSTOM_QUOTE'
+                    ? 'Custom quote'
+                    : `${formatPaise(p.pricePaise)}, ${(PRICING_MODELS[p.pricingModel] || '').toLowerCase()}`}
+                  {', '}
+                  {p.inclusions?.length || 0} inclusions
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Link to={buildRoute.vendorAddons(vendorId, p._id)} className="text-xs font-bold text-brand-red border border-brand-red px-3 py-2">
-                  Manage Add-ons
+              <div className="flex items-center gap-2">
+                <Link
+                  to={buildRoute.vendorAddons(vendorId, p._id)}
+                  className="h-10 rounded-pill border border-night/30 px-4 text-sm font-semibold leading-10 text-night transition-colors hover:bg-night/5"
+                >
+                  Manage add-ons
                 </Link>
-                <button onClick={() => handleDelete(p._id)} className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:border-red-400 hover:text-red-500">
-                  <X size={13} />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(p)}
+                  aria-label={`Remove ${p.name}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-mist text-ink/60 transition-colors hover:border-red-400 hover:text-red-600"
+                >
+                  <Trash2 size={15} />
                 </button>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
-      </div>
-    </div>
+        </ul>
+      )}
+    </DashboardShell>
   );
 };
 

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { disputeService } from '../../services/dispute.service';
-import Spinner from '../ui/Spinner/Spinner';
 
 const REASON_LABELS = {
   no_show: 'Vendor / customer no-show',
@@ -13,14 +12,17 @@ const REASON_LABELS = {
 };
 
 const STATUS_STYLES = {
-  open: 'bg-amber-50 text-amber-700 border-amber-200',
-  under_review: 'bg-blue-50 text-blue-700 border-blue-200',
-  resolved: 'bg-green-50 text-green-700 border-green-200',
-  rejected: 'bg-gray-100 text-gray-500 border-gray-200',
+  open: 'bg-amber-50 text-amber-800 border-amber-200',
+  under_review: 'bg-blue-50 text-blue-800 border-blue-200',
+  resolved: 'bg-green-50 text-green-800 border-green-200',
+  rejected: 'bg-gray-100 text-gray-600 border-gray-200',
 };
 
-// Reusable on both the customer and vendor side, same as BookingChatThread —
-// only needs the bookingId, the backend infers who's asking.
+const fieldClass =
+  'w-full rounded-xl border border-mist bg-moonlight px-3 text-sm text-ink transition-colors focus:border-night focus:bg-white focus:outline-none focus:ring-2 focus:ring-night/20';
+
+// Reusable on both the customer and vendor side, same as BookingChatThread:
+// it only needs the bookingId, the backend infers who's asking.
 const DisputePanel = ({ bookingId }) => {
   const [disputes, setDisputes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,8 +43,8 @@ const DisputePanel = ({ bookingId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId]);
 
-  // Only one open/under_review dispute is allowed per booking (enforced by
-  // the backend too) — this just decides whether to show the raise-form.
+  // Only one open or under_review dispute is allowed per booking (the backend
+  // enforces it too); this just decides whether to show the raise form.
   const hasOpenDispute = disputes.some((d) => ['open', 'under_review'].includes(d.status));
 
   const handleSubmit = async (e) => {
@@ -64,22 +66,24 @@ const DisputePanel = ({ bookingId }) => {
   if (loading) return null;
 
   return (
-    <div className="border-t border-gray-100 pt-3 mt-3">
+    <div className="border-t border-mist pt-3">
       {disputes.length > 0 && (
-        <div className="space-y-2 mb-2">
+        <div className="mb-3 space-y-2">
           {disputes.map((d) => (
-            <div key={d._id} className="bg-[#f9f9f8] border border-gray-200 p-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-gray-700">{REASON_LABELS[d.reason]}</span>
-                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 border ${STATUS_STYLES[d.status]}`}>
-                  {d.status.replace('_', ' ')}
+            <div key={d._id} className="rounded-xl border border-mist bg-moonlight p-3">
+              <div className="mb-1 flex items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-night">{REASON_LABELS[d.reason]}</span>
+                <span
+                  className={`rounded-pill border px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_STYLES[d.status]}`}
+                >
+                  {d.status.replace(/_/g, ' ')}
                 </span>
               </div>
-              <p className="text-xs text-gray-600">{d.description}</p>
+              <p className="text-sm text-ink/80">{d.description}</p>
               {d.resolution && (
-                <div className="mt-2 pt-2 border-t border-gray-200">
-                  <p className="text-[10px] font-bold uppercase text-gray-400">Resolution</p>
-                  <p className="text-xs text-gray-600">{d.resolution}</p>
+                <div className="mt-2 border-t border-mist pt-2">
+                  <p className="text-xs font-semibold text-ink/50">Resolution</p>
+                  <p className="text-sm text-ink/80">{d.resolution}</p>
                 </div>
               )}
             </div>
@@ -89,26 +93,33 @@ const DisputePanel = ({ bookingId }) => {
 
       {!hasOpenDispute && !showForm && (
         <button
+          type="button"
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-1.5 text-xs font-bold text-gray-600 border border-gray-300 px-3 py-1.5 hover:border-red-400 hover:text-red-600"
+          className="inline-flex h-10 items-center gap-1.5 rounded-pill border border-mist px-4 text-sm font-semibold text-ink/70 transition-colors hover:border-brand-red hover:text-brand-red"
         >
-          <AlertTriangle size={14} /> Raise a dispute
+          <AlertTriangle size={15} /> Raise a dispute
         </button>
       )}
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 p-3 space-y-2">
+        <form onSubmit={handleSubmit} className="space-y-3 rounded-2xl border border-mist bg-white p-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-gray-700">Raise a dispute</p>
-            <button type="button" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-700">
+            <p className="font-heading text-sm font-bold text-night">Raise a dispute</p>
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              aria-label="Close form"
+              className="-mr-2 flex h-9 w-9 items-center justify-center rounded-full text-night/50 transition-colors hover:bg-night/5"
+            >
               <X size={16} />
             </button>
           </div>
 
           <select
+            aria-label="Reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full border border-gray-300 px-2 py-1.5 text-xs"
+            className={`${fieldClass} h-11`}
           >
             {Object.entries(REASON_LABELS).map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
@@ -116,17 +127,18 @@ const DisputePanel = ({ bookingId }) => {
           </select>
 
           <textarea
+            aria-label="Describe what happened"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe what happened..."
+            placeholder="Describe what happened"
             rows={3}
-            className="w-full border border-gray-300 px-2 py-1.5 text-xs resize-none"
+            className={`${fieldClass} resize-none py-2.5`}
           />
 
           <button
             type="submit"
             disabled={submitting || !description.trim()}
-            className="text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-3 py-2 disabled:opacity-50"
+            className="btn-brand !py-2.5 text-sm disabled:opacity-50"
           >
             {submitting ? 'Submitting...' : 'Submit dispute'}
           </button>

@@ -6,6 +6,7 @@ export const useGeolocation = () => {
   const [error, setError]       = useState(null);
   const [loading, setLoading]   = useState(false);
 
+  
   const getLocation = () => {
     if (!navigator.geolocation) { setError('Geolocation not supported'); return; }
     setLoading(true);

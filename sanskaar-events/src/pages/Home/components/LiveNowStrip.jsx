@@ -1,84 +1,114 @@
 // src/pages/Home/components/LiveNowStrip.jsx
-// Matches reference: 2-col wide landscape cards, LIVE pill, category, title, location/time, attendees, "Join in →" red button
+// Events that are happening right now. Shows a few at first, the rest on request.
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Clock, Users } from 'lucide-react';
-import { buildRoute, ROUTES } from '../../../constants/routes';
+import { buildRoute } from '../../../constants/routes';
+import { formatEventTime } from '../../../utils/eventDate';
+
+const INITIAL_VISIBLE = 4;
+const STEP = 8;
 
 const LiveNowStrip = ({ events = [] }) => {
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
   if (!events.length) return null;
+
+  const visible = events.slice(0, visibleCount);
+  const remaining = events.length - visible.length;
+
   return (
-    <section className="py-6 border-b border-gray-200">
-      <div className="flex items-center justify-between mb-4 px-6">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-red block animate-pulse" />
-          <h2 className="font-black text-xl text-gray-900">Live now</h2>
-          <span className="text-sm text-gray-500">{events.length} event{events.length !== 1 ? 's' : ''} happening this moment</span>
-        </div>
-        <Link to={ROUTES.TONIGHT} className="text-sm font-semibold text-brand-red hover:underline">
-          See all →
-        </Link>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
+      <div className="flex items-center gap-2.5 mb-4">
+        <span className="w-2.5 h-2.5 rounded-full bg-brand-red animate-pulse" />
+        <h2 className="font-heading font-bold text-xl text-night">Live now</h2>
+        <span className="text-sm text-ink/60">
+          {events.length} {events.length === 1 ? 'event' : 'events'} happening right now
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-gray-200">
-        {events.map((event, i) => (
-          <Link
-            key={event.id}
-            to={buildRoute.eventDetail(event.id)}
-            className={`block hover:bg-gray-50 transition-colors ${i === 0 && events.length > 1 ? 'border-r border-gray-200' : ''}`}
-          >
-            <div className="flex gap-0 h-[160px]">
-              {/* Hatched image placeholder */}
-              <div
-                className="w-36 shrink-0 relative"
-                style={{
-                  backgroundImage:
-                    'repeating-linear-gradient(135deg, #d1d5db 0px, #d1d5db 1px, #e5e7eb 1px, #e5e7eb 10px)',
-                  backgroundColor: '#e5e7eb',
-                }}
-              >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {visible.map((event) => {
+          const here = event.attendees || event.going || 0;
+          return (
+            <Link
+              key={event.id}
+              to={buildRoute.eventDetail(event.id)}
+              className="flex bg-white rounded-card border border-mist overflow-hidden min-h-[140px]"
+            >
+              <div className="relative w-32 sm:w-40 shrink-0 bg-gradient-to-br from-night via-night-soft to-night">
                 {event.images?.[0] && (
-                  <img src={event.images[0]} alt={event.title} className="absolute inset-0 w-full h-full object-cover" />
+                  <img
+                    src={event.images[0]}
+                    alt={event.title}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 )}
-                {/* LIVE badge */}
-                <div className="absolute top-2 left-2 bg-black text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
-                  LIVE
-                </div>
+                <span className="absolute top-2 left-2 inline-flex items-center gap-1.5 rounded-pill bg-brand-red text-white text-xs font-semibold px-2.5 py-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  Live
+                </span>
               </div>
 
-              {/* Info */}
-              <div className="flex-1 p-4 flex flex-col justify-between">
+              <div className="flex-1 min-w-0 p-4 flex flex-col justify-between">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-brand-red mb-1">
-                    {event.category?.replace(/-/g, ' ')}
-                  </p>
-                  <h3 className="font-black text-lg leading-tight text-gray-900 mb-2">{event.title}</h3>
-                  <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
-                    <span className="flex items-center gap-1">
-                      <MapPin size={11} /> {event.venue?.name}{event.venue?.distance ? ` · ${event.venue.distance}` : ''}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock size={11} /> Started {event.time}
-                    </span>
+                  <h3 className="font-heading font-bold text-lg leading-snug text-night line-clamp-2">
+                    {event.title}
+                  </h3>
+                  <div className="mt-2 space-y-1 text-sm text-ink/70">
+                    <p className="flex items-center gap-1.5">
+                      <MapPin size={13} className="shrink-0" />
+                      <span className="truncate">{event.venue?.name}</span>
+                    </p>
+                    {event.time && (
+                      <p className="flex items-center gap-1.5">
+                        <Clock size={13} className="shrink-0" /> Started at {formatEventTime(event.time)}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1 text-sm font-semibold text-gray-800">
-                    <Users size={13} className="text-gray-400" />
-                    {event.attendees || event.going || 48} here now
+
+                <div className="mt-3 flex items-center justify-between">
+                  {here > 0 ? (
+                    <span className="flex items-center gap-1.5 text-sm font-semibold text-night">
+                      <Users size={14} /> {here} here now
+                    </span>
+                  ) : (
+                    <span />
+                  )}
+                  <span className="rounded-pill bg-brand-red text-white text-sm font-semibold px-4 py-1.5">
+                    Join now
                   </span>
-                  <button
-                    onClick={(e) => e.preventDefault()}
-                    className="bg-brand-red hover:bg-brand-red-hover text-white text-sm font-bold px-4 py-1.5 transition-colors"
-                  >
-                    Join in →
-                  </button>
                 </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
+
+      {(remaining > 0 || visibleCount > INITIAL_VISIBLE) && (
+        <div className="mt-5 flex items-center justify-center gap-3">
+          {remaining > 0 && (
+            <button
+              type="button"
+              onClick={() => setVisibleCount((c) => c + STEP)}
+              className="btn-outline text-sm"
+            >
+              Show {Math.min(STEP, remaining)} more live {Math.min(STEP, remaining) === 1 ? 'event' : 'events'}
+            </button>
+          )}
+          {visibleCount > INITIAL_VISIBLE && (
+            <button
+              type="button"
+              onClick={() => setVisibleCount(INITIAL_VISIBLE)}
+              className="text-sm font-semibold text-night hover:underline underline-offset-4"
+            >
+              Show fewer
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 };

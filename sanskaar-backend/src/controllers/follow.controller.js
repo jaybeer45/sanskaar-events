@@ -42,5 +42,22 @@ const toggleFollow = asyncHandler(async (req, res) => {
 
   res.status(200).json({ following, followersCount: targetUser.followersCount });
 });
+// @route GET /api/v1/users/:id/followers
+// @desc  Public — list of users who follow this user
+const getFollowers = asyncHandler(async (req, res) => {
+  const follows = await Follow.find({ following: req.params.id })
+    .populate('follower', 'name avatar followersCount')
+    .sort({ createdAt: -1 });
+  res.status(200).json({ results: follows.map((f) => f.follower).filter(Boolean) });
+});
 
-module.exports = { toggleFollow };
+// @route GET /api/v1/users/:id/following
+// @desc  Public — list of users this user follows
+const getFollowing = asyncHandler(async (req, res) => {
+  const follows = await Follow.find({ follower: req.params.id })
+    .populate('following', 'name avatar followersCount')
+    .sort({ createdAt: -1 });
+  res.status(200).json({ results: follows.map((f) => f.following).filter(Boolean) });
+});
+
+module.exports = { toggleFollow , getFollowers , getFollowing  };

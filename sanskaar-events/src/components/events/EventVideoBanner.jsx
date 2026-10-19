@@ -2,8 +2,8 @@
 import { useState, useRef } from 'react';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
-// BookMyShow-style hero: video autoplays muted with poster as fallback/loading
-// image. Falls back to a plain image if the event has no promotional video.
+// Hero video: autoplays muted, with the poster as a loading image. Falls back to
+// the poster (or a night gradient) if there is no video or it fails to load.
 const EventVideoBanner = ({ videoUrl, posterUrl, className = '' }) => {
     const videoRef = useRef(null);
     const [isMuted, setIsMuted] = useState(true);
@@ -11,14 +11,9 @@ const EventVideoBanner = ({ videoUrl, posterUrl, className = '' }) => {
     const [videoError, setVideoError] = useState(false);
 
     if (!videoUrl || videoError) {
-        // No video, or it failed to load — just show the poster/thumbnail image
         return (
             <div
-                className={`relative overflow-hidden ${className}`}
-                style={{
-                    backgroundImage: posterUrl ? undefined : 'repeating-linear-gradient(135deg, #d1d5db 0, #d1d5db 1px, #e5e7eb 1px, #e5e7eb 10px)',
-                    backgroundColor: '#e5e7eb',
-                }}
+                className={`relative overflow-hidden bg-gradient-to-br from-night via-night-soft to-night ${className}`}
             >
                 {posterUrl && <img src={posterUrl} alt="" className="w-full h-full object-cover" />}
             </div>
@@ -55,21 +50,23 @@ const EventVideoBanner = ({ videoUrl, posterUrl, className = '' }) => {
                 className="w-full h-full object-cover"
             />
 
-            {/* Controls overlay — bottom-right, small, unobtrusive */}
-            <div className="absolute bottom-3 right-3 flex gap-2">
+            {/* Controls: bottom-right, small */}
+            <div className="absolute bottom-3 right-3 z-20 flex gap-2">
                 <button
                     type="button"
                     onClick={togglePlay}
-                    className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center transition-colors"
+                    aria-label={isPlaying ? 'Pause video' : 'Play video'}
+                    className="w-11 h-11 rounded-full bg-black/55 hover:bg-black/75 flex items-center justify-center transition-colors"
                 >
-                    {isPlaying ? <Pause size={15} className="text-white" /> : <Play size={15} className="text-white ml-0.5" />}
+                    {isPlaying ? <Pause size={17} className="text-white" /> : <Play size={17} className="text-white ml-0.5" />}
                 </button>
                 <button
                     type="button"
                     onClick={toggleMute}
-                    className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center transition-colors"
+                    aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+                    className="w-11 h-11 rounded-full bg-black/55 hover:bg-black/75 flex items-center justify-center transition-colors"
                 >
-                    {isMuted ? <VolumeX size={15} className="text-white" /> : <Volume2 size={15} className="text-white" />}
+                    {isMuted ? <VolumeX size={17} className="text-white" /> : <Volume2 size={17} className="text-white" />}
                 </button>
             </div>
         </div>

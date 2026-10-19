@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
 @import 'leaflet/dist/leaflet.css';
 
 @tailwind base;
@@ -8,8 +7,8 @@
 @layer base {
   :root {
     --scrollbar-width: 6px;
-    --scrollbar-track: #f1f1f1;
-    --scrollbar-thumb: #ec3013;
+    --scrollbar-track: #ececf4;
+    --scrollbar-thumb: #1a1445;
   }
 
   html {
@@ -17,7 +16,7 @@
   }
 
   body {
-    @apply bg-surface font-body text-gray-800 antialiased;
+    @apply bg-surface font-body text-ink antialiased;
   }
 
   h1,
@@ -26,7 +25,7 @@
   h4,
   h5,
   h6 {
-    @apply font-heading;
+    @apply font-heading tracking-tight;
   }
 
   ::-webkit-scrollbar {
@@ -41,29 +40,79 @@
     background: var(--scrollbar-thumb);
     border-radius: 3px;
   }
+
+  /* Visible keyboard focus everywhere; flips to marigold on night surfaces */
+  :focus-visible {
+    outline: 2px solid #1a1445;
+    outline-offset: 2px;
+  }
+
+  .surface-night :focus-visible {
+    outline-color: #f5a623;
+  }
 }
 
 @layer components {
 
-  /* ── Brand Button ──────────────────────────────── */
+  /* Buttons: red is reserved for the main action on a screen */
   .btn-brand {
-    @apply bg-brand-red hover:bg-brand-red-hover text-white font-heading font-semibold px-5 py-2.5 rounded-pill transition-all duration-200 shadow-brand hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+    @apply bg-brand-red hover:bg-brand-red-hover text-white font-heading font-semibold px-5 py-2.5 rounded-pill transition-colors duration-200 shadow-brand active:scale-[0.98];
+  }
+
+  .btn-night {
+    @apply bg-night hover:bg-night-soft text-white font-heading font-semibold px-5 py-2.5 rounded-pill transition-colors duration-200 active:scale-[0.98];
+  }
+
+  .btn-marigold {
+    @apply bg-marigold hover:bg-brand-gold-hover text-night font-heading font-semibold px-5 py-2.5 rounded-pill transition-colors duration-200 active:scale-[0.98];
   }
 
   .btn-outline {
-    @apply border-2 border-brand-red text-brand-red hover:bg-brand-red hover:text-white font-heading font-semibold px-5 py-2.5 rounded-pill transition-all duration-200;
+    @apply border-2 border-ink text-ink hover:bg-ink hover:text-white font-heading font-semibold px-5 py-2.5 rounded-pill transition-colors duration-200;
   }
 
   .btn-ghost {
-    @apply text-gray-600 hover:text-brand-red hover:bg-red-50 font-medium px-4 py-2 rounded-xl transition-all duration-200;
+    @apply text-gray-600 hover:text-night hover:bg-night/5 font-medium px-4 py-2 rounded-xl transition-colors duration-200;
   }
 
-  /* ── Cards ─────────────────────────────────────── */
+  /* Cards: flat with a hairline border, no hover lift */
   .card {
-    @apply bg-card rounded-card shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden;
+    @apply bg-card rounded-card shadow-card border border-mist/70 overflow-hidden;
   }
 
-  /* ── Badge ─────────────────────────────────────── */
+  /* Ticket: notched stub used for event cards. Put .ticket-perf between the
+     image and the details; set --ticket-bg to the colour behind the card. */
+  .ticket {
+    --ticket-bg: #f5f5fa;
+    @apply bg-white rounded-ticket border border-mist overflow-hidden;
+  }
+
+  .ticket-perf {
+    position: relative;
+    border-top: 2px dashed #d9d8e6;
+  }
+
+  .ticket-perf::before,
+  .ticket-perf::after {
+    content: '';
+    position: absolute;
+    top: -11px;
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    background: var(--ticket-bg);
+    border: 1px solid #d9d8e6;
+  }
+
+  .ticket-perf::before {
+    left: -11px;
+  }
+
+  .ticket-perf::after {
+    right: -11px;
+  }
+
+  /* Badges */
   .badge {
     @apply inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full;
   }
@@ -73,7 +122,7 @@
   }
 
   .badge-gold {
-    @apply badge bg-amber-100 text-amber-700;
+    @apply badge bg-marigold-soft text-amber-800;
   }
 
   .badge-green {
@@ -88,22 +137,22 @@
     @apply badge bg-brand-red text-white animate-pulse-live;
   }
 
-  /* ── Section Title ──────────────────────────────── */
+  /* Section title */
   .section-title {
-    @apply font-heading font-bold text-2xl md:text-3xl text-gray-900;
+    @apply font-heading font-bold text-2xl md:text-3xl text-ink;
   }
 
-  /* ── Shimmer Skeleton ───────────────────────────── */
+  /* Shimmer skeleton */
   .skeleton {
-    @apply bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-shimmer rounded-xl;
+    @apply bg-gradient-to-r from-mist/60 via-white to-mist/60 bg-[length:200%_100%] animate-shimmer rounded-xl;
   }
 
-  /* ── Input ──────────────────────────────────────── */
+  /* Input */
   .input {
-    @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-red/40 focus:border-brand-red transition-all duration-200;
+    @apply w-full border border-mist rounded-xl px-4 py-3 text-ink placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-night/25 focus:border-night transition-colors duration-200;
   }
 
-  /* ── Page container ─────────────────────────────── */
+  /* Page container */
   .page-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
@@ -113,4 +162,58 @@
 .leaflet-container {
   border-radius: 16px;
   z-index: 0;
+}
+
+/* Respect the OS "reduce motion" setting */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hide the scrollbar on horizontally scrolling rows */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Map: fonts, pins and popups */
+.leaflet-container {
+  font-family: Hind, sans-serif;
+}
+
+.sk-marker {
+  background: transparent;
+  border: 0;
+}
+
+.sk-popup .leaflet-popup-content-wrapper {
+  border-radius: 14px;
+  box-shadow: 0 10px 28px -10px rgba(26, 20, 69, 0.4);
+}
+
+.sk-popup .leaflet-popup-content {
+  margin: 14px 16px;
+}
+
+.sk-popup .leaflet-popup-tip {
+  box-shadow: none;
+}
+
+/* Leaflet colours every link blue; keep the popup link on brand */
+.sk-popup a.sk-popup-link {
+  color: #1a1445;
+}
+
+/* Soften the standard OpenStreetMap colours so the numbered pins stand out */
+.sk-tiles {
+  filter: saturate(0.6) brightness(1.04);
 }

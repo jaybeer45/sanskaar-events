@@ -1,3 +1,4 @@
+// src/components/layout/CityPicker.jsx
 import { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapPin, ChevronDown, Search } from 'lucide-react';
@@ -14,8 +15,15 @@ const CityPicker = () => {
     const handleClickOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, []);
 
   const filteredCities = CITIES.filter((c) =>
@@ -31,45 +39,55 @@ const CityPicker = () => {
   return (
     <div className="relative shrink-0" ref={ref}>
       <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
-        className=" rounded-full px-4 flex items-center gap-1.5 border border-gray-300 py-1.5 text-sm text-gray-700 hover:border-gray-500 transition-colors"
+        className="h-10 rounded-pill px-3.5 flex items-center gap-1.5 bg-moonlight text-sm text-ink hover:bg-night/10 transition-colors"
       >
-        <MapPin size={14} className="text-brand-red" />
-        <span className="font-medium">{selectedCity.name}</span>
-        <ChevronDown size={14} className="text-gray-400" />
+        <MapPin size={15} className="text-night" />
+        <span className="font-medium max-w-[7rem] truncate">{selectedCity.name}</span>
+        <ChevronDown
+          size={14}
+          className={`text-night/50 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-2 w-64 rounded-xl border border-gray-200 bg-white shadow-lg z-50">
-          <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-2">
-            <Search size={14} className="text-gray-400" />
+        <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-mist bg-white shadow-card z-50 overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-mist px-3 py-2.5">
+            <Search size={14} className="text-night/50" />
             <input
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search city..."
+              placeholder="Search city"
+              aria-label="Search city"
               className="flex-1 text-sm focus:outline-none"
             />
           </div>
 
-          <div className="max-h-72 overflow-y-auto py-1">
+          <div role="listbox" className="max-h-72 overflow-y-auto py-1">
             {filteredCities.length === 0 && (
-              <p className="px-4 py-3 text-sm text-gray-400">No city found</p>
+              <p className="px-4 py-3 text-sm text-gray-500">No city found</p>
             )}
-            {filteredCities.map((city) => (
-              <button
-                key={city.name}
-                onClick={() => handleSelect(city)}
-                className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm transition-colors ${
-                  city.name === selectedCity.name
-                    ? 'bg-red-50 text-brand-red font-medium'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <span>{city.name}</span>
-                <span className="text-xs text-gray-400">{city.state}</span>
-              </button>
-            ))}
+            {filteredCities.map((city) => {
+              const isSelected = city.name === selectedCity.name;
+              return (
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  key={city.name}
+                  onClick={() => handleSelect(city)}
+                  className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors ${isSelected ? 'bg-night/5 text-night font-semibold' : 'text-ink hover:bg-moonlight'
+                    }`}
+                >
+                  <span>{city.name}</span>
+                  <span className="text-xs text-gray-500">{city.state}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

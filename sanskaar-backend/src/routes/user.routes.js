@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { updateProfile, saveEvent, unsaveEvent, recordConsent, getConsents } = require('../controllers/user.controller');
-const { toggleFollow } = require('../controllers/follow.controller');
+const { updateProfile, saveEvent, unsaveEvent, recordConsent, getConsents , getUserById } = require('../controllers/user.controller');
+const { toggleFollow , getFollowers , getFollowing } = require('../controllers/follow.controller');
 const { protect } = require('../middleware/auth.middleware');
 const { getMyWallet , getMyCoupons , validateMyCoupon } = require('../controllers/rewards.controller');
 
@@ -11,6 +11,9 @@ router.delete('/:id/saved-events/:eventId', protect, unsaveEvent);
 router.post('/:id/consents', protect, recordConsent);
 router.get('/:id/consents', protect, getConsents);
 router.post('/:id/follow', protect, toggleFollow);
+router.get('/:id/followers', getFollowers);
+router.get('/:id/following', getFollowing);
+router.get('/:id', getUserById);
 router.get('/me/wallet', protect, getMyWallet);
 router.get('/me/coupons', protect, getMyCoupons);
 router.post('/me/coupons/validate', protect, validateMyCoupon);

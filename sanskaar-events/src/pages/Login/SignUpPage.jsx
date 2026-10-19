@@ -1,7 +1,7 @@
 // src/pages/Login/SignUpPage.jsx
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { register as registerUser } from "../../features/auth/slices/authSlice";
 import { CITIES } from "../../features/location/locationSlice";
@@ -9,7 +9,12 @@ import { ROUTES } from "../../constants/routes";
 import Input from "../../components/ui/Input/Input";
 import OTP from "../../components/ui/OTP/OTP";
 import { authService } from "../../services/auth.service";
-import { useSearchParams } from 'react-router-dom';
+import AuthShell from "./AuthShell";
+
+// Same look as the shared Input component, for the fields that need a custom layout
+const fieldClass = (hasError) =>
+  `h-12 w-full rounded-xl border px-4 text-[15px] text-ink placeholder-gray-400 bg-moonlight focus:bg-white transition-colors focus:outline-none focus:ring-2 read-only:text-ink/70 disabled:cursor-not-allowed disabled:opacity-60 ${hasError ? "border-red-400 focus:ring-red-200" : "border-mist focus:ring-night/20 focus:border-night"
+  }`;
 
 const SignUpPage = () => {
   const [authError, setAuthError] = useState("");
@@ -20,9 +25,8 @@ const SignUpPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-const referredBy = searchParams.get('ref');
+  const referredBy = searchParams.get("ref");
   const dispatch = useDispatch();
- 
 
   const {
     register,
@@ -32,39 +36,40 @@ const referredBy = searchParams.get('ref');
     formState: { errors, isSubmitting },
   } = useForm({ mode: "onBlur" });
 
-const handleSendOtp = async () => {
-  const phone = getValues("phone");
-  if (!phone || !/^[6-9]\d{9}$/.test(phone)) {
-    setOtpError("Enter a valid 10-digit phone number first.");
-    return;
-  }
-  setOtpError("");
-  try {
-    await authService.sendOtp(phone);
-    setOtpStage("sent");
-  } catch (err) {
-    setOtpError(err?.message || "Could not send OTP.");
-  }
-};
-
-const handleVerifyOtp = async () => {
-  if (otpValue.length !== 6) {
-    setOtpError("Enter the complete 6-digit code.");
-    return;
-  }
-  setOtpError("");
-  try {
+  const handleSendOtp = async () => {
     const phone = getValues("phone");
-    await authService.verifyOtp(phone, otpValue);
-    setOtpStage("verified");
-  } catch (err) {
-    setOtpError(err?.message || "Invalid or expired code.");
-  }
-};
+    if (!phone || !/^[6-9]\d{9}$/.test(phone)) {
+      setOtpError("Enter a valid 10-digit phone number first.");
+      return;
+    }
+    setOtpError("");
+    try {
+      await authService.sendOtp(phone);
+      setOtpStage("sent");
+    } catch (err) {
+      setOtpError(err?.message || "Could not send OTP.");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otpValue.length !== 6) {
+      setOtpError("Enter the complete 6-digit code.");
+      return;
+    }
+    setOtpError("");
+    try {
+      const phone = getValues("phone");
+      await authService.verifyOtp(phone, otpValue);
+      setOtpStage("verified");
+    } catch (err) {
+      setOtpError(err?.message || "Invalid or expired code.");
+    }
+  };
 
   const handleSignUp = async (data) => {
     setAuthError("");
 
+    // Phone verification is optional for now:
     // if (otpStage !== "verified") {
     //   setAuthError("Please verify your phone number before continuing.");
     //   return;
@@ -87,217 +92,215 @@ const handleVerifyOtp = async () => {
       ).unwrap();
 
       const redirectTo = location.state?.from?.pathname;
-navigate(redirectTo || ROUTES.ONBOARDING, { replace: true });
+      navigate(redirectTo || ROUTES.ONBOARDING, { replace: true });
     } catch (err) {
       setAuthError(err || "Something went wrong. Please try again.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center bg-gray-50 px-4 py-10">
-      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 overflow-hidden shadow-xl">
-        {/* Branding Panel */}
-        <div className="hidden md:flex flex-col justify-center bg-red-600 text-white p-10">
-          <span className="text-2xl font-bold tracking-tight mb-8">
-            SANSKAAR<span className="text-red-300">.</span>
-          </span>
-          <h1 className="text-4xl font-bold leading-tight mb-4">
-            Join the community today.
-          </h1>
-          <p className="text-red-100 text-sm leading-relaxed">
-            Create your account to discover events, book tickets and manage
-            everything in one place.
-          </p>
-        </div>
+    <AuthShell
+      headline="Join the community today."
+      intro="Create your account to discover events, book tickets and manage everything in one place."
+      points={[
+        "Discover events in your city",
+        "Book tickets in a minute",
+        "Share videos from events you go to",
+      ]}
+    >
+      <div className="mx-auto w-full max-w-md md:max-w-none">
+        <h1 className="font-heading font-extrabold text-3xl text-night">Create your account</h1>
+        <p className="mt-2 text-ink/60">
+          Already have an account?{" "}
+          <Link to="/login" className="font-semibold text-night underline underline-offset-4 hover:text-brand-red">
+            Sign in
+          </Link>
+        </p>
 
-        {/* Signup Card */}
-        <div className="bg-white p-8 sm:p-10 flex flex-col justify-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">
-            Create Account
-          </h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Already have an account?{" "}
-            <Link to="/login" className="text-red-600 font-medium hover:underline">
-              Sign In
-            </Link>
+        {referredBy && (
+          <p className="mt-4 rounded-xl bg-marigold-soft px-4 py-2.5 text-sm text-night">
+            Referral link applied.
           </p>
+        )}
 
-          {authError && (
-            <div
-              role="alert"
-              className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600"
-            >
-              {authError}
+        {authError && (
+          <div
+            role="alert"
+            className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
+            {authError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(handleSignUp)} noValidate className="mt-6 space-y-5">
+          <Input
+            label="Full name"
+            type="text"
+            placeholder="Your name"
+            autoComplete="name"
+            required
+            error={errors.fullName?.message}
+            {...register("fullName", {
+              required: "Full name is required",
+              minLength: { value: 2, message: "Name must be at least 2 characters" },
+              maxLength: { value: 50, message: "Name must be under 50 characters" },
+            })}
+          />
+
+          <Input
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            autoComplete="email"
+            required
+            error={errors.email?.message}
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Enter a valid email address",
+              },
+            })}
+          />
+
+          {/* Phone and Send OTP */}
+          <div>
+            <label htmlFor="signup-phone" className="mb-1.5 block text-sm font-medium text-ink">
+              Phone <span className="text-brand-red">*</span>
+            </label>
+            <div className="flex gap-2">
+              <input
+                id="signup-phone"
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                placeholder="98765xxxxx"
+                readOnly={otpStage !== "idle"}
+                aria-invalid={errors.phone ? "true" : "false"}
+                className={`${fieldClass(!!errors.phone)} min-w-0 flex-1`}
+                {...register("phone", {
+                  required: "Phone number is required",
+                  pattern: { value: /^[6-9]\d{9}$/, message: "Enter a valid 10-digit number" },
+                })}
+              />
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                disabled={otpStage !== "idle"}
+                className="btn-outline h-12 shrink-0 !py-0 text-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
+              >
+                {otpStage === "idle" ? "Send OTP" : "Sent"}
+              </button>
+            </div>
+            {errors.phone && (
+              <p role="alert" className="mt-1.5 text-sm text-red-600">{errors.phone.message}</p>
+            )}
+            {otpStage === "idle" && otpError && (
+              <p role="alert" className="mt-1.5 text-sm text-red-600">{otpError}</p>
+            )}
+          </div>
+
+          {/* OTP box, shown only after the code is sent */}
+          {(otpStage === "sent" || otpStage === "verified") && (
+            <div>
+              <p className="mb-1.5 text-sm font-medium text-ink">Enter the 6-digit code</p>
+              <OTP
+                value={otpValue}
+                onChange={setOtpValue}
+                error={otpError}
+                disabled={otpStage === "verified"}
+              />
+              {otpStage === "sent" && (
+                <button
+                  type="button"
+                  onClick={handleVerifyOtp}
+                  className="mt-3 text-sm font-semibold text-night underline underline-offset-4 hover:text-brand-red"
+                >
+                  Verify code
+                </button>
+              )}
+              {otpStage === "verified" && (
+                <p className="mt-2 text-sm font-medium text-green-700">Phone verified</p>
+              )}
             </div>
           )}
 
-          <form onSubmit={handleSubmit(handleSignUp)} noValidate className="space-y-5">
-            {/* Full Name */}
+          {/* Password and confirm password */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-4">
             <Input
-              label="Full Name"
-              type="text"
-              placeholder="John Doe"
+              label="Password"
+              type="password"
+              placeholder="At least 8 characters"
+              autoComplete="new-password"
               required
-              error={errors.fullName?.message}
-              {...register("fullName", {
-                required: "Full name is required",
-                minLength: { value: 2, message: "Name must be at least 2 characters" },
-                maxLength: { value: 50, message: "Name must be under 50 characters" },
+              error={errors.password?.message}
+              {...register("password", {
+                required: "Password is required",
+                minLength: { value: 8, message: "Use at least 8 characters" },
               })}
             />
-
-            {/* Email */}
             <Input
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
+              label="Confirm password"
+              type="password"
+              placeholder="Repeat your password"
+              autoComplete="new-password"
               required
-              error={errors.email?.message}
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Enter a valid email address",
-                },
+              error={errors.confirmPassword?.message}
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (value) => value === watch("password") || "Passwords do not match",
               })}
             />
+          </div>
 
-            {/* Phone + Send OTP */}
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                Phone <span className="text-brand-red">*</span>
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="tel"
-                  placeholder="98765xxxxx"
-                  disabled={otpStage !== "idle"}
-                  className={`h-12 flex-1 rounded-lg border px-4 text-[15px] bg-gray-100 focus:bg-white transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 ${
-                    errors.phone
-                      ? "border-red-400 focus:ring-red-200"
-                      : "border-gray-200 focus:ring-red-100 focus:border-brand-red"
-                  }`}
-                  {...register("phone", {
-                    required: "Phone number is required",
-                    pattern: { value: /^[6-9]\d{9}$/, message: "Enter a valid 10-digit number" },
-                  })}
-                />
-                <button
-                  type="button"
-                  onClick={handleSendOtp}
-                  disabled={otpStage !== "idle"}
-                  className="shrink-0 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 hover:border-gray-500 transition-colors disabled:opacity-50"
-                >
-                  {otpStage === "idle" ? "Send OTP" : "Sent"}
-                </button>
-              </div>
-              {errors.phone && (
-                <p role="alert" className="mt-1.5 text-sm text-red-600">{errors.phone.message}</p>
-              )}
-            </div>
-
-            {/* OTP box — sirf phone bhejne ke baad dikhega */}
-            {(otpStage === "sent" || otpStage === "verified") && (
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                  Enter 6-digit code
-                </label>
-                <OTP
-                  value={otpValue}
-                  onChange={setOtpValue}
-                  error={otpError}
-                  disabled={otpStage === "verified"}
-                />
-                {otpStage === "sent" && (
-                  <button
-                    type="button"
-                    onClick={handleVerifyOtp}
-                    className="mt-2 text-sm font-semibold text-brand-red hover:underline"
-                  >
-                    Verify code
-                  </button>
-                )}
-                {otpStage === "verified" && (
-                  <p className="mt-2 text-sm font-medium text-green-600">✓ Phone verified</p>
-                )}
-              </div>
-            )}
-
-            {/* Password + Confirm — side by side, PRD spec */}
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                required
-                error={errors.password?.message}
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: { value: 8, message: "Min 8 characters" },
-                })}
-              />
-              <Input
-                label="Confirm Password"
-                type="password"
-                placeholder="••••••••"
-                required
-                error={errors.confirmPassword?.message}
-                {...register("confirmPassword", {
-                  required: "Please confirm your password",
-                  validate: (value) => value === watch("password") || "Passwords do not match",
-                })}
-              />
-            </div>
-
-            {/* City dropdown — Bareilly default, existing CITIES list se */}
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                City <span className="text-brand-red">*</span>
-              </label>
-              <select
-                defaultValue={CITIES[0].name}
-                className="h-12 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 text-[15px] focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-brand-red transition-colors"
-                {...register("city", { required: "Please select your city" })}
-              >
-                {CITIES.map((city) => (
-                  <option key={city.name} value={city.name}>
-                    {city.name}
-                  </option>
-                ))}
-              </select>
-              {errors.city && (
-                <p role="alert" className="mt-1.5 text-sm text-red-600">{errors.city.message}</p>
-              )}
-            </div>
-
-            {/* Terms */}
-            <div>
-              <label htmlFor="terms" className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                <input
-                  id="terms"
-                  type="checkbox"
-                  className="h-4 w-4 accent-red-600"
-                  {...register("terms", { required: "You must agree to the Terms & Conditions" })}
-                />
-                I agree to the Terms & Conditions and Privacy Policy
-              </label>
-              {errors.terms && (
-                <p role="alert" className="mt-1 text-sm text-red-600">{errors.terms.message}</p>
-              )}
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full rounded-lg bg-red-600 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition disabled:cursor-not-allowed disabled:opacity-70"
+          {/* City */}
+          <div>
+            <label htmlFor="signup-city" className="mb-1.5 block text-sm font-medium text-ink">
+              City <span className="text-brand-red">*</span>
+            </label>
+            <select
+              id="signup-city"
+              defaultValue={CITIES[0].name}
+              className={fieldClass(!!errors.city)}
+              {...register("city", { required: "Please select your city" })}
             >
-              {isSubmitting ? "Creating account..." : "Create Account"}
-            </button>
-          </form>
-        </div>
+              {CITIES.map((city) => (
+                <option key={city.name} value={city.name}>
+                  {city.name}
+                </option>
+              ))}
+            </select>
+            {errors.city && (
+              <p role="alert" className="mt-1.5 text-sm text-red-600">{errors.city.message}</p>
+            )}
+          </div>
+
+          {/* Terms */}
+          <div>
+            <label htmlFor="terms" className="flex cursor-pointer items-start gap-2.5 text-sm text-ink/80">
+              <input
+                id="terms"
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-night"
+                {...register("terms", { required: "You must agree to the Terms and Conditions" })}
+              />
+              I agree to the Terms and Conditions and the Privacy Policy
+            </label>
+            {errors.terms && (
+              <p role="alert" className="mt-1.5 text-sm text-red-600">{errors.terms.message}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-brand w-full py-3.5 text-base disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isSubmitting ? "Creating account..." : "Create account"}
+          </button>
+        </form>
       </div>
-    </div>
+    </AuthShell>
   );
 };
 
